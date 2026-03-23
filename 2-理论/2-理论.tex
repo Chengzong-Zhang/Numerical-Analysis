@@ -1,0 +1,218 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage[slantfont,boldfont]{xeCJK}
+\usepackage{fontspec}
+
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{bm}
+\usepackage{hyperref}
+
+\setlength{\parindent}{2em}
+\linespread{1.2}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\everymath{\displaystyle}
+
+\newcommand*{\QED}{\hfill\ensuremath{\square}}
+
+\setlength{\headheight}{13.6pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{数值分析\quad 第二章理论作业\quad 学号：241098117，姓名：张城宗}
+\fancyhead[R]{习题二}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries 数值分析\quad 第二章理论作业}\\[6pt]
+  {\large 习题二\quad 第 3、6、7 题}\\[4pt]
+  {\normalsize 学号：241098117\quad 姓名：张城宗}
+\end{center}
+
+\bigskip
+
+%=====================================================
+\noindent\textbf{第 3 题.}\quad 试利用 $81$、$100$ 和 $121$ 的平方根求 $\sqrt{95}$。
+
+\medskip
+\noindent\textbf{解.}\quad
+取插值节点 $x_0=81,\ x_1=100,\ x_2=121$，对应函数值
+\[
+  f(x_0)=\sqrt{81}=9,\quad f(x_1)=\sqrt{100}=10,\quad f(x_2)=\sqrt{121}=11.
+\]
+构造 Lagrange 二次插值多项式 $L_2(x)=\sum_{i=0}^{2}f(x_i)\,l_i(x)$，在 $x=95$ 处计算各基函数值：
+\begin{align*}
+  l_0(95) &= \frac{(95-100)(95-121)}{(81-100)(81-121)}
+            = \frac{(-5)(-26)}{(-19)(-40)}
+            = \frac{130}{760} = \frac{13}{76},\\[4pt]
+  l_1(95) &= \frac{(95-81)(95-121)}{(100-81)(100-121)}
+            = \frac{(14)(-26)}{(19)(-21)}
+            = \frac{-364}{-399} = \frac{52}{57},\\[4pt]
+  l_2(95) &= \frac{(95-81)(95-100)}{(121-81)(121-100)}
+            = \frac{(14)(-5)}{(40)(21)}
+            = \frac{-70}{840} = -\frac{1}{12}.
+\end{align*}
+验证：$\dfrac{13}{76}+\dfrac{52}{57}-\dfrac{1}{12} = \dfrac{39+208-19}{228} = 1$。\checkmark
+
+从而
+\[
+  \sqrt{95} \approx L_2(95)
+  = 9\times\frac{13}{76}+10\times\frac{52}{57}+11\times\left(-\frac{1}{12}\right)
+  = \frac{351+2080-209}{228}
+  = \frac{2222}{228}
+  = \frac{1111}{114}
+  \approx 9.7456.
+\]
+
+\noindent\textbf{误差估计.}\quad 设 $f(x)=x^{1/2}$，则
+\[
+  f'''(x) = \frac{3}{8}x^{-5/2}.
+\]
+插值余项为
+\[
+  R_2(95) = \frac{f'''(\xi)}{3!}(95-81)(95-100)(95-121)
+           = \frac{3}{8\cdot 6}\,\xi^{-5/2}\cdot(14)\cdot(-5)\cdot(-26),
+\]
+其中 $\xi\in(81,121)$。因 $\xi>81$，故 $\xi^{5/2}>81^{5/2}=9^5=59049$，于是
+\[
+  |R_2(95)| < \frac{1820}{16\times 59049} \approx 0.00193.
+\]
+真实值 $\sqrt{95}\approx 9.74679$，近似值 $\dfrac{1111}{114}\approx 9.74561$，实际误差约 $0.00118$，与误差界相符。
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第 6 题.}\quad 设 $x_0,x_1,\cdots,x_n$ 为 $n+1$ 个互异的插值节点，$l_i(x)\ (i=0,1,\cdots,n)$ 为 Lagrange 基本多项式，证明：
+
+\begin{enumerate}[label=(\arabic*),leftmargin=*,itemsep=8pt]
+  \item $\displaystyle\sum_{i=0}^n l_i(x)=1$；
+
+  \item $\displaystyle\sum_{i=0}^n x_i^j\,l_i(x)=x^j$，$j=1,2,\cdots,n$；
+
+  \item $\displaystyle\sum_{i=0}^n(x_i-x)^j\,l_i(x)=0$，$j=1,2,\cdots,n$；
+
+  \item $\displaystyle\sum_{i=0}^n l_i(0)\,x_i^j=
+        \begin{cases}
+          1, & j=0,\\[4pt]
+          0, & j=1,2,\cdots,n,\\[4pt]
+          (-1)^n x_0 x_1\cdots x_n, & j=n+1.
+        \end{cases}$
+\end{enumerate}
+
+\medskip
+\noindent\textbf{证明.}
+
+\medskip
+\noindent\textbf{预备结论：插值多项式的唯一性.}\quad
+对给定节点 $x_0,\cdots,x_n$ 和函数 $f$，满足插值条件的次数不超过 $n$ 的多项式唯一，
+记为 $L_n(x)=\sum_{i=0}^n f(x_i)\,l_i(x)$。
+若 $f$ 本身就是次数不超过 $n$ 的多项式，则由唯一性知 $L_n(x)\equiv f(x)$。
+
+\medskip
+\noindent\textbf{(1)}\quad
+取 $f(x)\equiv 1$。$f$ 是零次多项式，次数不超过 $n$，故
+\[
+  L_n(x) = \sum_{i=0}^n f(x_i)\,l_i(x) = \sum_{i=0}^n l_i(x) \equiv 1.\qquad\QED
+\]
+
+\medskip
+\noindent\textbf{(2)}\quad
+取 $f(x)=x^j\ (j=1,2,\cdots,n)$。$f$ 是 $j\leqslant n$ 次多项式，故
+\[
+  L_n(x) = \sum_{i=0}^n x_i^j\,l_i(x) \equiv x^j.\qquad\QED
+\]
+
+\medskip
+\noindent\textbf{(3)}\quad
+对 $j=1,2,\cdots,n$，利用二项式定理展开后交换求和次序：
+\begin{align*}
+  \sum_{i=0}^n(x_i-x)^j\,l_i(x)
+  &= \sum_{i=0}^n\left[\sum_{k=0}^{j}\binom{j}{k}x_i^k(-x)^{j-k}\right]l_i(x)\\
+  &= \sum_{k=0}^{j}\binom{j}{k}(-x)^{j-k}\sum_{i=0}^n x_i^k\,l_i(x).
+\end{align*}
+由 (1)，当 $k=0$ 时 $\sum x_i^0\,l_i(x)=1=x^0$；由 (2)，当 $k=1,\cdots,j\leqslant n$ 时 $\sum x_i^k\,l_i(x)=x^k$。故
+\[
+  \sum_{i=0}^n(x_i-x)^j\,l_i(x)
+  = \sum_{k=0}^{j}\binom{j}{k}(-x)^{j-k}\cdot x^k
+  = \bigl(x+(-x)\bigr)^j = 0.\qquad\QED
+\]
+
+\medskip
+\noindent\textbf{(4)}\quad
+
+\noindent\textit{当 $j=0$ 时：}\ 将 (1) 令 $x=0$，得 $\displaystyle\sum_{i=0}^n l_i(0)=1$，即 $\displaystyle\sum_{i=0}^n l_i(0)\,x_i^0=1$。
+
+\medskip
+\noindent\textit{当 $j=1,2,\cdots,n$ 时：}\ 将 (2) 令 $x=0$，得
+$\displaystyle\sum_{i=0}^n x_i^j\,l_i(0)=0^j=0$。
+
+\medskip
+\noindent\textit{当 $j=n+1$ 时：}\ 考虑 $f(x)=x^{n+1}$，其 Lagrange 插值余项公式为
+\[
+  x^{n+1} - L_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}\,\omega_{n+1}(x)
+  = \omega_{n+1}(x),
+\]
+其中 $\omega_{n+1}(x)=\prod_{i=0}^n(x-x_i)$，因为 $f^{(n+1)}(x)=(n+1)!$。从而
+\[
+  x^{n+1} = \sum_{i=0}^n x_i^{n+1}\,l_i(x) + \prod_{i=0}^n(x-x_i).
+\]
+令 $x=0$：
+\[
+  0 = \sum_{i=0}^n l_i(0)\,x_i^{n+1} + \prod_{i=0}^n(-x_i)
+    = \sum_{i=0}^n l_i(0)\,x_i^{n+1} + (-1)^{n+1}x_0 x_1\cdots x_n,
+\]
+故
+\[
+  \sum_{i=0}^n l_i(0)\,x_i^{n+1} = (-1)^n x_0 x_1\cdots x_n.\qquad\QED
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第 7 题.}\quad 假定要造计算零阶 Bessel 函数
+\[
+  I_0(x) = \frac{1}{\pi}\int_0^{\pi}\cos(x\sin t)\,\mathrm{d}t
+\]
+的等距数值表，问如何选取表距 $h$，使利用这个数值表作线性插值时，误差不超过 $10^{-6}$？
+
+\medskip
+\noindent\textbf{解.}\quad
+设相邻两个节点为 $x_k,\ x_{k+1}=x_k+h$，对 $x\in[x_k,x_{k+1}]$ 作线性插值，余项满足
+\[
+  |I_0(x)-L_1(x)|\leqslant\frac{h^2}{8}\max_{\xi}\bigl|I_0''(\xi)\bigr|.
+\]
+对 $I_0(x)$ 逐次求导：
+\[
+  I_0'(x)  = -\frac{1}{\pi}\int_0^{\pi}\sin t\cdot\sin(x\sin t)\,\mathrm{d}t,
+\]
+\[
+  I_0''(x) = -\frac{1}{\pi}\int_0^{\pi}\sin^2 t\cdot\cos(x\sin t)\,\mathrm{d}t.
+\]
+由 $|\cos(x\sin t)|\leqslant 1$，对所有实数 $x$ 均有
+\[
+  \bigl|I_0''(x)\bigr|
+  \leqslant \frac{1}{\pi}\int_0^{\pi}\sin^2 t\,\mathrm{d}t
+  = \frac{1}{\pi}\cdot\frac{\pi}{2} = \frac{1}{2}.
+\]
+代入误差界，要求
+\[
+  \frac{h^2}{8}\cdot\frac{1}{2} = \frac{h^2}{16} \leqslant 10^{-6},
+\]
+解得
+\[
+  h \leqslant 4\times 10^{-3} = 0.004.
+\]
+故只要取表距 $h\leqslant 4\times 10^{-3}$，用该数值表作线性插值时，误差即不超过 $10^{-6}$。
+
+\end{document}
