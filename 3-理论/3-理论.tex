@@ -1,0 +1,363 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage[slantfont,boldfont]{xeCJK}
+\usepackage{fontspec}
+
+
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{bm}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{array}
+
+\setlength{\parindent}{2em}
+\linespread{1.2}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\everymath{\displaystyle}
+
+\newcommand*{\QED}{\hfill\ensuremath{\square}}
+
+\setlength{\headheight}{13.6pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{数值分析\quad 第二章理论作业\quad 学号：241098117，姓名：张城宗}
+\fancyhead[R]{习题二}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries 数值分析\quad 第二章理论作业}\\[6pt]
+  {\large 习题二\quad 第 12、13、15、17、21、24、25 题}\\[4pt]
+  {\normalsize 学号：241098117\quad 姓名：张城宗}
+\end{center}
+
+\bigskip
+
+%=====================================================
+\noindent\textbf{第 12 题.}\quad
+设 $f(x)$ 为 $x$ 的 $k$ 次多项式，$x_1, x_2, \cdots, x_m$ 为互不相同的实数，且 $k > m$．
+试证明 $f[x, x_1, \cdots, x_m]$ 为 $x$ 的 $k-m$ 次多项式．
+
+\medskip
+\noindent\textbf{证明.}\quad
+对 $m$ 作数学归纳法．
+
+\textbf{基础步（$m=1$）：} 由差商定义，
+\[
+  f[x, x_1] = \frac{f(x) - f(x_1)}{x - x_1}.
+\]
+$f(x) - f(x_1)$ 是 $k$ 次多项式且以 $x_1$ 为根，故 $(x - x_1) \mid (f(x) - f(x_1))$，
+商为 $x$ 的 $k-1$ 次多项式，结论成立．
+
+\textbf{归纳步：} 设对 $m-1$ 时结论成立，即 $g(x) := f[x, x_1, \cdots, x_{m-1}]$ 是 $x$ 的
+$k-(m-1) = k-m+1$ 次多项式．由差商的递推公式，
+\[
+  f[x, x_1, \cdots, x_m] = \frac{f[x, x_1, \cdots, x_{m-1}] - f[x_1, x_2, \cdots, x_m]}{x - x_m}
+  = \frac{g(x) - c}{x - x_m},
+\]
+其中 $c = f[x_1, \cdots, x_m]$ 为与 $x$ 无关的常数．由差商的对称性，
+$g(x_m) = f[x_m, x_1, \cdots, x_{m-1}] = f[x_1, \cdots, x_{m-1}, x_m] = c$，
+故 $(x - x_m) \mid (g(x) - c)$，
+商 $f[x, x_1, \cdots, x_m]$ 为 $x$ 的 $k-m$ 次多项式．\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第 13 题.}\quad
+设 $a = x_0 < x_1 < x_2 < \cdots < x_{n-1} < x_n = b$，函数 $f(x) \in C^1[a,b]$，则差商
+\[
+  g(x) := f[x, x_0, x_1, \ldots, x_n]
+\]
+关于 $x$ 在 $[a,b]$ 上连续．这里 $g(x)$ 在节点 $x_k$ 处的值通过重节点差商定义．
+进一步，若 $f(x) \in C^2[a,b]$，则有
+\[
+  g'(x) = f[x, x, x_0, x_1, \ldots, x_n],
+\]
+且 $g'(x)$ 也关于 $x$ 在 $[a,b]$ 上连续．
+
+\medskip
+\noindent\textbf{证明（连续性）.}\quad
+当 $x \notin \{x_0, x_1, \ldots, x_n\}$ 时，$g(x)$ 由 Lagrange 差商公式给出：
+\[
+  g(x) = \frac{f(x)}{\displaystyle\prod_{k=0}^{n}(x - x_k)}
+       + \sum_{k=0}^{n} \frac{f(x_k)}{(x_k - x)\displaystyle\prod_{j \neq k}(x_k - x_j)},
+\]
+显然连续．设 $x$ 趋近于某节点 $x_m$，将右端分出含 $(x - x_m)$ 因子的两项合并：
+\[
+  \frac{f(x_m)}{(x_m - x)\displaystyle\prod_{j \neq m}(x_m - x_j)}
+  + \frac{f(x)}{(x - x_m)\displaystyle\prod_{j \neq m}(x - x_j)}
+  = \frac{f(x) - f(x_m)}{x - x_m} \cdot \frac{1}{\displaystyle\prod_{j \neq m}(x - x_j)}.
+\]
+由 $f \in C^1$ 知 $\dfrac{f(x)-f(x_m)}{x-x_m} \to f'(x_m)$，
+而 $\displaystyle\prod_{j \neq m}(x - x_j) \to \prod_{j \neq m}(x_m - x_j) \neq 0$，故
+\[
+  \lim_{x \to x_m} g(x)
+  = \frac{f'(x_m)}{\displaystyle\prod_{j \neq m}(x_m - x_j)}
+  + \sum_{k \neq m} \frac{f(x_k)}{(x_k - x_m)\displaystyle\prod_{j \neq k}(x_k - x_j)}
+  = g(x_m),
+\]
+其中最后一步利用了重节点差商 $g(x_m) = f[x_m, x_m, x_0, \ldots, \hat{x}_m, \ldots, x_n]$
+的定义及差商的对称性．故 $g(x)$ 在 $[a,b]$ 上连续．\QED
+
+\medskip
+\noindent\textbf{证明（导数公式）.}\quad
+对非节点处的 $x$，
+\[
+  \frac{g(x+h) - g(x)}{h}
+  = \frac{f[x+h, x_0, \ldots, x_n] - f[x, x_0, \ldots, x_n]}{(x+h) - x}
+  = f[x+h, x, x_0, \ldots, x_n].
+\]
+当 $f \in C^2[a,b]$ 时，对 $h(x) = f[y, x, x_0, \ldots, x_n]$（将 $x$ 视为额外节点），
+由连续性部分的结论（$f \in C^2 \subset C^1$），$h(y)$ 关于 $y$ 在 $[a,b]$ 上连续，故令 $h \to 0$：
+\[
+  g'(x) = \lim_{h \to 0} f[x+h, x, x_0, \ldots, x_n] = f[x, x, x_0, \ldots, x_n].
+\]
+同样的连续性论证（应用于更高阶差商，利用 $f \in C^2$）表明 $g'(x)$ 在 $[a,b]$ 上连续．\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第 15 题.}\quad
+试证明，对 $k = 0, 1, \cdots, n-2$ 恒有等式
+\[
+  \sum_{i=1}^{n}
+  \frac{i^k}{(i-1)\cdots(i-i+1)(i-i-1)\cdots(i-n)} = 0.
+\]
+
+\medskip
+\noindent\textbf{证明.}\quad
+取节点 $x_j = j$（$j = 1, 2, \ldots, n$），对函数 $f(x) = x^k$（$0 \leqslant k \leqslant n-2$）
+作 Lagrange 插值．
+
+由于 $\deg(x^k) = k \leqslant n-2 < n-1$，以 $n$ 个节点 $1, 2, \ldots, n$ 构造的
+次数不超过 $n-1$ 的插值多项式恰为 $x^k$ 本身，其 Lagrange 形式为
+\[
+  x^k = \sum_{i=1}^{n} i^k \, \ell_i(x),
+  \qquad \ell_i(x) = \prod_{\substack{j=1\\j \neq i}}^{n} \frac{x - j}{i - j}.
+\]
+比较两端 $x^{n-1}$ 项的系数：右端 $x^{n-1}$ 的系数为
+\[
+  \sum_{i=1}^{n} \frac{i^k}{\displaystyle\prod_{j=1,\, j \neq i}^{n}(i-j)},
+\]
+左端（即 $x^k$，$k \leqslant n-2$）$x^{n-1}$ 的系数为 $0$，故
+\[
+  \sum_{i=1}^{n}
+  \frac{i^k}{\displaystyle\prod_{j=1,\, j \neq i}^{n}(i-j)} = 0.
+\]
+注意到 $\displaystyle\prod_{j=1, j\neq i}^{n}(i-j) = (i-1)(i-2)\cdots 1 \cdot (-1)(-2)\cdots(i-n)$，
+即为题目中的分母，故等式得证．\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第 17 题.}\quad
+设 $n$ 次多项式 $f(x)$ 有互异的 $n$ 个实根 $x_1, x_2, \cdots, x_n$．证明
+\[
+  \sum_{i=1}^{n} \frac{x_i^k}{f'(x_i)}
+  = \begin{cases}
+      0,       & 0 \leqslant k \leqslant n-2;\\
+      a_n^{-1}, & k = n-1,
+    \end{cases}
+\]
+其中 $a_n$ 为 $f(x)$ 的首项系数．
+
+\medskip
+\noindent\textbf{证明.}\quad
+由于 $f(x)$ 有 $n$ 个互异实根，$f(x) = a_n \displaystyle\prod_{i=1}^{n}(x - x_i)$，故
+\[
+  f'(x_i) = a_n \prod_{j=1,\, j \neq i}^{n}(x_i - x_j),
+  \qquad \frac{1}{f'(x_i)} = \frac{1}{a_n \displaystyle\prod_{j \neq i}(x_i - x_j)}.
+\]
+对函数 $P(x) = x^k$ 以 $x_1, x_2, \ldots, x_n$ 为节点作 Lagrange 插值，插值多项式的
+$x^{n-1}$ 项系数为
+\[
+  \sum_{i=1}^{n} \frac{x_i^k}{\displaystyle\prod_{j \neq i}(x_i - x_j)}
+  = a_n \sum_{i=1}^{n} \frac{x_i^k}{f'(x_i)}.
+\]
+
+\textbf{当 $0 \leqslant k \leqslant n-2$ 时：} $\deg(x^k) = k < n-1$，插值多项式即为 $x^k$ 本身，
+其 $x^{n-1}$ 系数为 $0$，故
+\[
+  a_n \sum_{i=1}^{n} \frac{x_i^k}{f'(x_i)} = 0
+  \implies \sum_{i=1}^{n} \frac{x_i^k}{f'(x_i)} = 0.
+\]
+
+\textbf{当 $k = n-1$ 时：} 插值多项式即为 $x^{n-1}$ 本身，其 $x^{n-1}$ 系数为 $1$，故
+\[
+  a_n \sum_{i=1}^{n} \frac{x_i^{n-1}}{f'(x_i)} = 1
+  \implies \sum_{i=1}^{n} \frac{x_i^{n-1}}{f'(x_i)} = a_n^{-1}.
+\]\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第 21 题.}\quad
+已知 $f(x)$ 在 $[1,2]$ 的端点上满足
+\[
+  f(1) = 1,\quad f(2) = 8,\quad f'(1) = 3,\quad f'(2) = 12,
+\]
+求 Hermite 插值多项式 $H_3(x)$ 以及 $f(1.5)$ 的近似值．
+
+\medskip
+\noindent\textbf{解.}\quad
+以重节点序列 $1, 1, 2, 2$ 构造 Newton 差商表，令 $f[x_i, x_i] := f'(x_i)$：
+
+\medskip
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{c|cccc}
+\toprule
+$x_i$ & 0 阶 & 1 阶 & 2 阶 & 3 阶 \\
+\midrule
+$1$ & $1$ & & & \\
+$1$ & $1$ & $f'(1)=3$ & & \\
+$2$ & $8$ & $\dfrac{8-1}{2-1}=7$ & $\dfrac{7-3}{2-1}=4$ & \\
+$2$ & $8$ & $f'(2)=12$ & $\dfrac{12-7}{2-1}=5$ & $\dfrac{5-4}{2-1}=1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+故 Newton 插值多项式为
+\[
+  H_3(x)
+  = 1 + 3(x-1) + 4(x-1)^2 + 1\cdot(x-1)^2(x-2).
+\]
+展开整理：
+\begin{align*}
+  H_3(x)
+  &= 1 + 3(x-1) + (x-1)^2\bigl[4+(x-2)\bigr]\\
+  &= 1 + 3(x-1) + (x-1)^2(x+2).
+\end{align*}
+令 $u = x-1$：
+\[
+  H_3 = 1 + 3u + u^2(u+3) = 1 + 3u + 3u^2 + u^3 = (1+u)^3 = x^3.
+\]
+故
+\[
+  \boxed{H_3(x) = x^3.}
+\]
+验证：$H_3(1)=1$，$H_3(2)=8$，$H_3'(x)=3x^2 \Rightarrow H_3'(1)=3$，$H_3'(2)=12$，均满足．
+
+$f(1.5)$ 的近似值为
+\[
+  H_3(1.5) = 1.5^3 = 3.375.
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第 24 题.}\quad
+设函数 $f(x)$ 在 $[a,b]$ 上具有四阶连续导数，试构造三次多项式 $H_3(x)$，使其满足插值条件
+\[
+  H_3(a) = f(a),\quad H_3'(a) = f'(a),\quad H_3''(a) = f''(a),\quad H_3''(b) = f''(b),
+\]
+并求余项 $f(x) - H_3(x)$ 的表达式．
+
+\medskip
+\noindent\textbf{解.}\quad
+\textbf{构造 $H_3(x)$：} 设
+\[
+  H_3(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2}(x-a)^2 + c(x-a)^3,
+\]
+则 $H_3(a)=f(a)$，$H_3'(a)=f'(a)$，$H_3''(a)=f''(a)$ 自动满足．由条件 $H_3''(b)=f''(b)$：
+\[
+  H_3''(x) = f''(a) + 6c(x-a),
+  \quad H_3''(b) = f''(a) + 6c(b-a) = f''(b),
+\]
+解得 $c = \dfrac{f''(b)-f''(a)}{6(b-a)}$．故
+\[
+  H_3(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2}(x-a)^2
+            + \frac{f''(b)-f''(a)}{6(b-a)}(x-a)^3.
+\]
+
+\textbf{余项推导：} 设 $R(x) = f(x) - H_3(x)$，则
+\[
+  R(a) = R'(a) = R''(a) = R''(b) = 0.
+\]
+取辅助函数 $w(t) = (t-a)^3\bigl(t-(2b-a)\bigr)$，直接计算得
+\[
+  w''(t) = 12(t-a)(t-b),
+\]
+故 $w(a)=w'(a)=w''(a)=0$ 且 $w''(b)=0$，与 $R$ 的零点条件完全吻合．
+
+对固定的 $x \in (a,b)$，令
+\[
+  \psi(t) = R(t) - \frac{R(x)}{w(x)}\,w(t).
+\]
+则 $\psi(a)=\psi'(a)=\psi''(a)=0$，$\psi''(b)=0$，$\psi(x)=0$，即 $\psi$ 计重数共有
+4 个零点（$a$ 处三重，$x$ 处单重）且 $\psi''$ 在 $b$ 处额外为零．反复应用 Rolle 定理：
+$\psi'$ 有 $\geqslant 3$ 个零点，$\psi''$ 有至少 $a,\, b$ 以及 $(a,x)$ 中某点共 $3$ 个零点，
+$\psi'''$ 有至少 $2$ 个零点，$\psi^{(4)}$ 在 $(a,b)$ 中至少有一个零点 $\xi$．
+
+由 $H_3^{(4)}\equiv 0$ 得 $\psi^{(4)}(t) = f^{(4)}(t) - \dfrac{R(x)}{w(x)}\cdot 4!$，故
+\[
+  f^{(4)}(\xi) = \frac{R(x)}{w(x)}\cdot 24,
+\]
+从而
+\[
+  \boxed{f(x) - H_3(x) = \frac{f^{(4)}(\xi)}{4!}(x-a)^3\bigl(x-(2b-a)\bigr),
+  \quad \xi \in (a,b).}
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第 25 题.}\quad
+设函数 $f(x)$ 在 $[a,b]$ 上具有四阶连续导数，试构造三次多项式 $H_3(x)$，使其满足插值条件
+\[
+  H_3(a) = f(a),\quad H_3(b) = f(b),\quad H_3(c) = f(c),\quad H_3'(c) = f'(c),
+\]
+其中 $c = \dfrac{a+b}{2}$，并求余项 $f(x) - H_3(x)$ 的表达式．
+
+\medskip
+\noindent\textbf{解.}\quad
+\textbf{构造 $H_3(x)$：} 令 $h = c - a = b - c = \dfrac{b-a}{2}$．
+以节点序列 $a,\, c,\, c,\, b$（$c$ 重复以体现导数条件）建立 Newton 差商：
+\begin{align*}
+  f[a,c] &= \frac{f(c)-f(a)}{h}, \\[4pt]
+  f[c,c] &= f'(c), \\[4pt]
+  f[a,c,c] &= \frac{f'(c) - f[a,c]}{h} = \frac{hf'(c) - f(c) + f(a)}{h^2}, \\[4pt]
+  f[c,b] &= \frac{f(b)-f(c)}{h}, \\[4pt]
+  f[c,c,b] &= \frac{f[c,b]-f'(c)}{h} = \frac{f(b)-f(c)-hf'(c)}{h^2}, \\[4pt]
+  f[a,c,c,b] &= \frac{f[c,c,b]-f[a,c,c]}{2h}
+               = \frac{f(b)-f(a)-2hf'(c)}{2h^3}.
+\end{align*}
+故
+\[
+  H_3(x) = f(a) + \frac{f(c)-f(a)}{h}(x-a)
+            + \frac{hf'(c)-f(c)+f(a)}{h^2}(x-a)(x-c)
+            + \frac{f(b)-f(a)-2hf'(c)}{2h^3}(x-a)(x-c)^2.
+\]
+
+\textbf{余项推导：} 设 $R(x)=f(x)-H_3(x)$，则
+\[
+  R(a) = R(b) = R(c) = R'(c) = 0.
+\]
+对固定的 $x \in (a,b)$，令
+\[
+  \psi(t) = R(t) - \frac{R(x)}{(x-a)(x-b)(x-c)^2}(t-a)(t-b)(t-c)^2.
+\]
+则 $\psi(a)=\psi(b)=\psi(c)=\psi'(c)=\psi(x)=0$，计重数共 5 个零点．反复应用 Rolle 定理：
+$\psi'$ 有 $\geqslant 4$ 个零点，$\psi''$ 有 $\geqslant 3$ 个零点，$\psi'''$ 有 $\geqslant 2$ 个零点，
+$\psi^{(4)}$ 在 $(a,b)$ 中至少有一个零点 $\xi$．
+
+由 $\psi^{(4)}(\xi)=f^{(4)}(\xi) - \dfrac{R(x)}{(x-a)(x-b)(x-c)^2}\cdot 4! = 0$，得
+\[
+  \boxed{f(x) - H_3(x) = \frac{f^{(4)}(\xi)}{4!}(x-a)(x-b)(x-c)^2,
+  \quad \xi \in (a,b).}
+\]
+
+\end{document}
