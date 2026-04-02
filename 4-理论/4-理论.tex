@@ -1,0 +1,359 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage[slantfont,boldfont]{xeCJK}
+\usepackage{fontspec}
+
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{bm}
+\usepackage{hyperref}
+
+\setlength{\parindent}{2em}
+\linespread{1.2}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\everymath{\displaystyle}
+
+\newcommand*{\QED}{\hfill\ensuremath{\square}}
+
+\setlength{\headheight}{13.6pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{数值分析\quad 第四次理论作业\quad 学号：241098117，姓名：张城宗}
+\fancyhead[R]{习题二、习题三}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries 数值分析\quad 第四次理论作业}\\[6pt]
+  {\large 习题二 第 26、27、28 题\quad 习题三 第 2、4、6 题}\\[4pt]
+  {\normalsize 学号：241098117\quad 姓名：张城宗}
+\end{center}
+
+\bigskip
+
+%=====================================================
+\noindent\textbf{习题二\quad 第 26 题.}\quad
+已知函数 $y=f(x)$ 在若干点的函数值：
+\[
+  f(1)=1,\quad f(2)=3,\quad f(4)=4,\quad f(5)=2,
+\]
+且 $f''(1)=f''(5)=0$。试求 $f(x)$ 的自然三次样条插值函数 $S_N(x)$，并求 $f(3)$ 的近似值。
+
+\medskip
+\noindent\textbf{解.}\quad
+取节点 $x_0=1,\ x_1=2,\ x_2=4,\ x_3=5$，步长 $h_1=1,\ h_2=2,\ h_3=1$。
+
+\medskip
+\noindent\textbf{建立方程组.}\quad
+设 $M_i=S_N''(x_i)$。自然边界条件给出
+\[
+  M_0 = M_3 = 0.
+\]
+均差：$f[x_0,x_1]=2,\ f[x_1,x_2]=\tfrac{1}{2},\ f[x_2,x_3]=-2$。
+
+对内节点 $x_1, x_2$ 列样条方程
+$h_i M_{i-1}+2(h_i+h_{i+1})M_i+h_{i+1}M_{i+1}=6\bigl(f[x_i,x_{i+1}]-f[x_{i-1},x_i]\bigr)$：
+\begin{align*}
+  i=1:&\quad 6M_1+2M_2 = 6\!\left(\tfrac{1}{2}-2\right)=-9,\\
+  i=2:&\quad 2M_1+6M_2 = 6(-2-\tfrac{1}{2})=-15.
+\end{align*}
+解方程组：将第一式乘以 $3$ 减去第二式，得 $16M_1=-12$，故
+\[
+  M_1 = -\frac{3}{4},\qquad
+  M_2 = \frac{-9-6M_1}{2} = \frac{-9+\frac{9}{2}}{2} = -\frac{9}{4}.
+\]
+
+\medskip
+\noindent\textbf{样条表达式.}\quad
+采用标准 $M$ 表示，在 $[x_i,x_{i+1}]$ 上
+\[
+  S_i(x)=\frac{M_i}{6h_i}(x_{i+1}-x)^3+\frac{M_{i+1}}{6h_i}(x-x_i)^3
+  +\!\left(\frac{f_i}{h_i}-\frac{M_i h_i}{6}\right)\!(x_{i+1}-x)
+  +\!\left(\frac{f_{i+1}}{h_i}-\frac{M_{i+1}h_i}{6}\right)\!(x-x_i).
+\]
+
+\noindent 在 $[1,2]$（$h=1$）：
+\[
+  S_0(x) = -\frac{1}{8}(x-1)^3+(2-x)+\frac{25}{8}(x-1).
+\]
+
+\noindent 在 $[2,4]$（$h=2$）：
+\begin{align*}
+  S_1(x) &= -\frac{1}{16}(4-x)^3-\frac{3}{16}(x-2)^3+\frac{7}{4}(4-x)+\frac{11}{4}(x-2).
+\end{align*}
+
+\noindent 在 $[4,5]$（$h=1$）：
+\[
+  S_2(x) = -\frac{3}{8}(5-x)^3+\frac{35}{8}(5-x)+2(x-4).
+\]
+
+\medskip
+\noindent\textbf{计算 $f(3)$.}\quad $x=3\in[2,4]$，代入 $S_1$：
+\[
+  S_N(3)=S_1(3)=-\frac{1}{16}\cdot1-\frac{3}{16}\cdot1+\frac{7}{4}\cdot1+\frac{11}{4}\cdot1
+  = -\frac{4}{16}+\frac{18}{4} = -\frac{1}{4}+\frac{9}{2} = \boxed{\frac{17}{4}=4.25}.
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题二\quad 第 27 题.}\quad
+已知 $f(x)$ 在若干点的函数值：$f(1)=1,\ f(2)=3,\ f(4)=5,\ f(5)=2$，
+以及 $f'(1)=1,\ f'(5)=-4$。求完备三次样条插值函数 $S_C(x)$，并计算 $f(1.5)$ 和 $f(3)$ 的近似值。
+
+\medskip
+\noindent\textbf{解.}\quad
+节点与步长同上，但函数值为 $f_0=1,f_1=3,f_2=5,f_3=2$。
+
+均差：$f[x_0,x_1]=2,\ f[x_1,x_2]=1,\ f[x_2,x_3]=-3$。
+
+\medskip
+\noindent\textbf{建立方程组.}\quad
+设 $M_i=S_C''(x_i)$，完备边界条件给出：
+\[
+  2M_0+M_1 = \frac{6}{h_1}\!\left(\frac{f_1-f_0}{h_1}-f_0'\right)=6(2-1)=6,\tag{0}
+\]
+\[
+  M_2+2M_3 = \frac{6}{h_3}\!\left(f_3'-\frac{f_3-f_2}{h_3}\right)=6(-4-(-3))=-6.\tag{3}
+\]
+对内节点：
+\begin{align*}
+  i=1:&\quad M_0+6M_1+2M_2=6(1-2)=-6,\tag{1}\\
+  i=2:&\quad 2M_1+6M_2+M_3=6(-3-1)=-24.\tag{2}
+\end{align*}
+
+\noindent\textbf{求解.}\quad 由 $(0)$：$M_0=3-M_1/2$，代入 $(1)$：
+\[
+  \frac{11}{2}M_1+2M_2=-9 \implies 11M_1+4M_2=-18.\tag{1'}
+\]
+由 $(3)$：$M_2=-6-2M_3$，代入 $(2)$：
+\[
+  2M_1-11M_3=12,\tag{2'}
+\]
+代入 $(1')$：
+\[
+  11M_1-8M_3=6.\tag{1''}
+\]
+由 $(2')$：$M_1=(12+11M_3)/2$，代入 $(1'')$：
+\[
+  \frac{11(12+11M_3)}{2}-8M_3=6
+  \implies 105M_3=-120
+  \implies M_3=-\frac{8}{7}.
+\]
+逐步回代：
+\[
+  M_1=-\frac{2}{7},\quad M_2=-\frac{26}{7},\quad M_0=\frac{22}{7}.
+\]
+验证：
+$(0):\ \frac{44}{7}-\frac{2}{7}=6$\checkmark，
+$(1):\ \frac{22-12-52}{7}=-6$\checkmark，
+$(2):\ \frac{-4-156-8}{7}=-24$\checkmark，
+$(3):\ \frac{-26-16}{7}=-6$\checkmark。
+
+\medskip
+\noindent\textbf{样条表达式.}\quad
+
+\noindent 在 $[1,2]$（$h=1$）：
+\[
+  S_0(x)=\frac{11}{21}(2-x)^3-\frac{1}{21}(x-1)^3+\frac{10}{21}(2-x)+\frac{64}{21}(x-1).
+\]
+
+\noindent 在 $[2,4]$（$h=2$）：
+\[
+  S_1(x)=-\frac{1}{42}(4-x)^3-\frac{13}{42}(x-2)^3+\frac{67}{42}(4-x)+\frac{157}{42}(x-2).
+\]
+
+\noindent 在 $[4,5]$（$h=1$）：
+\[
+  S_2(x)=-\frac{13}{21}(5-x)^3-\frac{4}{21}(x-4)^3+\frac{118}{21}(5-x)+\frac{46}{21}(x-4).
+\]
+
+\medskip
+\noindent\textbf{计算近似值.}\quad
+
+$x=1.5\in[1,2]$，令 $2-x=x-1=\tfrac{1}{2}$：
+\[
+  S_C(1.5)=S_0(1.5)
+  =\frac{11}{21}\cdot\frac{1}{8}-\frac{1}{21}\cdot\frac{1}{8}+\frac{10}{21}\cdot\frac{1}{2}+\frac{64}{21}\cdot\frac{1}{2}
+  =\frac{10}{168}+\frac{37}{21}
+  =\frac{10+296}{168}=\frac{306}{168}=\boxed{\frac{51}{28}\approx 1.821}.
+\]
+
+$x=3\in[2,4]$，令 $4-x=x-2=1$：
+\[
+  S_C(3)=S_1(3)=\frac{-1-13+67+157}{42}=\frac{210}{42}=\boxed{5}.
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题二\quad 第 28 题.}\quad
+设函数 $f(x)$ 在 $[a,b]$ 上一次连续可微，给定节点 $a=x_1<x_2<\cdots<x_{n+1}=b$ 及节点处函数值 $f(x_j)=f_j$。若 $S(x)$ 在 $[a,b]$ 上一次连续可微，且 $S_i(x)$ 是不高于二次的多项式（$i=1,\ldots,n$），满足 $S(x_j)=f_j$，则称 $S(x)$ 为 $f(x)$ 的\textbf{二次样条插值函数}。试给出一种边界条件下 $S(x)$ 的计算方法，未知量尽可能少。
+
+\medskip
+\noindent\textbf{解.}\quad
+
+\noindent\textbf{参数化.}\quad 设 $m_j=S'(x_j)$，$j=1,\ldots,n+1$，共 $n+1$ 个未知量。
+在每段 $[x_j,x_{j+1}]$（步长 $h_j=x_{j+1}-x_j$）上，由插值条件 $S_j(x_j)=f_j$ 和导数值 $S_j'(x_j)=m_j$，令
+\[
+  S_j(x)=f_j+m_j(x-x_j)+c_j(x-x_j)^2,
+\]
+由 $S_j(x_{j+1})=f_{j+1}$ 得
+\[
+  c_j=\frac{f_{j+1}-f_j-m_j h_j}{h_j^2}=\frac{f[x_j,x_{j+1}]-m_j}{h_j},
+\]
+其中 $f[x_j,x_{j+1}]=\dfrac{f_{j+1}-f_j}{h_j}$ 为一阶均差。
+
+\medskip
+\noindent\textbf{递推关系.}\quad $C^1$ 光滑条件要求 $S_j'(x_{j+1})=m_{j+1}$，而
+\[
+  S_j'(x_{j+1})=m_j+2c_j h_j=m_j+2\bigl(f[x_j,x_{j+1}]-m_j\bigr)=2f[x_j,x_{j+1}]-m_j,
+\]
+故得\textbf{两步递推式}
+\[
+  \boxed{m_{j+1}=2f[x_j,x_{j+1}]-m_j,\qquad j=1,2,\ldots,n.}
+\]
+一旦给定 $m_1$，即可逐步算出 $m_2,m_3,\ldots,m_{n+1}$，每步只需一次均差和一次减法，所用未知量数目降至 $1$（边界值 $m_1$）。
+
+\medskip
+\noindent\textbf{边界条件.}\quad 取 $m_1=f'(a)$（若已知），或取 $m_1=f[x_1,x_2]$（以端点均差代替），均可构成唯一确定的二次样条。
+
+\medskip
+\noindent\textbf{算法总结.}
+\begin{enumerate}[label=\arabic*.,leftmargin=*,itemsep=4pt]
+  \item 给定边界条件 $m_1$。
+  \item 对 $j=1,2,\ldots,n$，计算
+        \[
+          h_j=x_{j+1}-x_j,\quad
+          f[x_j,x_{j+1}]=\frac{f_{j+1}-f_j}{h_j},\quad
+          m_{j+1}=2f[x_j,x_{j+1}]-m_j.
+        \]
+  \item 在 $[x_j,x_{j+1}]$ 上，样条片段为
+        \[
+          S_j(x)=f_j+m_j(x-x_j)+\frac{f[x_j,x_{j+1}]-m_j}{h_j}(x-x_j)^2.
+        \]
+\end{enumerate}
+该方法仅须存储相邻两步的 $m$ 值，无需求解方程组，计算量为 $O(n)$。\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 2 题.}\quad
+设函数 $f(x)$ 在区间 $[a,b]$ 上连续，试证明 $f(x)$ 的 $n$ 次最佳一致逼近多项式是 $f(x)$ 在 $[a,b]$ 上某一个 Lagrange 插值多项式。
+
+\medskip
+\noindent\textbf{证明.}\quad
+设 $p^*(x)$ 是 $f(x)$ 在 $[a,b]$ 上次数不超过 $n$ 的最佳一致逼近多项式，令
+\[
+  E^*=\max_{x\in[a,b]}\bigl|f(x)-p^*(x)\bigr|.
+\]
+由 Chebyshev 定理（等偏差定理），存在至少 $n+2$ 个点 $\xi_0<\xi_1<\cdots<\xi_{n+1}$ 使得
+\[
+  f(\xi_k)-p^*(\xi_k)=(-1)^k\lambda E^*,\qquad k=0,1,\ldots,n+1,
+\]
+其中 $\lambda=\pm 1$。由于相邻偏差符号相反，连续函数 $g(x)=f(x)-p^*(x)$ 在每个开区间 $(\xi_k,\xi_{k+1})$（$k=0,1,\ldots,n$）上至少有一个零点 $z_k$，共得 $n+1$ 个零点
+\[
+  z_0\in(\xi_0,\xi_1),\quad z_1\in(\xi_1,\xi_2),\quad\ldots,\quad z_n\in(\xi_n,\xi_{n+1}).
+\]
+在这 $n+1$ 个互异点处，$g(z_k)=0$，即
+\[
+  p^*(z_k)=f(z_k),\qquad k=0,1,\ldots,n.
+\]
+故 $p^*(x)$ 是次数不超过 $n$ 的多项式，且在 $n+1$ 个互异节点 $z_0,z_1,\ldots,z_n$ 处与 $f$ 取相同的值。由 Lagrange 插值多项式的存在唯一性，$p^*(x)$ 恰好等于 $f(x)$ 在节点 $z_0,z_1,\ldots,z_n$ 处的 Lagrange 插值多项式 $L_n(x)$。\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 4 题.}\quad
+记 $H_2=\mathrm{Span}\{1,x,x^2\}$ 为二次多项式空间。求 $p(x)\in H_2$ 使得
+$\max_{x\in[0,2]}\bigl|x^3-p(x)\bigr|$ 达到最小。
+
+\medskip
+\noindent\textbf{解.}\quad
+
+\noindent\textbf{变量替换.}\quad 令 $t=x-1$，则 $x\in[0,2]\Leftrightarrow t\in[-1,1]$，
+\[
+  x^3=(t+1)^3=t^3+3t^2+3t+1.
+\]
+设 $p(x)=q(t)$（$q$ 为次数不超过 $2$ 的多项式），问题化为
+\[
+  \min_{q\in H_2}\max_{t\in[-1,1]}\bigl|(t+1)^3-q(t)\bigr|.
+\]
+将 $(t+1)^3$ 中次数 $\leqslant 2$ 的部分归入 $q$ 后，等价于求
+\[
+  \min_{r\in H_2}\max_{t\in[-1,1]}\bigl|t^3-r(t)\bigr|,
+\]
+即求次数不超过 $2$ 的多项式 $r(t)$ 对首一三次多项式 $t^3$ 的最佳一致逼近。
+
+\medskip
+\noindent\textbf{Chebyshev 多项式.}\quad $[-1,1]$ 上三阶 Chebyshev 多项式为
+\[
+  T_3(t)=4t^3-3t,
+\]
+首一化为 $\widetilde{T}_3(t)=t^3-\tfrac{3}{4}t$，在 $[-1,1]$ 上的最大偏差为 $\tfrac{1}{4}$，且由 Chebyshev 定理它是唯一的最佳逼近误差。故最佳 $r^*(t)=\tfrac{3}{4}t$，对应误差
+\[
+  t^3-r^*(t)=t^3-\frac{3}{4}t=\frac{T_3(t)}{4}.
+\]
+
+\medskip
+\noindent\textbf{回代.}\quad 最佳 $q^*(t)=3t^2+3t+1+\tfrac{3}{4}t=3t^2+\tfrac{15}{4}t+1$，
+再令 $t=x-1$：
+\begin{align*}
+  p^*(x)&=3(x-1)^2+\frac{15}{4}(x-1)+1\\
+        &=3x^2-6x+3+\frac{15}{4}x-\frac{15}{4}+1\\
+        &=\boxed{3x^2-\frac{9}{4}x+\frac{1}{4}}.
+\end{align*}
+最小偏差为 $\dfrac{1}{4}$，在四个等偏差点
+\[
+  x=2,\;\frac{3}{2},\;\frac{1}{2},\;0
+  \quad\left(\text{对应 }t=\cos\frac{k\pi}{3},\ k=0,1,2,3\right)
+\]
+处 $|x^3-p^*(x)|=\tfrac{1}{4}$ 交替取正负值，满足等偏差条件。\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 6 题.}\quad
+设 $f(x)$ 在区间 $[a,b]$ 上连续，试证 $f(x)$ 的零次最佳一致逼近多项式是
+\[
+  p^*(x)=\frac{M+m}{2},
+\]
+其中 $M=\max_{a\leqslant x\leqslant b}f(x)$，$m=\min_{a\leqslant x\leqslant b}f(x)$。
+
+\medskip
+\noindent\textbf{证明.}\quad
+设零次逼近多项式为常数 $p(x)\equiv c$，偏差为
+\[
+  E(c)=\max_{x\in[a,b]}\bigl|f(x)-c\bigr|.
+\]
+
+\noindent\textbf{当 $m\leqslant c\leqslant M$ 时：}
+\[
+  E(c)=\max\!\bigl(M-c,\;c-m\bigr).
+\]
+这是两个仿射函数之逐点最大值。$M-c$ 关于 $c$ 单调递减，$c-m$ 关于 $c$ 单调递增，两者在 $c^*=\dfrac{M+m}{2}$ 处相等，值为 $\dfrac{M-m}{2}$；在此点两侧 $E(c)$ 均严格增大，故 $c^*$ 是唯一极小点。
+
+\noindent\textbf{当 $c<m$ 时：}
+$|f(x)-c|\geqslant f(x)-c\geqslant m-c>0$，故
+$E(c)\geqslant m-c>M-m>\dfrac{M-m}{2}=E(c^*)$。
+
+\noindent\textbf{当 $c>M$ 时：}
+类似地，$E(c)\geqslant c-M>E(c^*)$。
+
+综上，$E(c)$ 在 $c^*=\dfrac{M+m}{2}$ 处取得全局最小值 $\dfrac{M-m}{2}$，即 $f(x)$ 的零次最佳一致逼近多项式为
+\[
+  p^*(x)=\frac{M+m}{2}.\qquad\QED
+\]
+
+\end{document}
