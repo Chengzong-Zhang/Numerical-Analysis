@@ -340,6 +340,7 @@ for r_idx = 1:n_ratios
 end
 
 sgtitle('FFT 频域截断压缩：保留不同比例频率系数的重建效果对比', 'FontSize', 12);
+print(gcf, 'p4_fig1', '-dpng', '-r150');   % 保存图1到磁盘（150 DPI）
 
 % ---- 图像压缩效果图 ----
 figure('Name', 'FFT 图像压缩效果', 'NumberTitle', 'off', ...
@@ -384,8 +385,9 @@ title('图像质量 vs 压缩比', 'FontSize', 10);
 grid on;
 
 sgtitle('二维 FFT 图像压缩效果', 'FontSize', 12);
+print(gcf, 'p4_fig2', '-dpng', '-r150');   % 保存图2到磁盘（150 DPI）
 
-fprintf('图形已生成，请查看弹出的图形窗口。\n\n');
+fprintf('图形已保存：p4_fig1.png, p4_fig2.png\n\n');
 fprintf('程序运行完毕。\n');
 
 

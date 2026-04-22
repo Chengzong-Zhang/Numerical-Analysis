@@ -267,6 +267,7 @@ legend('Location', 'best', 'FontSize', 8);
 grid on;  hold off;
 
 sgtitle('9次多项式拟合（m=n+1=10）：幂函数基 vs Chebyshev 基', 'FontSize', 12);
+print(gcf, 'p3_fig1', '-dpng', '-r150');   % 保存图1到磁盘（150 DPI）
 
-fprintf('图形已生成，请查看弹出的图形窗口。\n\n');
+fprintf('图形已保存：p3_fig1.png\n\n');
 fprintf('程序运行完毕。\n');

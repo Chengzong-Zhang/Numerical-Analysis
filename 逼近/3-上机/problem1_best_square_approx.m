@@ -238,14 +238,16 @@ figure('Name', 'f(x)=e^x 的最佳平方逼近', 'NumberTitle', 'off', ...
     'Position', [50, 50, 1200, 900]);
 
 % 四个子图的标题字符串
+% 子图标题与 results(1..4) 一一对应
 subplot_titles = {
-    '(1) n=5, 幂函数基 x^k（Hilbert矩阵）', ...
-    '(3) n=10, 幂函数基 x^k（极度病态）', ...
-    '(2) n=5, Legendre 正交基', ...
-    '(4) n=10, Legendre 正交基'
+    '(1) n=5,  幂函数基 x^k（Hilbert矩阵）', ...   % results(1)
+    '(3) n=10, 幂函数基 x^k（极度病态）', ...        % results(2)
+    '(2) n=5,  Legendre 正交基', ...                % results(3)
+    '(4) n=10, Legendre 正交基'                     % results(4)
 };
-% 绘图顺序：左列为幂函数基（n=5,10），右列为Legendre基（n=5,10）
-plot_order = [1, 3, 2, 4];   % results 的下标顺序
+% 绘图顺序：上行为幂函数基（n=5,n=10），下行为Legendre基（n=5,n=10）
+% results(1)=幂n=5, results(2)=幂n=10, results(3)=Legn=5, results(4)=Legn=10
+plot_order = [1, 2, 3, 4];   % results 的下标顺序（按存储顺序直接对应子图）
 
 for k = 1:4
     r = plot_order(k);        % 取对应结果

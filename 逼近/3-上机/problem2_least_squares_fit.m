@@ -239,6 +239,7 @@ for idx = 1:length(n_tests)
 end
 % sgtitle：整个 figure 的总标题
 sgtitle('例3.5.3数据：多项式空间 P_n 中的最小二乘拟合', 'FontSize', 13);
+print(gcf, 'p2_fig1', '-dpng', '-r150');   % 保存图1到磁盘（150 DPI）
 
 % ---- 图2：所有方法汇总对比 ----
 figure('Name', '最小二乘拟合方法汇总对比', 'NumberTitle', 'off', ...
@@ -288,6 +289,7 @@ end
 grid on;
 
 sgtitle('例3.5.3数据最小二乘拟合：多项式基 vs 混合基', 'FontSize', 13);
+print(gcf, 'p2_fig2', '-dpng', '-r150');   % 保存图2到磁盘（150 DPI）
 
-fprintf('图形已生成，请查看弹出的图形窗口。\n\n');
+fprintf('图形已保存：p2_fig1.png, p2_fig2.png\n\n');
 fprintf('程序运行完毕。\n');
