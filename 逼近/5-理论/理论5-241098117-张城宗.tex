@@ -1,0 +1,268 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage[slantfont,boldfont]{xeCJK}
+\usepackage{fontspec}
+
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{bm}
+\usepackage{hyperref}
+
+\setlength{\parindent}{2em}
+\linespread{1.2}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\everymath{\displaystyle}
+
+\newcommand*{\QED}{\hfill\ensuremath{\square}}
+\newcommand{\inner}[2]{\left(#1,#2\right)}
+
+\setlength{\headheight}{13.6pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{数值分析\quad 第五次理论作业\quad 学号：241098117，姓名：张城宗}
+\fancyhead[R]{习题三}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries 数值分析\quad 第五次理论作业}\\[6pt]
+  {\large 习题三第 7、8、9 题}\\[4pt]
+  {\normalsize 学号：241098117\quad 姓名：张城宗}
+\end{center}
+
+\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 7 题}\quad
+对下列给定的权函数 $W(x)$，求区间 $[-1,1]$ 上的正交多项式系的前三个多项式
+$p_0(x),p_1(x),p_2(x)$：
+\[
+  (1)\ W(x)=\frac{1}{\sqrt{1+x^2}},\qquad
+  (2)\ W(x)=1+x^2.
+\]
+\medskip
+\noindent\textbf{解}\quad
+由讲义第三章性质 3.3.2，区间 $[-1,1]$ 上关于权函数 $W(x)$ 的首一正交多项式满足
+\[
+  p_{k+1}(x)=(x-\alpha_k)p_k(x)-\beta_k p_{k-1}(x),\qquad
+  p_0(x)=1,\quad p_{-1}(x)=0,
+\]
+其中
+\[
+  \alpha_k=\frac{\inner{x p_k}{p_k}}{\inner{p_k}{p_k}},\qquad
+  \beta_1=\frac{\inner{p_1}{p_1}}{\inner{p_0}{p_0}},
+\]
+这里的内积为
+\[
+  \inner{f}{g}=\int_{-1}^1 W(x)f(x)g(x)\,\mathrm{d}x.
+\]
+由于两种情形下的权函数都满足 $W(-x)=W(x)$，所以它们都是偶函数，从而
+\[
+  \alpha_0=\frac{\int_{-1}^1 xW(x)\,\mathrm{d}x}{\int_{-1}^1 W(x)\,\mathrm{d}x}=0,
+\]
+故
+\[
+  p_0(x)=1,\qquad p_1(x)=x.
+\]
+同理，
+\[
+  \alpha_1=\frac{\int_{-1}^1 x^3W(x)\,\mathrm{d}x}{\int_{-1}^1 x^2W(x)\,\mathrm{d}x}=0,
+\]
+所以
+\[
+  p_2(x)=x^2-\beta_1,\qquad
+  \beta_1=\frac{\int_{-1}^1 x^2W(x)\,\mathrm{d}x}{\int_{-1}^1 W(x)\,\mathrm{d}x}.
+\]
+下面分别计算 $\beta_1$。
+
+\medskip
+\noindent\textbf{(1) 当 $W(x)=\dfrac{1}{\sqrt{1+x^2}}$ 时}\quad
+\[
+  \inner{p_0}{p_0}=\int_{-1}^1 \frac{1}{\sqrt{1+x^2}}\,\mathrm{d}x
+  =2\int_0^1 \frac{1}{\sqrt{1+x^2}}\,\mathrm{d}x
+  =2\,\operatorname{arsinh}1
+  =2\ln(1+\sqrt{2}).
+\]
+再计算
+\[
+  \inner{p_1}{p_1}=\int_{-1}^1 \frac{x^2}{\sqrt{1+x^2}}\,\mathrm{d}x
+  =2\int_0^1 \frac{x^2}{\sqrt{1+x^2}}\,\mathrm{d}x.
+\]
+令 $x=\sinh t$，则 $\mathrm{d}x=\cosh t\,\mathrm{d}t$，$\sqrt{1+x^2}=\cosh t$，于是
+\begin{align*}
+  \inner{p_1}{p_1}
+  &=2\int_0^{\operatorname{arsinh}1}\sinh^2 t\,\mathrm{d}t \\
+  &=2\left[\frac{\sinh 2t}{4}-\frac{t}{2}\right]_0^{\operatorname{arsinh}1} \\
+  &=2\left(\frac{2\sqrt{2}}{4}-\frac{1}{2}\ln(1+\sqrt{2})\right) \\
+  &=\sqrt{2}-\ln(1+\sqrt{2}).
+\end{align*}
+故
+\[
+  \beta_1=\frac{\sqrt{2}-\ln(1+\sqrt{2})}{2\ln(1+\sqrt{2})}.
+\]
+因此前三个首一正交多项式为
+\[
+  \boxed{
+  p_0(x)=1,\qquad
+  p_1(x)=x,\qquad
+  p_2(x)=x^2-\frac{\sqrt{2}-\ln(1+\sqrt{2})}{2\ln(1+\sqrt{2})}.}
+\]
+
+\medskip
+\noindent\textbf{(2) 当 $W(x)=1+x^2$ 时}\quad
+\[
+  \inner{p_0}{p_0}=\int_{-1}^1 (1+x^2)\,\mathrm{d}x
+  =2+\frac{2}{3}
+  =\frac{8}{3},
+\]
+\[
+  \inner{p_1}{p_1}=\int_{-1}^1 x^2(1+x^2)\,\mathrm{d}x
+  =\int_{-1}^1 (x^2+x^4)\,\mathrm{d}x
+  =\frac{2}{3}+\frac{2}{5}
+  =\frac{16}{15}.
+\]
+于是
+\[
+  \beta_1=\frac{16/15}{8/3}=\frac{2}{5}.
+\]
+故前三个首一正交多项式为
+\[
+  \boxed{
+  p_0(x)=1,\qquad
+  p_1(x)=x,\qquad
+  p_2(x)=x^2-\frac{2}{5}.}
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 8 题}\quad
+设 $q_n(x)$ 是区间 $[a,b]$ 上关于权函数 $W(x)$ 的首一 $n$ 次正交多项式。令
+\[
+  A_n=
+  \begin{pmatrix}
+    \alpha_0 & \sqrt{\beta_1} &        &        &   \\
+    \sqrt{\beta_1} & \alpha_1 & \sqrt{\beta_2} &        &   \\
+        & \sqrt{\beta_2} & \ddots & \ddots &   \\
+        &        & \ddots & \alpha_{n-2} & \sqrt{\beta_{n-1}} \\
+        &        &        & \sqrt{\beta_{n-1}} & \alpha_{n-1}
+  \end{pmatrix},
+  \qquad n\ge 1,
+\]
+其中 $\alpha_k,\beta_k$ 为递推关系式 $(3.3.3)$ 中的系数。试证，矩阵 $A_n$ 的特征值是正交多项式
+$q_n(x)$ 的根。
+\medskip
+\noindent\textbf{证明}\quad
+由讲义第三章性质 3.3.2，首一正交多项式满足三项递推关系
+\[
+  q_{k+1}(x)=(x-\alpha_k)q_k(x)-\beta_k q_{k-1}(x),
+  \qquad q_0(x)=1,\quad q_1(x)=x-\alpha_0.
+\]
+记 $\Delta_n(\lambda)=\det(\lambda I-A_n)$ 为矩阵 $A_n$ 的特征多项式。再设
+$A_k$ 表示 $A_n$ 的左上角 $k\times k$ 主子矩阵，并约定
+\[
+  \Delta_0(\lambda)=1,\qquad \Delta_1(\lambda)=\lambda-\alpha_0.
+\]
+
+对 $k\ge 2$，按最后一行或最后一列展开 $\Delta_k(\lambda)=\det(\lambda I-A_k)$，得
+\[
+  \Delta_k(\lambda)
+  =(\lambda-\alpha_{k-1})\Delta_{k-1}(\lambda)-\beta_{k-1}\Delta_{k-2}(\lambda).
+\]
+这是因为相邻副对角元都等于 $\sqrt{\beta_{k-1}}$，其乘积恰为 $\beta_{k-1}$。
+
+将正交多项式的递推式把指标改写为 $k\mapsto k-1$，可得
+\[
+  q_k(x)=(x-\alpha_{k-1})q_{k-1}(x)-\beta_{k-1}q_{k-2}(x),
+  \qquad k\ge 2.
+\]
+于是 $\Delta_k(\lambda)$ 与 $q_k(\lambda)$ 满足完全相同的递推关系与初值条件：
+\[
+  \Delta_0(\lambda)=1=q_0(\lambda),\qquad
+  \Delta_1(\lambda)=\lambda-\alpha_0=q_1(\lambda).
+\]
+因此由递推关系的唯一性可知，
+\[
+  \Delta_k(\lambda)=q_k(\lambda),\qquad k\ge 0.
+\]
+特别地，
+\[
+  \det(\lambda I-A_n)=\Delta_n(\lambda)=q_n(\lambda).
+\]
+故矩阵 $A_n$ 的特征值满足
+\[
+  \det(\lambda I-A_n)=0,
+\]
+也就是正交多项式 $q_n(\lambda)=0$ 的根。证毕。\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 9 题}\quad
+设
+\[
+  X_n(x,y)=T_{n+1}(x)T_n(y)-T_{n+1}(y)T_n(x),
+\]
+其中 $T_n$ 表示 Chebyshev 多项式。证明
+\[
+  X_n(x,y)=2(x-y)T_n(x)T_n(y)+X_{n-1}(x,y),\qquad n\ge 1,
+\]
+并导出
+\[
+  \frac{1}{2}X_n(x,y)=(x-y)\left[\frac{1}{2}+\sum_{k=1}^n T_k(x)T_k(y)\right].
+\]
+\medskip
+\noindent\textbf{证明}\quad
+由讲义第三章中 Chebyshev 多项式的递推关系
+\[
+  T_{n+1}(t)=2tT_n(t)-T_{n-1}(t),\qquad n\ge 1,
+\]
+分别在 $t=x$ 与 $t=y$ 处使用，代入 $X_n(x,y)$ 得
+\begin{align*}
+  X_n(x,y)
+  &=[2xT_n(x)-T_{n-1}(x)]T_n(y)-[2yT_n(y)-T_{n-1}(y)]T_n(x) \\
+  &=2(x-y)T_n(x)T_n(y)+T_n(x)T_{n-1}(y)-T_n(y)T_{n-1}(x) \\
+  &=2(x-y)T_n(x)T_n(y)+X_{n-1}(x,y).
+\end{align*}
+故第一式成立。
+
+\medskip
+由上式移项得
+\[
+  X_n(x,y)-X_{n-1}(x,y)=2(x-y)T_n(x)T_n(y),\qquad n\ge 1.
+\]
+从 $k=1$ 到 $n$ 求和，得到
+\[
+  X_n(x,y)-X_0(x,y)=2(x-y)\sum_{k=1}^n T_k(x)T_k(y).
+\]
+又因为
+\[
+  X_0(x,y)=T_1(x)T_0(y)-T_1(y)T_0(x)=x-y,
+\]
+其中 $T_0(x)=1,\ T_1(x)=x$，所以
+\[
+  X_n(x,y)=(x-y)+2(x-y)\sum_{k=1}^n T_k(x)T_k(y).
+\]
+提取公因子 $(x-y)$，即得
+\[
+  X_n(x,y)=2(x-y)\left[\frac{1}{2}+\sum_{k=1}^n T_k(x)T_k(y)\right].
+\]
+两边同除以 $2$，便有
+\[
+  \boxed{
+  \frac{1}{2}X_n(x,y)=(x-y)\left[\frac{1}{2}+\sum_{k=1}^n T_k(x)T_k(y)\right].}
+  \qquad \QED
+\]
+
+\end{document}
