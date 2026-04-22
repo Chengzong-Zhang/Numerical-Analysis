@@ -1,0 +1,32 @@
+# OS / explorer noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor temp files
+*~
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# MATLAB autosave / temp files
+*.asv
+slprj/
+
+# LaTeX intermediate files
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.xdv
+*.nav
+*.snm
+*.vrb
+

@@ -1,0 +1,354 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage[slantfont,boldfont]{xeCJK}
+\usepackage{fontspec}
+
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{bm}
+\usepackage{hyperref}
+
+\setlength{\parindent}{2em}
+\linespread{1.2}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\everymath{\displaystyle}
+
+\newcommand*{\QED}{\hfill\ensuremath{\square}}
+\newcommand{\inner}[2]{\left(#1,#2\right)}
+
+\setlength{\headheight}{13.6pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{数值分析\quad 第六次理论作业\quad 学号：241098117，姓名：张城宗}
+\fancyhead[R]{习题三}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries 数值分析\quad 第六次理论作业}\\[6pt]
+  {\large 习题三第 13、16、18(2)、21 题}\\[4pt]
+  {\normalsize 学号：241098117\quad 姓名：张城宗}
+\end{center}
+
+\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 13 题}\quad
+求函数 $f(x)=\arctan x$ 在 $[-1,1]$ 上的三次 Chebyshev 插值多项式。
+\medskip
+\noindent\textbf{解}\quad
+由讲义第三章关于 Chebyshev 插值节点的结论，三次 Chebyshev 插值多项式应取
+$T_4(x)$ 的零点为插值节点，即
+\[
+  x_k=\cos\frac{(2k+1)\pi}{8},\qquad k=0,1,2,3.
+\]
+记
+\[
+  a=\cos\frac{\pi}{8}=\frac{\sqrt{2+\sqrt2}}{2},\qquad
+  b=\cos\frac{3\pi}{8}=\frac{\sqrt{2-\sqrt2}}{2},
+\]
+则四个节点为
+\[
+  x_0=a,\quad x_1=b,\quad x_2=-b,\quad x_3=-a.
+\]
+
+由于 $f(x)=\arctan x$ 是奇函数，而插值节点关于原点对称，所以三次插值多项式也是奇函数。
+再由 Chebyshev 多项式的奇偶性，只需设
+\[
+  p_3(x)=c_1T_1(x)+c_3T_3(x).
+\]
+其中
+\[
+  T_1(x)=x,\qquad T_3(x)=4x^3-3x.
+\]
+
+对节点 $x=a,b$ 施加插值条件。注意到
+\[
+  T_3(a)=\cos\frac{3\pi}{8}=b,\qquad
+  T_3(b)=\cos\frac{9\pi}{8}=-a,
+\]
+于是有
+\[
+  c_1a+c_3b=\arctan a,
+\]
+\[
+  c_1b-c_3a=\arctan b.
+\]
+解此二元一次方程组，又因为
+\[
+  a^2+b^2=\cos^2\frac{\pi}{8}+\cos^2\frac{3\pi}{8}=1,
+\]
+故得
+\[
+  c_1=a\arctan a+b\arctan b,
+\]
+\[
+  c_3=b\arctan a-a\arctan b.
+\]
+
+因此，所求三次 Chebyshev 插值多项式为
+\[
+  \boxed{
+  p_3(x)=\bigl(a\arctan a+b\arctan b\bigr)T_1(x)
+  +\bigl(b\arctan a-a\arctan b\bigr)T_3(x),}
+\]
+其中
+\[
+  a=\frac{\sqrt{2+\sqrt2}}{2},\qquad b=\frac{\sqrt{2-\sqrt2}}{2}.
+\]
+
+若化为幂函数形式，则
+\[
+  p_3(x)=\bigl(c_1-3c_3\bigr)x+4c_3x^3.
+\]
+数值上
+\[
+  c_1\approx 0.828945,\qquad c_3\approx -0.052243,
+\]
+故
+\[
+  \boxed{p_3(x)\approx 0.985674\,x-0.208972\,x^3.}
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 16 题}\quad
+试证明：在所有首项系数为 $1$ 的 $n$ 次多项式集合 $Q_n$ 中，$(3.3.22)$ 中的
+$\bar P_n(x)$ 在区间 $[-1,1]$ 上与零的平方误差最小，即
+\[
+  \int_{-1}^1 |\bar P_n(x)|^2\,\mathrm{d}x
+  =
+  \min_{p_n(x)\in Q_n}\int_{-1}^1 |p_n(x)|^2\,\mathrm{d}x.
+\]
+\medskip
+\noindent\textbf{证明}\quad
+由讲义第三章 $(3.3.22)$，
+\[
+  \bar P_n(x)=\frac{2^n(n!)^2}{(2n)!}P_n(x)
+\]
+是区间 $[-1,1]$ 上关于权函数 $W(x)=1$ 的首一 $n$ 次正交多项式。特别地，
+$\bar P_n(x)$ 与任意次数低于 $n$ 的多项式都正交。
+
+现任取 $p_n(x)\in Q_n$。因为 $p_n(x)$ 与 $\bar P_n(x)$ 都是首项系数为 $1$ 的 $n$ 次多项式，
+所以它们的差
+\[
+  q_{n-1}(x)=p_n(x)-\bar P_n(x)
+\]
+至多是 $n-1$ 次多项式。于是由正交性可得
+\[
+  \int_{-1}^1 \bar P_n(x)\,q_{n-1}(x)\,\mathrm{d}x=0.
+\]
+
+再由
+\[
+  p_n(x)=\bar P_n(x)+q_{n-1}(x)
+\]
+得到
+\begin{align*}
+  \int_{-1}^1 |p_n(x)|^2\,\mathrm{d}x
+  &=\int_{-1}^1 \bigl(\bar P_n(x)+q_{n-1}(x)\bigr)^2\,\mathrm{d}x \\
+  &=\int_{-1}^1 \bar P_n^2(x)\,\mathrm{d}x
+    +2\int_{-1}^1 \bar P_n(x)q_{n-1}(x)\,\mathrm{d}x
+    +\int_{-1}^1 q_{n-1}^2(x)\,\mathrm{d}x \\
+  &=\int_{-1}^1 \bar P_n^2(x)\,\mathrm{d}x+\int_{-1}^1 q_{n-1}^2(x)\,\mathrm{d}x \\
+  &\ge \int_{-1}^1 \bar P_n^2(x)\,\mathrm{d}x.
+\end{align*}
+这说明对任意 $p_n(x)\in Q_n$ 都有
+\[
+  \int_{-1}^1 |p_n(x)|^2\,\mathrm{d}x
+  \ge
+  \int_{-1}^1 |\bar P_n(x)|^2\,\mathrm{d}x.
+\]
+因此
+\[
+  \int_{-1}^1 |\bar P_n(x)|^2\,\mathrm{d}x
+  =
+  \min_{p_n(x)\in Q_n}\int_{-1}^1 |p_n(x)|^2\,\mathrm{d}x.
+\]
+证毕。\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 18 题（2）}\quad
+求函数 $f(x)=\ln x$ 在区间 $[1,2]$ 上的一次和二次最佳平方逼近多项式
+（分别取函数系 $\{1,x\}$ 和 $\{1,x,x^2\}$）。
+\medskip
+\noindent\textbf{解}\quad
+由讲义第三章最佳平方逼近的法方程组，误差函数应与所选基函数正交。
+
+\medskip
+\noindent\textbf{(1) 一次最佳平方逼近}\quad
+设
+\[
+  p_1(x)=a_0+a_1x.
+\]
+则正交条件为
+\[
+  \int_1^2 \bigl(\ln x-a_0-a_1x\bigr)\,\mathrm{d}x=0,
+\]
+\[
+  \int_1^2 x\bigl(\ln x-a_0-a_1x\bigr)\,\mathrm{d}x=0.
+\]
+先计算各积分：
+\[
+  \int_1^2 \ln x\,\mathrm{d}x
+  =\bigl[x\ln x-x\bigr]_1^2
+  =2\ln2-1,
+\]
+\[
+  \int_1^2 x\ln x\,\mathrm{d}x
+  =\left[\frac{x^2}{2}\ln x-\frac{x^2}{4}\right]_1^2
+  =2\ln2-\frac{3}{4},
+\]
+\[
+  \int_1^2 x\,\mathrm{d}x=\frac{3}{2},\qquad
+  \int_1^2 x^2\,\mathrm{d}x=\frac{7}{3}.
+\]
+于是法方程组为
+\[
+  a_0+\frac{3}{2}a_1=2\ln2-1,
+\]
+\[
+  \frac{3}{2}a_0+\frac{7}{3}a_1=2\ln2-\frac{3}{4}.
+\]
+解得
+\[
+  a_0=20\ln2-\frac{29}{2},\qquad
+  a_1=9-12\ln2.
+\]
+故一次最佳平方逼近多项式为
+\[
+  \boxed{
+  p_1^*(x)=\left(20\ln2-\frac{29}{2}\right)+\left(9-12\ln2\right)x.}
+\]
+数值上，
+\[
+  p_1^*(x)\approx -0.637056+0.682234x.
+\]
+
+\medskip
+\noindent\textbf{(2) 二次最佳平方逼近}\quad
+设
+\[
+  p_2(x)=b_0+b_1x+b_2x^2.
+\]
+则正交条件为
+\[
+  \int_1^2 \bigl(\ln x-p_2(x)\bigr)\,\mathrm{d}x=0,
+\]
+\[
+  \int_1^2 x\bigl(\ln x-p_2(x)\bigr)\,\mathrm{d}x=0,
+\]
+\[
+  \int_1^2 x^2\bigl(\ln x-p_2(x)\bigr)\,\mathrm{d}x=0.
+\]
+除上面已算出的积分外，再有
+\[
+  \int_1^2 x^3\,\mathrm{d}x=\frac{15}{4},\qquad
+  \int_1^2 x^4\,\mathrm{d}x=\frac{31}{5},
+\]
+\[
+  \int_1^2 x^2\ln x\,\mathrm{d}x
+  =\left[\frac{x^3}{3}\ln x-\frac{x^3}{9}\right]_1^2
+  =\frac{8}{3}\ln2-\frac{7}{9}.
+\]
+因此法方程组为
+\[
+  b_0+\frac{3}{2}b_1+\frac{7}{3}b_2=2\ln2-1,
+\]
+\[
+  \frac{3}{2}b_0+\frac{7}{3}b_1+\frac{15}{4}b_2=2\ln2-\frac{3}{4},
+\]
+\[
+  \frac{7}{3}b_0+\frac{15}{4}b_1+\frac{31}{5}b_2=\frac{8}{3}\ln2-\frac{7}{9}.
+\]
+解得
+\[
+  b_0=410\ln2-\frac{856}{3},\qquad
+  b_1=384-552\ln2,\qquad
+  b_2=180\ln2-125.
+\]
+故二次最佳平方逼近多项式为
+\[
+  \boxed{
+  p_2^*(x)=\left(410\ln2-\frac{856}{3}\right)
+  +(384-552\ln2)x
+  +(180\ln2-125)x^2.}
+\]
+数值上，
+\[
+  p_2^*(x)\approx -1.142989+1.382756x-0.233507x^2.
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题三\quad 第 21 题}\quad
+求 $f(x)=\arcsin x$ 的 Chebyshev 级数。
+\medskip
+\noindent\textbf{解}\quad
+由讲义第三章 $(3.4.13)$--$(3.4.16)$，函数 $f(x)$ 的 Chebyshev 级数可写为
+\[
+  f(x)=\frac{1}{2}c_0+\sum_{k=1}^{\infty} c_k T_k(x),
+\]
+其中
+\[
+  c_k=\frac{2}{\pi}\int_0^{\pi} f(\cos\theta)\cos(k\theta)\,\mathrm{d}\theta.
+\]
+
+对本题，取 $f(x)=\arcsin x$，则
+\[
+  f(\cos\theta)=\arcsin(\cos\theta)=\frac{\pi}{2}-\theta,\qquad 0\le \theta\le \pi.
+\]
+因此
+\[
+  c_k=\frac{2}{\pi}\int_0^{\pi}\left(\frac{\pi}{2}-\theta\right)\cos(k\theta)\,\mathrm{d}\theta.
+\]
+
+先算 $c_0$：
+\[
+  c_0=\frac{2}{\pi}\int_0^{\pi}\left(\frac{\pi}{2}-\theta\right)\,\mathrm{d}\theta=0.
+\]
+
+当 $k\ge 1$ 时，分部积分：
+\begin{align*}
+  \int_0^{\pi}\left(\frac{\pi}{2}-\theta\right)\cos(k\theta)\,\mathrm{d}\theta
+  &=\left[\left(\frac{\pi}{2}-\theta\right)\frac{\sin(k\theta)}{k}\right]_0^{\pi}
+    +\frac{1}{k}\int_0^{\pi}\sin(k\theta)\,\mathrm{d}\theta \\
+  &=\frac{1}{k}\left[-\frac{\cos(k\theta)}{k}\right]_0^{\pi} \\
+  &=\frac{1-(-1)^k}{k^2}.
+\end{align*}
+故
+\[
+  c_k=\frac{2}{\pi}\cdot\frac{1-(-1)^k}{k^2}.
+\]
+于是
+\[
+  c_{2m}=0,\qquad
+  c_{2m+1}=\frac{4}{\pi(2m+1)^2},\qquad m=0,1,2,\ldots
+\]
+
+所以 $f(x)=\arcsin x$ 的 Chebyshev 级数为
+\[
+  \boxed{
+  \arcsin x=\frac{4}{\pi}\sum_{m=0}^{\infty}\frac{T_{2m+1}(x)}{(2m+1)^2}.}
+\]
+即
+\[
+  \arcsin x=\frac{4}{\pi}\left(T_1(x)+\frac{1}{9}T_3(x)+\frac{1}{25}T_5(x)+\frac{1}{49}T_7(x)+\cdots\right).
+\]
+
+\end{document}
