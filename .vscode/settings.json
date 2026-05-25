@@ -1,0 +1,6 @@
+{
+  "code-runner.runInTerminal": true,
+  "code-runner.executorMap": {
+    "matlab": "matlab -batch \"run('$fullFileName')\""
+  }
+}

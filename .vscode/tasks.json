@@ -1,0 +1,18 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run current MATLAB file",
+      "type": "shell",
+      "command": "matlab",
+      "args": [
+        "-batch",
+        "run('${file}')"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
