@@ -1,460 +1,460 @@
 %% run_and_save.m  --  运行四个题目并保存图片（内存安全版）
 % 对 problem1 的 h 范围加限制避免内存溢出（n 最大 1e7）
 
-clear; close all; clc;
+clear; close all; clc;  % 逐行注释：清空工作区变量、关闭所有图窗、清空命令行，保证脚本从干净环境开始运行。
 % 非交互模式：batch 下必须关闭可见性才能正常保存图片
-set(groot, 'DefaultFigureVisible', 'off');
+set(groot, 'DefaultFigureVisible', 'off');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-outdir = fileparts(mfilename('fullpath'));
+outdir = fileparts(mfilename('fullpath'));  % 逐行注释：fileparts 拆分文件路径；这里用于得到当前脚本所在文件夹。
 
 %% ============================================================
 %  题目1：计算圆周率 π（修改版：h 最小到 1e-7 避免内存溢出）
 %% ============================================================
 
-f = @(x) 4 ./ (1 + x.^2);
-a = 0; b = 1;
-pi_exact = pi;
+f = @(x) 4 ./ (1 + x.^2);  % 逐行注释：定义匿名函数；@(参数) 后面写函数表达式，可像普通函数一样调用，常用于积分和向量化计算。
+a = 0; b = 1;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+pi_exact = pi;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 
-fprintf('=== 题目1：数值积分计算圆周率 π ===\n\n');
+fprintf('=== 题目1：数值积分计算圆周率 π ===\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % 第一部分：误差随步长变化（限制 n <= 5e6 以节省内存）
-h_vals = logspace(0, -7, 80);
-n_vals = ceil((b - a) ./ h_vals);
-n_vals = min(n_vals, 5e6);  % 限制最大节点数
-err_trap = zeros(1, length(h_vals));
-err_simp = zeros(1, length(h_vals));
-actual_h = zeros(1, length(h_vals));
+h_vals = logspace(0, -7, 80);  % 逐行注释：logspace 生成对数均匀序列；常用于跨数量级测试步长或样本数。
+n_vals = ceil((b - a) ./ h_vals);  % 逐行注释：ceil 向上取整；可保证区间数或样本数不低于目标值。
+n_vals = min(n_vals, 5e6);  % 限制最大节点数  % 逐行注释：min 取最小值；对数组时按元素或按列比较，常用于裁剪范围。
+err_trap = zeros(1, length(h_vals));  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+err_simp = zeros(1, length(h_vals));  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+actual_h = zeros(1, length(h_vals));  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
 
-for k = 1:length(h_vals)
-    n = n_vals(k);
-    m = max(1, ceil(n/2));
-    h_trap = (b - a) / n;
-    h_simp = (b - a) / (2*m);
-    actual_h(k) = h_trap;
-    x_trap = linspace(a, b, n + 1);
-    fx_trap = f(x_trap);
-    T_n = h_trap / 2 * (fx_trap(1) + fx_trap(end) + 2 * sum(fx_trap(2:end-1)));
-    err_trap(k) = abs(T_n - pi_exact);
-    x_simp = linspace(a, b, 2*m + 1);
-    fx_simp = f(x_simp);
-    S_m = h_simp / 3 * (fx_simp(1) + fx_simp(end) + ...
-          4 * sum(fx_simp(2:2:end-1)) + 2 * sum(fx_simp(3:2:end-2)));
-    err_simp(k) = abs(S_m - pi_exact);
-    clear x_trap fx_trap x_simp fx_simp;
-end
+for k = 1:length(h_vals)  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    n = n_vals(k);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    m = max(1, ceil(n/2));  % 逐行注释：max 取最大值；也可和另一个数比较实现下界保护。
+    h_trap = (b - a) / n;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    h_simp = (b - a) / (2*m);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    actual_h(k) = h_trap;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    x_trap = linspace(a, b, n + 1);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+    fx_trap = f(x_trap);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    T_n = h_trap / 2 * (fx_trap(1) + fx_trap(end) + 2 * sum(fx_trap(2:end-1)));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    err_trap(k) = abs(T_n - pi_exact);  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
+    x_simp = linspace(a, b, 2*m + 1);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+    fx_simp = f(x_simp);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    S_m = h_simp / 3 * (fx_simp(1) + fx_simp(end) + ...  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+          4 * sum(fx_simp(2:2:end-1)) + 2 * sum(fx_simp(3:2:end-2)));  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+    err_simp(k) = abs(S_m - pi_exact);  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
+    clear x_trap fx_trap x_simp fx_simp;  % 逐行注释：清空工作区变量；MATLAB 语句以分号结尾时不会把结果打印到命令行。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
 
-[min_err_trap, idx_trap] = min(err_trap);
-[min_err_simp, idx_simp] = min(err_simp);
-fprintf('梯形最优 h=%.2e，误差=%.4e\n', actual_h(idx_trap), min_err_trap);
-fprintf('Simpson最优 h=%.2e，误差=%.4e\n', actual_h(idx_simp), min_err_simp);
+[min_err_trap, idx_trap] = min(err_trap);  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
+[min_err_simp, idx_simp] = min(err_simp);  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
+fprintf('梯形最优 h=%.2e，误差=%.4e\n', actual_h(idx_trap), min_err_trap);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('Simpson最优 h=%.2e，误差=%.4e\n', actual_h(idx_simp), min_err_simp);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % Romberg 积分
-max_level = 10; tol_romberg = 1e-12;
-T_rom = zeros(max_level, max_level);
-T_rom(1,1) = (b-a)/2*(f(a)+f(b));
-romberg_result = T_rom(1,1); converged_level = 1;
-fprintf('\nRomberg 表：\n');
-fprintf('m=1: T=%.15f  误差=%.4e\n', T_rom(1,1), abs(T_rom(1,1)-pi_exact));
-for m = 2:max_level
-    h_prev = (b-a)/2^(m-2);
-    h_cur  = (b-a)/2^(m-1);
-    k_v = 1:2^(m-2);
-    x_new = a + (k_v-0.5)*h_prev;
-    T_rom(m,1) = 0.5*T_rom(m-1,1) + h_cur*sum(f(x_new));
-    for j = 2:m
-        c = 4^(j-1);
-        T_rom(m,j) = (c*T_rom(m,j-1)-T_rom(m-1,j-1))/(c-1);
-    end
-    fprintf('m=%d: T=%.15f  误差=%.4e\n', m, T_rom(m,m), abs(T_rom(m,m)-pi_exact));
-    if m>=2 && abs(T_rom(m,m)-T_rom(m-1,m-1))<tol_romberg
-        romberg_result=T_rom(m,m); converged_level=m;
-        fprintf('  收敛于第%d层\n',m); break;
-    end
-    romberg_result=T_rom(m,m); converged_level=m;
-end
-fprintf('\nRomberg结果: %.15f，误差: %.4e\n', romberg_result, abs(romberg_result-pi_exact));
+max_level = 10; tol_romberg = 1e-12;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+T_rom = zeros(max_level, max_level);  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+T_rom(1,1) = (b-a)/2*(f(a)+f(b));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+romberg_result = T_rom(1,1); converged_level = 1;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fprintf('\nRomberg 表：\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('m=1: T=%.15f  误差=%.4e\n', T_rom(1,1), abs(T_rom(1,1)-pi_exact));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+for m = 2:max_level  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    h_prev = (b-a)/2^(m-2);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    h_cur  = (b-a)/2^(m-1);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    k_v = 1:2^(m-2);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    x_new = a + (k_v-0.5)*h_prev;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    T_rom(m,1) = 0.5*T_rom(m-1,1) + h_cur*sum(f(x_new));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    for j = 2:m  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+        c = 4^(j-1);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+        T_rom(m,j) = (c*T_rom(m,j-1)-T_rom(m-1,j-1))/(c-1);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+    fprintf('m=%d: T=%.15f  误差=%.4e\n', m, T_rom(m,m), abs(T_rom(m,m)-pi_exact));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+    if m>=2 && abs(T_rom(m,m)-T_rom(m-1,m-1))<tol_romberg  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+        romberg_result=T_rom(m,m); converged_level=m;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+        fprintf('  收敛于第%d层\n',m); break;  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+    end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+    romberg_result=T_rom(m,m); converged_level=m;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+fprintf('\nRomberg结果: %.15f，误差: %.4e\n', romberg_result, abs(romberg_result-pi_exact));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % 自适应Simpson
-tol_adaptive = 1e-10;
-S_init = simp1_local(f,a,b);
-[pi_adaptive, func_count] = adapt_simp_local(f,a,b,tol_adaptive,S_init);
-fprintf('自适应Simpson: %.15f，误差: %.4e，求值次数: %d\n', ...
-    pi_adaptive, abs(pi_adaptive-pi_exact), func_count);
+tol_adaptive = 1e-10;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+S_init = simp1_local(f,a,b);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+[pi_adaptive, func_count] = adapt_simp_local(f,a,b,tol_adaptive,S_init);  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
+fprintf('自适应Simpson: %.15f，误差: %.4e，求值次数: %d\n', ...  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+    pi_adaptive, abs(pi_adaptive-pi_exact), func_count);  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
 
 %% 绘图1：误差随h变化
-fig1 = figure('Position',[50 50 900 500]);
-loglog(actual_h, err_trap, 'b-', 'LineWidth',1.5, 'DisplayName','复合梯形误差');
-hold on;
-loglog(actual_h, err_simp, 'r-', 'LineWidth',1.5, 'DisplayName','复合Simpson误差');
-h_ref = logspace(0,-5,50);
-loglog(h_ref, 0.3*h_ref.^2, 'b--', 'LineWidth',1.0, 'DisplayName','O(h²)');
-loglog(h_ref, 0.05*h_ref.^4, 'r--', 'LineWidth',1.0, 'DisplayName','O(h⁴)');
-xline(actual_h(idx_trap),'b:','梯形最优h','LineWidth',1.5,'FontSize',9);
-xline(actual_h(idx_simp),'r:','Simpson最优h','LineWidth',1.5,'FontSize',9);
-xlabel('步长 h（对数刻度）');
-ylabel('|近似值 - π|（对数刻度）');
-title('题目1：复合梯形 vs 复合Simpson：误差随步长变化');
-legend('Location','NorthEast','FontSize',9);
-grid on;
-print(fig1, fullfile(outdir,'fig1_error_vs_h'), '-dpng', '-r150');
-fprintf('图1已保存\n');
+fig1 = figure('Position',[50 50 900 500]);  % 逐行注释：创建新的图形窗口；属性名-属性值成对出现，用来设置窗口标题、位置等。
+loglog(actual_h, err_trap, 'b-', 'LineWidth',1.5, 'DisplayName','复合梯形误差');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+loglog(actual_h, err_simp, 'r-', 'LineWidth',1.5, 'DisplayName','复合Simpson误差');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+h_ref = logspace(0,-5,50);  % 逐行注释：logspace 生成对数均匀序列；常用于跨数量级测试步长或样本数。
+loglog(h_ref, 0.3*h_ref.^2, 'b--', 'LineWidth',1.0, 'DisplayName','O(h²)');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+loglog(h_ref, 0.05*h_ref.^4, 'r--', 'LineWidth',1.0, 'DisplayName','O(h⁴)');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xline(actual_h(idx_trap),'b:','梯形最优h','LineWidth',1.5,'FontSize',9);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xline(actual_h(idx_simp),'r:','Simpson最优h','LineWidth',1.5,'FontSize',9);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlabel('步长 h（对数刻度）');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+ylabel('|近似值 - π|（对数刻度）');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('题目1：复合梯形 vs 复合Simpson：误差随步长变化');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+legend('Location','NorthEast','FontSize',9);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+print(fig1, fullfile(outdir,'fig1_error_vs_h'), '-dpng', '-r150');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+fprintf('图1已保存\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 %% 绘图2：Romberg收敛 + 方法精度对比
-fig2 = figure('Position',[100 100 900 400]);
-subplot(1,2,1);
-romberg_diag = zeros(1,converged_level);
-for m=1:converged_level; romberg_diag(m)=abs(T_rom(m,m)-pi_exact); end
-semilogy(1:converged_level, romberg_diag, 'bo-', 'LineWidth',1.5, 'MarkerSize',7);
-xlabel('对分次数 m'); ylabel('|T_{m,m} - π|');
-title('Romberg 对角线收敛过程'); grid on;
+fig2 = figure('Position',[100 100 900 400]);  % 逐行注释：创建新的图形窗口；属性名-属性值成对出现，用来设置窗口标题、位置等。
+subplot(1,2,1);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+romberg_diag = zeros(1,converged_level);  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+for m=1:converged_level; romberg_diag(m)=abs(T_rom(m,m)-pi_exact); end  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+semilogy(1:converged_level, romberg_diag, 'bo-', 'LineWidth',1.5, 'MarkerSize',7);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('对分次数 m'); ylabel('|T_{m,m} - π|');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('Romberg 对角线收敛过程'); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(1,2,2);
-h0=1e-4; n0=round((b-a)/h0); m0=ceil(n0/2);
-x0t=linspace(a,b,n0+1); fx0t=f(x0t);
-T0=h0/2*(fx0t(1)+fx0t(end)+2*sum(fx0t(2:end-1)));
-x0s=linspace(a,b,2*m0+1); fx0s=f(x0s);
-S0=(h0/2)/3*(fx0s(1)+fx0s(end)+4*sum(fx0s(2:2:end-1))+2*sum(fx0s(3:2:end-2)));
-errs=[abs(T0-pi_exact),abs(S0-pi_exact),abs(romberg_result-pi_exact),abs(pi_adaptive-pi_exact)];
-bar(1:4,errs);
-set(gca,'YScale','log');
-set(gca,'XTickLabel',{'梯形(h=1e-4)','Simpson(h=1e-4)','Romberg','自适应Simpson'});
-xtickangle(20); ylabel('误差（对数刻度）');
-title('各方法精度比较（题目1）'); grid on;
-sgtitle('题目1：数值积分计算圆周率 π');
-print(fig2, fullfile(outdir,'fig1_romberg_adaptive'), '-dpng', '-r150');
-fprintf('图2已保存\n\n');
-close all;
+subplot(1,2,2);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+h0=1e-4; n0=round((b-a)/h0); m0=ceil(n0/2);  % 逐行注释：round 四舍五入取整；常用于把理论样本数或区间数变为整数。
+x0t=linspace(a,b,n0+1); fx0t=f(x0t);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+T0=h0/2*(fx0t(1)+fx0t(end)+2*sum(fx0t(2:end-1)));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+x0s=linspace(a,b,2*m0+1); fx0s=f(x0s);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+S0=(h0/2)/3*(fx0s(1)+fx0s(end)+4*sum(fx0s(2:2:end-1))+2*sum(fx0s(3:2:end-2)));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+errs=[abs(T0-pi_exact),abs(S0-pi_exact),abs(romberg_result-pi_exact),abs(pi_adaptive-pi_exact)];  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+bar(1:4,errs);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+set(gca,'YScale','log');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+set(gca,'XTickLabel',{'梯形(h=1e-4)','Simpson(h=1e-4)','Romberg','自适应Simpson'});  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xtickangle(20); ylabel('误差（对数刻度）');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('各方法精度比较（题目1）'); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+sgtitle('题目1：数值积分计算圆周率 π');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+print(fig2, fullfile(outdir,'fig1_romberg_adaptive'), '-dpng', '-r150');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+fprintf('图2已保存\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+close all;  % 逐行注释：关闭所有已经打开的图形窗口，避免旧图影响本次绘图。
 
 %% ============================================================
 %  题目2：Planck 黑体辐射积分
 %% ============================================================
-fprintf('=== 题目2：Planck 黑体辐射积分 ===\n\n');
+fprintf('=== 题目2：Planck 黑体辐射积分 ===\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
-f_p = @(x) planck_local(x);
-I_exact2 = 7*pi^4/120;
-x_min = 1e-10; x_max = 50;
-fprintf('精确值 7π⁴/120 = %.10f\n\n', I_exact2);
+f_p = @(x) planck_local(x);  % 逐行注释：定义匿名函数；@(参数) 后面写函数表达式，可像普通函数一样调用，常用于积分和向量化计算。
+I_exact2 = 7*pi^4/120;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+x_min = 1e-10; x_max = 50;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fprintf('精确值 7π⁴/120 = %.10f\n\n', I_exact2);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % 复合梯形
-n_trap2 = 5000;
-h_trap2 = (x_max-x_min)/n_trap2;
-x_trap2 = linspace(x_min,x_max,n_trap2+1);
-fx_trap2 = arrayfun(f_p,x_trap2);
-I_trap2 = h_trap2/2*(fx_trap2(1)+fx_trap2(end)+2*sum(fx_trap2(2:end-1)));
-fprintf('复合梯形(n=%d): I=%.10f，误差=%.4e\n',n_trap2,I_trap2,abs(I_trap2-I_exact2));
+n_trap2 = 5000;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+h_trap2 = (x_max-x_min)/n_trap2;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+x_trap2 = linspace(x_min,x_max,n_trap2+1);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+fx_trap2 = arrayfun(f_p,x_trap2);  % 逐行注释：arrayfun 对数组每个元素逐个调用函数，适合函数内部含 if 分支、不便直接向量化的情况。
+I_trap2 = h_trap2/2*(fx_trap2(1)+fx_trap2(end)+2*sum(fx_trap2(2:end-1)));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fprintf('复合梯形(n=%d): I=%.10f，误差=%.4e\n',n_trap2,I_trap2,abs(I_trap2-I_exact2));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % 复合Simpson
-m_simp2 = 2500;
-h_simp2 = (x_max-x_min)/(2*m_simp2);
-x_simp2 = linspace(x_min,x_max,2*m_simp2+1);
-fx_simp2 = arrayfun(f_p,x_simp2);
-I_simp2 = h_simp2/3*(fx_simp2(1)+fx_simp2(end)+...
-          4*sum(fx_simp2(2:2:end-1))+2*sum(fx_simp2(3:2:end-2)));
-fprintf('复合Simpson(m=%d): I=%.10f，误差=%.4e\n',m_simp2,I_simp2,abs(I_simp2-I_exact2));
+m_simp2 = 2500;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+h_simp2 = (x_max-x_min)/(2*m_simp2);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+x_simp2 = linspace(x_min,x_max,2*m_simp2+1);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+fx_simp2 = arrayfun(f_p,x_simp2);  % 逐行注释：arrayfun 对数组每个元素逐个调用函数，适合函数内部含 if 分支、不便直接向量化的情况。
+I_simp2 = h_simp2/3*(fx_simp2(1)+fx_simp2(end)+...  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+          4*sum(fx_simp2(2:2:end-1))+2*sum(fx_simp2(3:2:end-2)));  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+fprintf('复合Simpson(m=%d): I=%.10f，误差=%.4e\n',m_simp2,I_simp2,abs(I_simp2-I_exact2));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % Romberg
-T_r2 = zeros(12,12); max_lv2=12; tol_rom2=1e-8;
-T_r2(1,1)=(x_max-x_min)/2*(f_p(x_min)+f_p(x_max));
-I_romberg2=T_r2(1,1); rom_level2=1;
-fprintf('\nRomberg对角线:\n');
-fprintf('m=1: %.12f  误差=%.4e\n',T_r2(1,1),abs(T_r2(1,1)-I_exact2));
-for m=2:max_lv2
-    h_rp=(x_max-x_min)/2^(m-2); h_rc=(x_max-x_min)/2^(m-1);
-    k_r=1:2^(m-2); xnr=x_min+(k_r-0.5)*h_rp;
-    T_r2(m,1)=0.5*T_r2(m-1,1)+h_rc*sum(arrayfun(f_p,xnr));
-    for j=2:m; c=4^(j-1); T_r2(m,j)=(c*T_r2(m,j-1)-T_r2(m-1,j-1))/(c-1); end
-    fprintf('m=%d: %.12f  误差=%.4e\n',m,T_r2(m,m),abs(T_r2(m,m)-I_exact2));
-    if abs(T_r2(m,m)-T_r2(m-1,m-1))<tol_rom2
-        I_romberg2=T_r2(m,m); rom_level2=m;
-        fprintf('  收敛于第%d层\n',m); break;
-    end
-    I_romberg2=T_r2(m,m); rom_level2=m;
-end
+T_r2 = zeros(12,12); max_lv2=12; tol_rom2=1e-8;  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+T_r2(1,1)=(x_max-x_min)/2*(f_p(x_min)+f_p(x_max));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+I_romberg2=T_r2(1,1); rom_level2=1;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fprintf('\nRomberg对角线:\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('m=1: %.12f  误差=%.4e\n',T_r2(1,1),abs(T_r2(1,1)-I_exact2));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+for m=2:max_lv2  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    h_rp=(x_max-x_min)/2^(m-2); h_rc=(x_max-x_min)/2^(m-1);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    k_r=1:2^(m-2); xnr=x_min+(k_r-0.5)*h_rp;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    T_r2(m,1)=0.5*T_r2(m-1,1)+h_rc*sum(arrayfun(f_p,xnr));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    for j=2:m; c=4^(j-1); T_r2(m,j)=(c*T_r2(m,j-1)-T_r2(m-1,j-1))/(c-1); end  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    fprintf('m=%d: %.12f  误差=%.4e\n',m,T_r2(m,m),abs(T_r2(m,m)-I_exact2));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+    if abs(T_r2(m,m)-T_r2(m-1,m-1))<tol_rom2  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+        I_romberg2=T_r2(m,m); rom_level2=m;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+        fprintf('  收敛于第%d层\n',m); break;  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+    end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+    I_romberg2=T_r2(m,m); rom_level2=m;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
 
 % 自适应Simpson
-S_init2=simp_one_local(f_p,x_min,x_max);
-[I_adapt2,fcnt2]=adaptive_simp_local(f_p,x_min,x_max,1e-8,S_init2);
-fprintf('\nRomberg: %.10f，误差=%.4e\n',I_romberg2,abs(I_romberg2-I_exact2));
-fprintf('自适应Simpson: %.10f，误差=%.4e\n',I_adapt2,abs(I_adapt2-I_exact2));
+S_init2=simp_one_local(f_p,x_min,x_max);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+[I_adapt2,fcnt2]=adaptive_simp_local(f_p,x_min,x_max,1e-8,S_init2);  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
+fprintf('\nRomberg: %.10f，误差=%.4e\n',I_romberg2,abs(I_romberg2-I_exact2));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('自适应Simpson: %.10f，误差=%.4e\n',I_adapt2,abs(I_adapt2-I_exact2));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 %% 绘图3：Planck 积分
-fig3 = figure('Position',[50 50 1000 600]);
-subplot(2,2,1);
-x_plot2=linspace(0.01,15,500); y_plot2=arrayfun(f_p,x_plot2);
-fill([x_plot2,fliplr(x_plot2)],[y_plot2,zeros(1,500)],[0.7 0.85 1],'EdgeColor','b','LineWidth',1.2);
-xlabel('x'); ylabel('f(x)=x³/(eˣ+1)');
-title('Planck 被积函数（积分区域阴影）'); grid on;
+fig3 = figure('Position',[50 50 1000 600]);  % 逐行注释：创建新的图形窗口；属性名-属性值成对出现，用来设置窗口标题、位置等。
+subplot(2,2,1);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+x_plot2=linspace(0.01,15,500); y_plot2=arrayfun(f_p,x_plot2);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+fill([x_plot2,fliplr(x_plot2)],[y_plot2,zeros(1,500)],[0.7 0.85 1],'EdgeColor','b','LineWidth',1.2);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('x'); ylabel('f(x)=x³/(eˣ+1)');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('Planck 被积函数（积分区域阴影）'); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,2,2);
-errs2=abs([I_trap2,I_simp2,I_romberg2,I_adapt2]-I_exact2);
-bar(errs2); set(gca,'YScale','log');
-set(gca,'XTickLabel',{'梯形','Simpson','Romberg','自适应'}); xtickangle(30);
-ylabel('误差（对数刻度）'); title('四种方法精度比较'); grid on;
+subplot(2,2,2);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+errs2=abs([I_trap2,I_simp2,I_romberg2,I_adapt2]-I_exact2);  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
+bar(errs2); set(gca,'YScale','log');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+set(gca,'XTickLabel',{'梯形','Simpson','Romberg','自适应'}); xtickangle(30);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+ylabel('误差（对数刻度）'); title('四种方法精度比较'); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,2,3);
-rd2=zeros(1,rom_level2);
-for m=1:rom_level2; rd2(m)=abs(T_r2(m,m)-I_exact2); end
-semilogy(1:rom_level2,rd2,'ro-','LineWidth',1.5,'MarkerSize',7);
-xlabel('对分层数 m'); ylabel('|T_{m,m}-I_{exact}|');
-title('Romberg 积分收敛过程'); grid on;
+subplot(2,2,3);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+rd2=zeros(1,rom_level2);  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+for m=1:rom_level2; rd2(m)=abs(T_r2(m,m)-I_exact2); end  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+semilogy(1:rom_level2,rd2,'ro-','LineWidth',1.5,'MarkerSize',7);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('对分层数 m'); ylabel('|T_{m,m}-I_{exact}|');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('Romberg 积分收敛过程'); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,2,4);
-n_rng=round(logspace(1,4,25));
-err_rng=zeros(1,length(n_rng));
-for k=1:length(n_rng)
-    nk=n_rng(k); hk=(x_max-x_min)/nk;
-    xk=linspace(x_min,x_max,nk+1);
-    fxk=arrayfun(f_p,xk);
-    Tk=hk/2*(fxk(1)+fxk(end)+2*sum(fxk(2:end-1)));
-    err_rng(k)=abs(Tk-I_exact2);
-end
-loglog(n_rng,err_rng,'b-o','MarkerSize',4,'LineWidth',1.2);
-hold on;
-loglog(n_rng,10./n_rng.^2,'r--','LineWidth',1.2,'DisplayName','O(n^{-2})');
-xlabel('子区间数 n'); ylabel('误差'); title('梯形公式收敛阶验证');
-legend({'实际误差','O(n^{-2})'},'Location','NorthEast'); grid on;
-sgtitle('题目2：Planck 黑体辐射积分 ∫₀^∞ x³/(eˣ+1)dx = 7π⁴/120');
-print(fig3, fullfile(outdir,'fig2_planck'), '-dpng', '-r150');
-fprintf('\n图3已保存\n\n');
-close all;
+subplot(2,2,4);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+n_rng=round(logspace(1,4,25));  % 逐行注释：round 四舍五入取整；常用于把理论样本数或区间数变为整数。
+err_rng=zeros(1,length(n_rng));  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+for k=1:length(n_rng)  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    nk=n_rng(k); hk=(x_max-x_min)/nk;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    xk=linspace(x_min,x_max,nk+1);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+    fxk=arrayfun(f_p,xk);  % 逐行注释：arrayfun 对数组每个元素逐个调用函数，适合函数内部含 if 分支、不便直接向量化的情况。
+    Tk=hk/2*(fxk(1)+fxk(end)+2*sum(fxk(2:end-1)));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    err_rng(k)=abs(Tk-I_exact2);  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+loglog(n_rng,err_rng,'b-o','MarkerSize',4,'LineWidth',1.2);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+loglog(n_rng,10./n_rng.^2,'r--','LineWidth',1.2,'DisplayName','O(n^{-2})');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('子区间数 n'); ylabel('误差'); title('梯形公式收敛阶验证');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+legend({'实际误差','O(n^{-2})'},'Location','NorthEast'); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+sgtitle('题目2：Planck 黑体辐射积分 ∫₀^∞ x³/(eˣ+1)dx = 7π⁴/120');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+print(fig3, fullfile(outdir,'fig2_planck'), '-dpng', '-r150');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+fprintf('\n图3已保存\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+close all;  % 逐行注释：关闭所有已经打开的图形窗口，避免旧图影响本次绘图。
 
 %% ============================================================
 %  题目3：蒲丰投针
 %% ============================================================
-fprintf('=== 题目3：蒲丰投针估计 π ===\n\n');
-rng(42);
-l=1.0; d=2.0;
-N_total3=1e6;
-y_c=d*rand(1,N_total3); theta_c=pi*rand(1,N_total3);
-hp=0.5*l*sin(theta_c);
-cross_flag=(y_c<hp)|(y_c>d-hp);
-N_cross=sum(cross_flag);
-pi_est3=2*l*N_total3/(d*N_cross);
-fprintf('N=%.0e，相交%d次，π估计=%.10f，误差=%.4e\n',N_total3,N_cross,pi_est3,abs(pi_est3-pi));
+fprintf('=== 题目3：蒲丰投针估计 π ===\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+rng(42);  % 逐行注释：设置随机数种子；固定种子后 rand/randn 每次运行生成相同随机序列，便于复现实验。
+l=1.0; d=2.0;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+N_total3=1e6;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+y_c=d*rand(1,N_total3); theta_c=pi*rand(1,N_total3);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+hp=0.5*l*sin(theta_c);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+cross_flag=(y_c<hp)|(y_c>d-hp);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+N_cross=sum(cross_flag);  % 逐行注释：sum 求和；对向量求所有元素之和，对矩阵默认按列求和。
+pi_est3=2*l*N_total3/(d*N_cross);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fprintf('N=%.0e，相交%d次，π估计=%.10f，误差=%.4e\n',N_total3,N_cross,pi_est3,abs(pi_est3-pi));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
-N_seq3=round(logspace(2,6,50));
-pi_seq3=zeros(1,length(N_seq3)); err_seq3=zeros(1,length(N_seq3));
-cumcross3=cumsum(cross_flag);
-for k=1:length(N_seq3)
-    Nk=N_seq3(k);
-    ck=cumcross3(Nk);
-    if ck>0
-        pi_seq3(k)=2*l*Nk/(d*ck);
-    else
-        pi_seq3(k)=Inf;
-    end
-    err_seq3(k)=abs(pi_seq3(k)-pi);
-end
-p0=2*l/(pi*d);
-theory_std3=pi*sqrt((1-p0)./(N_seq3*p0));
+N_seq3=round(logspace(2,6,50));  % 逐行注释：round 四舍五入取整；常用于把理论样本数或区间数变为整数。
+pi_seq3=zeros(1,length(N_seq3)); err_seq3=zeros(1,length(N_seq3));  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+cumcross3=cumsum(cross_flag);  % 逐行注释：cumsum 做累积求和；第 k 个元素表示前 k 项总和，适合做逐步收敛曲线。
+for k=1:length(N_seq3)  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    Nk=N_seq3(k);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    ck=cumcross3(Nk);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    if ck>0  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+        pi_seq3(k)=2*l*Nk/(d*ck);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    else  % 逐行注释：当前面 if/elseif 都不满足时执行这个兜底分支。
+        pi_seq3(k)=Inf;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+    err_seq3(k)=abs(pi_seq3(k)-pi);  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+p0=2*l/(pi*d);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+theory_std3=pi*sqrt((1-p0)./(N_seq3*p0));  % 逐行注释：包含点运算 .^、.* 或 ./；表示逐元素幂、乘、除，是 MATLAB 向量化计算的核心语法。
 
 % 重复实验
-M_rep3=300; N_each3=3000;
-pi_rep3=zeros(1,M_rep3);
-for m=1:M_rep3
-    ym=d*rand(1,N_each3); tm=pi*rand(1,N_each3);
-    hpm=(l/2)*sin(tm); cm=sum((ym<hpm)|(ym>d-hpm));
-    if cm>0
-        pi_rep3(m)=2*l*N_each3/(d*cm);
-    else
-        pi_rep3(m)=NaN;
-    end
-end
-pi_rep3=pi_rep3(~isnan(pi_rep3));
-fprintf('重复实验均值=%.8f，std=%.6f，理论std=%.6f\n',mean(pi_rep3),std(pi_rep3),pi*sqrt((1-p0)/(N_each3*p0)));
+M_rep3=300; N_each3=3000;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+pi_rep3=zeros(1,M_rep3);  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+for m=1:M_rep3  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    ym=d*rand(1,N_each3); tm=pi*rand(1,N_each3);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    hpm=(l/2)*sin(tm); cm=sum((ym<hpm)|(ym>d-hpm));  % 逐行注释：sum 求和；对向量求所有元素之和，对矩阵默认按列求和。
+    if cm>0  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+        pi_rep3(m)=2*l*N_each3/(d*cm);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    else  % 逐行注释：当前面 if/elseif 都不满足时执行这个兜底分支。
+        pi_rep3(m)=NaN;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+pi_rep3=pi_rep3(~isnan(pi_rep3));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fprintf('重复实验均值=%.8f，std=%.6f，理论std=%.6f\n',mean(pi_rep3),std(pi_rep3),pi*sqrt((1-p0)/(N_each3*p0)));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 %% 绘图4：蒲丰投针
-fig4=figure('Position',[50 50 1100 700]);
-subplot(2,3,1);
-n_show=200; y_sh=d*rand(1,n_show); th_sh=pi*rand(1,n_show);
-hp_sh=(l/2)*sin(th_sh); cr_sh=(y_sh<hp_sh)|(y_sh>d-hp_sh);
-hold on;
-for lk=0:3; plot([0,l*3],[lk*d,lk*d],'k-','LineWidth',1.5); end
-for k=1:n_show
-    yy=mod(y_sh(k)+floor(rand()*4)*d,4*d);
-    xc=l*rand(); dx=(l/2)*cos(th_sh(k)); dy=(l/2)*sin(th_sh(k));
-    if cr_sh(k); plot([xc-dx,xc+dx],[yy-dy,yy+dy],'r-','LineWidth',1.2);
-    else;        plot([xc-dx,xc+dx],[yy-dy,yy+dy],'b-','LineWidth',0.8); end
-end
-axis equal; xlim([0,l*3]); ylim([0,4*d]);
-title(sprintf('投针示意（红=相交，蓝=不相交）\nn=%d',n_show)); xlabel('x'); ylabel('y');
+fig4=figure('Position',[50 50 1100 700]);  % 逐行注释：创建新的图形窗口；属性名-属性值成对出现，用来设置窗口标题、位置等。
+subplot(2,3,1);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+n_show=200; y_sh=d*rand(1,n_show); th_sh=pi*rand(1,n_show);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+hp_sh=(l/2)*sin(th_sh); cr_sh=(y_sh<hp_sh)|(y_sh>d-hp_sh);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+for lk=0:3; plot([0,l*3],[lk*d,lk*d],'k-','LineWidth',1.5); end  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+for k=1:n_show  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    yy=mod(y_sh(k)+floor(rand()*4)*d,4*d);  % 逐行注释：mod 取余数；常用于把数值限制在一个周期或显示范围内。
+    xc=l*rand(); dx=(l/2)*cos(th_sh(k)); dy=(l/2)*sin(th_sh(k));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    if cr_sh(k); plot([xc-dx,xc+dx],[yy-dy,yy+dy],'r-','LineWidth',1.2);  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+    else;        plot([xc-dx,xc+dx],[yy-dy,yy+dy],'b-','LineWidth',0.8); end  % 逐行注释：当前面 if/elseif 都不满足时执行这个兜底分支。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+axis equal; xlim([0,l*3]); ylim([0,4*d]);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title(sprintf('投针示意（红=相交，蓝=不相交）\nn=%d',n_show)); xlabel('x'); ylabel('y');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,2);
-semilogx(N_seq3,pi_seq3,'b-','LineWidth',1.2); hold on;
-yline(pi,'r--','LineWidth',1.5);
-fill([N_seq3,fliplr(N_seq3)],[pi+2*theory_std3,fliplr(pi-2*theory_std3)],...
-     [1 0.7 0.7],'FaceAlpha',0.3,'EdgeColor','none');
-xlabel('投针次数 N'); ylabel('π 估计值');
-title('π 估计值随实验次数的收敛'); grid on;
+subplot(2,3,2);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+semilogx(N_seq3,pi_seq3,'b-','LineWidth',1.2); hold on;  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+yline(pi,'r--','LineWidth',1.5);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+fill([N_seq3,fliplr(N_seq3)],[pi+2*theory_std3,fliplr(pi-2*theory_std3)],...  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+     [1 0.7 0.7],'FaceAlpha',0.3,'EdgeColor','none');  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+xlabel('投针次数 N'); ylabel('π 估计值');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('π 估计值随实验次数的收敛'); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,3);
-loglog(N_seq3,err_seq3,'b-','LineWidth',1.2,'DisplayName','实际误差');
-hold on;
-loglog(N_seq3,theory_std3,'r--','LineWidth',1.5,'DisplayName','理论σ=C/√N');
-xlabel('N'); ylabel('|π̂-π|'); title('收敛速度验证：误差∝1/√N');
-legend('Location','NorthEast'); grid on;
+subplot(2,3,3);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+loglog(N_seq3,err_seq3,'b-','LineWidth',1.2,'DisplayName','实际误差');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+loglog(N_seq3,theory_std3,'r--','LineWidth',1.5,'DisplayName','理论σ=C/√N');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('N'); ylabel('|π̂-π|'); title('收敛速度验证：误差∝1/√N');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+legend('Location','NorthEast'); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,4);
-histogram(pi_rep3,25,'Normalization','pdf','FaceColor',[0.4 0.6 0.8],'EdgeColor','white');
-hold on;
-mu3=pi; sig3=pi*sqrt((1-p0)/(N_each3*p0));
-xn3=linspace(pi-4*sig3,pi+4*sig3,200);
-yn3=(1/(sig3*sqrt(2*pi)))*exp(-0.5*((xn3-mu3)/sig3).^2);
-plot(xn3,yn3,'r-','LineWidth',2); xline(pi,'k--','LineWidth',1.5);
-xlabel('π 估计值'); ylabel('概率密度');
-title(sprintf('π 估计值分布\n均值=%.4f，std=%.4f',mean(pi_rep3),std(pi_rep3)));
+subplot(2,3,4);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+histogram(pi_rep3,25,'Normalization','pdf','FaceColor',[0.4 0.6 0.8],'EdgeColor','white');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+mu3=pi; sig3=pi*sqrt((1-p0)/(N_each3*p0));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+xn3=linspace(pi-4*sig3,pi+4*sig3,200);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+yn3=(1/(sig3*sqrt(2*pi)))*exp(-0.5*((xn3-mu3)/sig3).^2);  % 逐行注释：包含点运算 .^、.* 或 ./；表示逐元素幂、乘、除，是 MATLAB 向量化计算的核心语法。
+plot(xn3,yn3,'r-','LineWidth',2); xline(pi,'k--','LineWidth',1.5);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('π 估计值'); ylabel('概率密度');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title(sprintf('π 估计值分布\n均值=%.4f，std=%.4f',mean(pi_rep3),std(pi_rep3)));  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,5);
-th_ax=linspace(0,pi,200); P_th=(l/d)*sin(th_ax);
-fill([th_ax,fliplr(th_ax)],[P_th,zeros(1,200)],[0.8 0.9 0.7],'EdgeColor','g','LineWidth',1.2);
-xlabel('θ（弧度）'); ylabel('P(相交|θ)');
-title(sprintf('条件相交概率\n面积=2l/(πd)=%.4f',2*l/(pi*d)));
-xticks([0 pi/4 pi/2 3*pi/4 pi]); xticklabels({'0','π/4','π/2','3π/4','π'}); grid on;
+subplot(2,3,5);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+th_ax=linspace(0,pi,200); P_th=(l/d)*sin(th_ax);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+fill([th_ax,fliplr(th_ax)],[P_th,zeros(1,200)],[0.8 0.9 0.7],'EdgeColor','g','LineWidth',1.2);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('θ（弧度）'); ylabel('P(相交|θ)');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title(sprintf('条件相交概率\n面积=2l/(πd)=%.4f',2*l/(pi*d)));  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xticks([0 pi/4 pi/2 3*pi/4 pi]); xticklabels({'0','π/4','π/2','3π/4','π'}); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,6);
-ns6=1:min(10000,N_total3);
-cum_pi6=2*l*ns6./(d*max(1,cumcross3(ns6)));
-plot(ns6,cum_pi6,'b-','LineWidth',0.8); hold on;
-yline(pi,'r--','LineWidth',1.5);
-xlabel('投针次数 N'); ylabel('π 累积估计值');
-title('π 估计值实时收敛（前10000次）'); grid on;
-sgtitle('题目3：蒲丰投针 Monte Carlo 模拟估计 π');
-print(fig4, fullfile(outdir,'fig3_buffon'), '-dpng', '-r150');
-fprintf('图4已保存\n\n');
-close all;
+subplot(2,3,6);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+ns6=1:min(10000,N_total3);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+cum_pi6=2*l*ns6./(d*max(1,cumcross3(ns6)));  % 逐行注释：包含点运算 .^、.* 或 ./；表示逐元素幂、乘、除，是 MATLAB 向量化计算的核心语法。
+plot(ns6,cum_pi6,'b-','LineWidth',0.8); hold on;  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+yline(pi,'r--','LineWidth',1.5);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlabel('投针次数 N'); ylabel('π 累积估计值');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('π 估计值实时收敛（前10000次）'); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+sgtitle('题目3：蒲丰投针 Monte Carlo 模拟估计 π');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+print(fig4, fullfile(outdir,'fig3_buffon'), '-dpng', '-r150');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+fprintf('图4已保存\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+close all;  % 逐行注释：关闭所有已经打开的图形窗口，避免旧图影响本次绘图。
 
 %% ============================================================
 %  题目4：Monte Carlo 计算 ∫₀¹ e^{-x} dx
 %% ============================================================
-fprintf('=== 题目4：Monte Carlo 计算 I=∫₀¹e^{-x}dx ===\n\n');
-rng(2024);
-f4=@(x)exp(-x);
-I_exact4=1-exp(-1);
-N4=5e5;
-fprintf('精确值: %.15f\n\n',I_exact4);
+fprintf('=== 题目4：Monte Carlo 计算 I=∫₀¹e^{-x}dx ===\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+rng(2024);  % 逐行注释：设置随机数种子；固定种子后 rand/randn 每次运行生成相同随机序列，便于复现实验。
+f4=@(x)exp(-x);  % 逐行注释：定义匿名函数；@(参数) 后面写函数表达式，可像普通函数一样调用，常用于积分和向量化计算。
+I_exact4=1-exp(-1);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+N4=5e5;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fprintf('精确值: %.15f\n\n',I_exact4);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
-x_hit=rand(1,N4); y_hit=rand(1,N4);
-hits=sum(y_hit<=f4(x_hit));
-I_hm=hits/N4;
-fprintf('随机投点法: I=%.10f，误差=%.4e\n',I_hm,abs(I_hm-I_exact4));
+x_hit=rand(1,N4); y_hit=rand(1,N4);  % 逐行注释：生成随机数组；rand 为均匀分布，randn 为标准正态分布，参数决定数组尺寸。
+hits=sum(y_hit<=f4(x_hit));  % 逐行注释：sum 求和；对向量求所有元素之和，对矩阵默认按列求和。
+I_hm=hits/N4;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fprintf('随机投点法: I=%.10f，误差=%.4e\n',I_hm,abs(I_hm-I_exact4));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
-x_smp=rand(1,N4);
-I_sm=mean(f4(x_smp));
-fprintf('样本均值法: I=%.10f，误差=%.4e\n\n',I_sm,abs(I_sm-I_exact4));
+x_smp=rand(1,N4);  % 逐行注释：生成随机数组；rand 为均匀分布，randn 为标准正态分布，参数决定数组尺寸。
+I_sm=mean(f4(x_smp));  % 逐行注释：mean 求平均值；Monte Carlo 和误差统计中常用来估计数学期望。
+fprintf('样本均值法: I=%.10f，误差=%.4e\n\n',I_sm,abs(I_sm-I_exact4));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % 收敛分析
-N_list4=round(logspace(2,5,40));
-err_hit4=zeros(1,length(N_list4)); err_smp4=zeros(1,length(N_list4));
-hit_all4=(y_hit<=f4(x_hit)); fval_all4=f4(x_smp);
-cumhit4=cumsum(hit_all4); cumfv4=cumsum(fval_all4);
-for k=1:length(N_list4)
-    Nk=N_list4(k);
-    err_hit4(k)=abs(cumhit4(Nk)/Nk-I_exact4);
-    err_smp4(k)=abs(cumfv4(Nk)/Nk-I_exact4);
-end
-std_hit4=sqrt(I_exact4*(1-I_exact4)./N_list4);
-var_f4=(1-exp(-2))/2-I_exact4^2;
-std_smp4=sqrt(var_f4./N_list4);
+N_list4=round(logspace(2,5,40));  % 逐行注释：round 四舍五入取整；常用于把理论样本数或区间数变为整数。
+err_hit4=zeros(1,length(N_list4)); err_smp4=zeros(1,length(N_list4));  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+hit_all4=(y_hit<=f4(x_hit)); fval_all4=f4(x_smp);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+cumhit4=cumsum(hit_all4); cumfv4=cumsum(fval_all4);  % 逐行注释：cumsum 做累积求和；第 k 个元素表示前 k 项总和，适合做逐步收敛曲线。
+for k=1:length(N_list4)  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    Nk=N_list4(k);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    err_hit4(k)=abs(cumhit4(Nk)/Nk-I_exact4);  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
+    err_smp4(k)=abs(cumfv4(Nk)/Nk-I_exact4);  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+std_hit4=sqrt(I_exact4*(1-I_exact4)./N_list4);  % 逐行注释：sqrt 开平方；常用于由均方误差得到均方根误差。
+var_f4=(1-exp(-2))/2-I_exact4^2;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+std_smp4=sqrt(var_f4./N_list4);  % 逐行注释：sqrt 开平方；常用于由均方误差得到均方根误差。
 
 %% 绘图5：Monte Carlo 积分
-fig5=figure('Position',[50 50 1100 800]);
-subplot(2,3,1);
-xc4=linspace(0,1,300); yc4=f4(xc4);
-fill([xc4,fliplr(xc4)],[yc4,zeros(1,300)],[0.65 0.85 0.95],'EdgeColor','b','LineWidth',2);
-hold on; plot(xc4,yc4,'b-','LineWidth',2);
-text(0.35,0.3,sprintf('面积=%.6f',I_exact4),'FontSize',12,'Color','b','FontWeight','bold');
-xlabel('x'); ylabel('y=e^{-x}'); title('积分区域（曲线下阴影）');
-xlim([0,1]); ylim([0,1.1]); grid on;
+fig5=figure('Position',[50 50 1100 800]);  % 逐行注释：创建新的图形窗口；属性名-属性值成对出现，用来设置窗口标题、位置等。
+subplot(2,3,1);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+xc4=linspace(0,1,300); yc4=f4(xc4);  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+fill([xc4,fliplr(xc4)],[yc4,zeros(1,300)],[0.65 0.85 0.95],'EdgeColor','b','LineWidth',2);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+hold on; plot(xc4,yc4,'b-','LineWidth',2);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+text(0.35,0.3,sprintf('面积=%.6f',I_exact4),'FontSize',12,'Color','b','FontWeight','bold');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlabel('x'); ylabel('y=e^{-x}'); title('积分区域（曲线下阴影）');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlim([0,1]); ylim([0,1.1]); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,2);
-Ns2=2000;
-fill([xc4,fliplr(xc4)],[yc4,zeros(1,300)],[0.9 0.95 0.98],'EdgeColor','none');
-hold on;
-xsh=x_hit(1:Ns2); ysh=y_hit(1:Ns2); hsh=hit_all4(1:Ns2);
-plot(xsh(~hsh),ysh(~hsh),'r.','MarkerSize',2,'DisplayName','未命中');
-plot(xsh(hsh), ysh(hsh), 'b.','MarkerSize',2,'DisplayName','命中');
-plot(xc4,yc4,'k-','LineWidth',1.5);
-xlabel('x'); ylabel('y'); title(sprintf('随机投点法示意(N=%d)',Ns2));
-xlim([0,1]); ylim([0,1]);
+subplot(2,3,2);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+Ns2=2000;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fill([xc4,fliplr(xc4)],[yc4,zeros(1,300)],[0.9 0.95 0.98],'EdgeColor','none');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xsh=x_hit(1:Ns2); ysh=y_hit(1:Ns2); hsh=hit_all4(1:Ns2);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+plot(xsh(~hsh),ysh(~hsh),'r.','MarkerSize',2,'DisplayName','未命中');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+plot(xsh(hsh), ysh(hsh), 'b.','MarkerSize',2,'DisplayName','命中');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+plot(xc4,yc4,'k-','LineWidth',1.5);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('x'); ylabel('y'); title(sprintf('随机投点法示意(N=%d)',Ns2));  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlim([0,1]); ylim([0,1]);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,3);
-histogram(f4(x_smp(1:5000)),25,'Normalization','pdf','FaceColor',[0.4 0.7 0.4],'EdgeColor','white');
-hold on;
-tr4=linspace(exp(-1),1,200); pdf4=1./tr4;
-plot(tr4,pdf4,'r-','LineWidth',2);
-xline(I_exact4,'b--','LineWidth',1.5);
-xlabel('f(x)=e^{-x}的取值'); ylabel('概率密度');
-title('样本均值法：f(X)的分布');
+subplot(2,3,3);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+histogram(f4(x_smp(1:5000)),25,'Normalization','pdf','FaceColor',[0.4 0.7 0.4],'EdgeColor','white');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+tr4=linspace(exp(-1),1,200); pdf4=1./tr4;  % 逐行注释：linspace 生成等间距点；语法 linspace(起点,终点,点数)，常用于采样和绘图。
+plot(tr4,pdf4,'r-','LineWidth',2);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xline(I_exact4,'b--','LineWidth',1.5);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlabel('f(x)=e^{-x}的取值'); ylabel('概率密度');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('样本均值法：f(X)的分布');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,4);
-loglog(N_list4,err_hit4,'r-','LineWidth',1.5,'DisplayName','投点法误差');
-hold on;
-loglog(N_list4,err_smp4,'b-','LineWidth',1.5,'DisplayName','样本均值法误差');
-loglog(N_list4,std_hit4,'r--','LineWidth',1.0,'DisplayName','投点法理论σ');
-loglog(N_list4,std_smp4,'b--','LineWidth',1.0,'DisplayName','样本均值法理论σ');
-Nrf=[1e2,1e5]; loglog(Nrf,0.5./sqrt(Nrf),'k:','LineWidth',1.2,'DisplayName','O(N^{-1/2})');
-xlabel('样本数 N'); ylabel('误差'); title('两种方法收敛速度比较');
-legend('Location','SouthWest','FontSize',7); grid on;
+subplot(2,3,4);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+loglog(N_list4,err_hit4,'r-','LineWidth',1.5,'DisplayName','投点法误差');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+loglog(N_list4,err_smp4,'b-','LineWidth',1.5,'DisplayName','样本均值法误差');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+loglog(N_list4,std_hit4,'r--','LineWidth',1.0,'DisplayName','投点法理论σ');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+loglog(N_list4,std_smp4,'b--','LineWidth',1.0,'DisplayName','样本均值法理论σ');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+Nrf=[1e2,1e5]; loglog(Nrf,0.5./sqrt(Nrf),'k:','LineWidth',1.2,'DisplayName','O(N^{-1/2})');  % 逐行注释：包含点运算 .^、.* 或 ./；表示逐元素幂、乘、除，是 MATLAB 向量化计算的核心语法。
+xlabel('样本数 N'); ylabel('误差'); title('两种方法收敛速度比较');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+legend('Location','SouthWest','FontSize',7); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,5);
-Nlv=min(N4,5e4); na5=1:Nlv;
-lh5=cumhit4(1:Nlv)./na5; ls5=cumfv4(1:Nlv)./na5;
-plot(na5,lh5,'r-','LineWidth',0.8,'DisplayName','投点法');
-hold on; plot(na5,ls5,'b-','LineWidth',0.8,'DisplayName','样本均值法');
-yline(I_exact4,'k--','LineWidth',1.5,DisplayName=sprintf('精确值=%.6f',I_exact4));
-xlabel('样本数 N'); ylabel('I 累积估计值');
-title('实时收敛（前5万次）');
-legend('Location','NorthEast','FontSize',8); grid on;
-ylim([I_exact4-0.05, I_exact4+0.05]);
+subplot(2,3,5);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+Nlv=min(N4,5e4); na5=1:Nlv;  % 逐行注释：min 取最小值；对数组时按元素或按列比较，常用于裁剪范围。
+lh5=cumhit4(1:Nlv)./na5; ls5=cumfv4(1:Nlv)./na5;  % 逐行注释：包含点运算 .^、.* 或 ./；表示逐元素幂、乘、除，是 MATLAB 向量化计算的核心语法。
+plot(na5,lh5,'r-','LineWidth',0.8,'DisplayName','投点法');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+hold on; plot(na5,ls5,'b-','LineWidth',0.8,'DisplayName','样本均值法');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+yline(I_exact4,'k--','LineWidth',1.5,DisplayName=sprintf('精确值=%.6f',I_exact4));  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlabel('样本数 N'); ylabel('I 累积估计值');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('实时收敛（前5万次）');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+legend('Location','NorthEast','FontSize',8); grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+ylim([I_exact4-0.05, I_exact4+0.05]);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2,3,6);
-Mr6=500; Ne6=500;
-ph6=zeros(1,Mr6); ps6=zeros(1,Mr6);
-for m=1:Mr6
-    xh6=rand(1,Ne6); yh6=rand(1,Ne6);
-    ph6(m)=sum(yh6<=f4(xh6))/Ne6;
-    xs6=rand(1,Ne6); ps6(m)=mean(f4(xs6));
-end
-histogram(ph6,25,'Normalization','pdf','FaceColor',[1 0.6 0.6],'EdgeColor','white','FaceAlpha',0.6,...
-    'DisplayName',sprintf('投点法(σ=%.4f)',std(ph6)));
-hold on;
-histogram(ps6,25,'Normalization','pdf','FaceColor',[0.6 0.7 1],'EdgeColor','white','FaceAlpha',0.6,...
-    'DisplayName',sprintf('样本均值法(σ=%.4f)',std(ps6)));
-xline(I_exact4,'k--','LineWidth',2);
-xlabel('I 估计值'); ylabel('概率密度');
-title(sprintf('估计值分布对比(M=%d,N=%d)',Mr6,Ne6));
-legend('Location','NorthWest','FontSize',7);
-sgtitle('题目4：Monte Carlo 计算 I=∫₀¹e^{-x}dx');
-print(fig5, fullfile(outdir,'fig4_monte_carlo'), '-dpng', '-r150');
-fprintf('图5已保存\n\n');
-close all;
+subplot(2,3,6);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+Mr6=500; Ne6=500;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+ph6=zeros(1,Mr6); ps6=zeros(1,Mr6);  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+for m=1:Mr6  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    xh6=rand(1,Ne6); yh6=rand(1,Ne6);  % 逐行注释：生成随机数组；rand 为均匀分布，randn 为标准正态分布，参数决定数组尺寸。
+    ph6(m)=sum(yh6<=f4(xh6))/Ne6;  % 逐行注释：sum 求和；对向量求所有元素之和，对矩阵默认按列求和。
+    xs6=rand(1,Ne6); ps6(m)=mean(f4(xs6));  % 逐行注释：生成随机数组；rand 为均匀分布，randn 为标准正态分布，参数决定数组尺寸。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+histogram(ph6,25,'Normalization','pdf','FaceColor',[1 0.6 0.6],'EdgeColor','white','FaceAlpha',0.6,...  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+    'DisplayName',sprintf('投点法(σ=%.4f)',std(ph6)));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+histogram(ps6,25,'Normalization','pdf','FaceColor',[0.6 0.7 1],'EdgeColor','white','FaceAlpha',0.6,...  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+    'DisplayName',sprintf('样本均值法(σ=%.4f)',std(ps6)));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+xline(I_exact4,'k--','LineWidth',2);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlabel('I 估计值'); ylabel('概率密度');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title(sprintf('估计值分布对比(M=%d,N=%d)',Mr6,Ne6));  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+legend('Location','NorthWest','FontSize',7);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+sgtitle('题目4：Monte Carlo 计算 I=∫₀¹e^{-x}dx');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+print(fig5, fullfile(outdir,'fig4_monte_carlo'), '-dpng', '-r150');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+fprintf('图5已保存\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+close all;  % 逐行注释：关闭所有已经打开的图形窗口，避免旧图影响本次绘图。
 
-fprintf('=== 所有图片已保存至 %s ===\n', outdir);
+fprintf('=== 所有图片已保存至 %s ===\n', outdir);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 %% ---- 局部辅助函数 ----
-function S=simp1_local(f,a,b); m=(a+b)/2; S=(b-a)/6*(f(a)+4*f(m)+f(b)); end
-function [I,cnt]=adapt_simp_local(f,a,b,tol,S_ab)
-    m=(a+b)/2; Sam=simp1_local(f,a,m); Smb=simp1_local(f,m,b);
-    S2=Sam+Smb; cnt=3;
-    if abs(S2-S_ab)/15<=tol; I=S2+(S2-S_ab)/15;
-    else
-        [Il,cl]=adapt_simp_local(f,a,m,tol/2,Sam);
-        [Ir,cr]=adapt_simp_local(f,m,b,tol/2,Smb);
-        I=Il+Ir; cnt=cnt+cl+cr;
-    end
-end
-function y=planck_local(x)
-    if x<=0; y=0; elseif x>500; y=0; elseif x>37; y=x^3*exp(-x);
-    else; y=x^3/(exp(x)+1); end
-end
-function S=simp_one_local(f,a,b); m=(a+b)/2; S=(b-a)/6*(f(a)+4*f(m)+f(b)); end
-function [I,cnt]=adaptive_simp_local(f,a,b,tol,S_ab)
-    m=(a+b)/2; Sam=simp_one_local(f,a,m); Smb=simp_one_local(f,m,b);
-    S2=Sam+Smb; cnt=3;
-    if abs(S2-S_ab)/15<=tol; I=S2+(S2-S_ab)/15;
-    else
-        [Il,cl]=adaptive_simp_local(f,a,m,tol/2,Sam);
-        [Ir,cr]=adaptive_simp_local(f,m,b,tol/2,Smb);
-        I=Il+Ir; cnt=cnt+cl+cr;
-    end
-end
+function S=simp1_local(f,a,b); m=(a+b)/2; S=(b-a)/6*(f(a)+4*f(m)+f(b)); end  % 逐行注释：定义局部函数；function 后写输出变量、函数名和输入参数，供本文件前面的脚本调用。
+function [I,cnt]=adapt_simp_local(f,a,b,tol,S_ab)  % 逐行注释：定义局部函数；function 后写输出变量、函数名和输入参数，供本文件前面的脚本调用。
+    m=(a+b)/2; Sam=simp1_local(f,a,m); Smb=simp1_local(f,m,b);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    S2=Sam+Smb; cnt=3;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    if abs(S2-S_ab)/15<=tol; I=S2+(S2-S_ab)/15;  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+    else  % 逐行注释：当前面 if/elseif 都不满足时执行这个兜底分支。
+        [Il,cl]=adapt_simp_local(f,a,m,tol/2,Sam);  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
+        [Ir,cr]=adapt_simp_local(f,m,b,tol/2,Smb);  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
+        I=Il+Ir; cnt=cnt+cl+cr;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+function y=planck_local(x)  % 逐行注释：定义局部函数；function 后写输出变量、函数名和输入参数，供本文件前面的脚本调用。
+    if x<=0; y=0; elseif x>500; y=0; elseif x>37; y=x^3*exp(-x);  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+    else; y=x^3/(exp(x)+1); end  % 逐行注释：当前面 if/elseif 都不满足时执行这个兜底分支。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+function S=simp_one_local(f,a,b); m=(a+b)/2; S=(b-a)/6*(f(a)+4*f(m)+f(b)); end  % 逐行注释：定义局部函数；function 后写输出变量、函数名和输入参数，供本文件前面的脚本调用。
+function [I,cnt]=adaptive_simp_local(f,a,b,tol,S_ab)  % 逐行注释：定义局部函数；function 后写输出变量、函数名和输入参数，供本文件前面的脚本调用。
+    m=(a+b)/2; Sam=simp_one_local(f,a,m); Smb=simp_one_local(f,m,b);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    S2=Sam+Smb; cnt=3;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    if abs(S2-S_ab)/15<=tol; I=S2+(S2-S_ab)/15;  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+    else  % 逐行注释：当前面 if/elseif 都不满足时执行这个兜底分支。
+        [Il,cl]=adaptive_simp_local(f,a,m,tol/2,Sam);  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
+        [Ir,cr]=adaptive_simp_local(f,m,b,tol/2,Smb);  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
+        I=Il+Ir; cnt=cnt+cl+cr;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。

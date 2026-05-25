@@ -23,379 +23,379 @@
 %  → 用 IFFT 重建信号，实现有损压缩
 %  =========================================================
 
-clear; close all; clc;
+clear; close all; clc;  % 逐行注释：清空工作区变量、关闭所有图窗、清空命令行，保证脚本从干净环境开始运行。
 
-fprintf('==============================================\n');
-fprintf('  第三章上机作业4：FFT 算法实现与信号压缩\n');
-fprintf('==============================================\n\n');
+fprintf('==============================================\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('  第三章上机作业4：FFT 算法实现与信号压缩\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('==============================================\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 %% =========================================================
 %  第一部分：实现并验证 Cooley-Tukey 基-2 FFT 算法
 %  =========================================================
 
-fprintf('===== 第一部分：Cooley-Tukey 基-2 FFT 算法验证 =====\n\n');
+fprintf('===== 第一部分：Cooley-Tukey 基-2 FFT 算法验证 =====\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % ---- 正确性验证：与 MATLAB 内置 fft 结果对比 ----
 % 选择 N=64（2^6），包含复数输入以充分测试
-N_test = 64;
+N_test = 64;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 % randn(1, N)：生成 1×N 的标准正态随机向量（实部）
 % 1i：MATLAB 中的虚数单位 i（避免与变量名 i 冲突用 1i）
-x_test = randn(1, N_test) + 1i * randn(1, N_test);  % 复数测试信号
+x_test = randn(1, N_test) + 1i * randn(1, N_test);  % 复数测试信号  % 逐行注释：生成随机数组；rand 为均匀分布，randn 为标准正态分布，参数决定数组尺寸。
 
 % 调用自实现 FFT（局部函数，定义在本文件末）
-X_my  = my_fft(x_test);
+X_my  = my_fft(x_test);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 % 调用 MATLAB 内置 FFT（使用高度优化的 FFTW 库）
 % fft(x)：对向量 x 计算离散 Fourier 变换，返回等长复数向量
 % 语法：X = fft(x) 或 X = fft(x, N)（第二参数指定 DFT 长度，不足补零）
-X_ref = fft(x_test);
+X_ref = fft(x_test);  % 逐行注释：Fourier 变换相关调用；fft/fft2 转到频域，ifft/ifft2 从频域重建。
 
 % 验证精度：计算两者之差的最大绝对值
 % max(abs(v))：向量 v 各元素取模（复数的模），再取最大值
-err_verify = max(abs(X_my - X_ref));
-fprintf('FFT 算法验证：\n');
-fprintf('  测试信号长度 N = %d（= 2^%d）\n', N_test, log2(N_test));
-fprintf('  自实现 FFT 与 MATLAB 内置 fft 的最大误差 = %.4e\n', err_verify);
-if err_verify < 1e-10
-    fprintf('  验证通过：误差在数值精度范围内（< 1e-10）\n\n');
-else
-    fprintf('  警告：误差偏大，请检查 FFT 实现\n\n');
-end
+err_verify = max(abs(X_my - X_ref));  % 逐行注释：max 取最大值；也可和另一个数比较实现下界保护。
+fprintf('FFT 算法验证：\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('  测试信号长度 N = %d（= 2^%d）\n', N_test, log2(N_test));  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('  自实现 FFT 与 MATLAB 内置 fft 的最大误差 = %.4e\n', err_verify);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+if err_verify < 1e-10  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+    fprintf('  验证通过：误差在数值精度范围内（< 1e-10）\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+else  % 逐行注释：当前面 if/elseif 都不满足时执行这个兜底分支。
+    fprintf('  警告：误差偏大，请检查 FFT 实现\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
 
 % ---- 运算速度对比（DFT vs FFT）----
-fprintf('运算速度对比（DFT vs FFT）：\n');
-N_speed = 256;   % 测试规模
+fprintf('运算速度对比（DFT vs FFT）：\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+N_speed = 256;   % 测试规模  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 
 % 直接 DFT 实现（O(N^2)）
-x_speed = randn(1, N_speed);
+x_speed = randn(1, N_speed);  % 逐行注释：生成随机数组；rand 为均匀分布，randn 为标准正态分布，参数决定数组尺寸。
 
 % tic/toc：MATLAB 计时函数
 % tic：启动秒表计时器
 % toc：返回自上次 tic 以来经过的时间（秒）
-tic;
-X_dft = zeros(1, N_speed);
-for k = 0:N_speed-1
-    n_vec = 0:N_speed-1;  % 时域下标 n
+tic;  % 逐行注释：启动计时器；通常和 toc 配合测量一段代码运行时间。
+X_dft = zeros(1, N_speed);  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+for k = 0:N_speed-1  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    n_vec = 0:N_speed-1;  % 时域下标 n  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
     % 直接 DFT 定义：X[k] = Σ_n x[n] · e^{-2πi·kn/N}
-    X_dft(k+1) = sum(x_speed .* exp(-2i*pi*k*n_vec/N_speed));
+    X_dft(k+1) = sum(x_speed .* exp(-2i*pi*k*n_vec/N_speed));  % 逐行注释：sum 求和；对向量求所有元素之和，对矩阵默认按列求和。
     % sum(v)：向量 v 的所有元素之和
     % exp(-2i*pi*...)：计算复数指数（旋转因子），.* 是逐元素乘法
-end
-time_dft = toc;  % 记录 DFT 耗时
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+time_dft = toc;  % 记录 DFT 耗时  % 逐行注释：读取从上一次 tic 开始经过的时间，单位为秒。
 
-tic;
-X_fft = my_fft(x_speed);
-time_fft = toc;  % 记录 FFT 耗时
+tic;  % 逐行注释：启动计时器；通常和 toc 配合测量一段代码运行时间。
+X_fft = my_fft(x_speed);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+time_fft = toc;  % 记录 FFT 耗时  % 逐行注释：读取从上一次 tic 开始经过的时间，单位为秒。
 
-fprintf('  信号长度 N = %d：\n', N_speed);
-fprintf('  直接 DFT 耗时 = %.4f 秒（O(N^2) = O(%d)）\n', time_dft, N_speed^2);
-fprintf('  自实现 FFT 耗时 = %.6f 秒（O(N·log₂N) = O(%d)）\n', ...
-    time_fft, N_speed * log2(N_speed));
-fprintf('  加速比 = %.1f 倍\n\n', time_dft / time_fft);
+fprintf('  信号长度 N = %d：\n', N_speed);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('  直接 DFT 耗时 = %.4f 秒（O(N^2) = O(%d)）\n', time_dft, N_speed^2);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('  自实现 FFT 耗时 = %.6f 秒（O(N·log₂N) = O(%d)）\n', ...  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+    time_fft, N_speed * log2(N_speed));  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+fprintf('  加速比 = %.1f 倍\n\n', time_dft / time_fft);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 %% =========================================================
 %  第二部分：音频信号压缩示例
 %  =========================================================
 
-fprintf('===== 第二部分：音频信号的 FFT 频域压缩 =====\n\n');
+fprintf('===== 第二部分：音频信号的 FFT 频域压缩 =====\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % ---- 生成合成音频信号（模拟真实音频的多频率叠加特性）----
-Fs = 1000;         % 采样频率（Hz）：每秒采样 Fs 个点
+Fs = 1000;         % 采样频率（Hz）：每秒采样 Fs 个点  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 % Fs 需满足 Nyquist 采样定理：Fs > 2 × 最高频率（这里最高200Hz，Fs=1000≥400）
 
 % t：时间轴，从 0 到 1 秒，采样间隔 1/Fs
 % 语法：start : step : stop（生成等差数列）
-t = 0 : 1/Fs : 1 - 1/Fs;   % 长度为 Fs = 1000 的时间向量（秒）
-N_sig = length(t);           % 信号点数
+t = 0 : 1/Fs : 1 - 1/Fs;   % 长度为 Fs = 1000 的时间向量（秒）  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+N_sig = length(t);           % 信号点数  % 逐行注释：length 返回数组最长维度的长度；对向量就是元素个数。
 
 % 合成信号：主要由三个正弦波叠加，加少量噪声
 % 数值分析含义：模拟真实信号——能量集中在少数频率分量，FFT 后大多数系数接近0
 % sin(2*pi*f*t)：频率为 f Hz 的正弦波（2π·f·t 是角频率×时间 = 相位）
-x_signal = 2.0 * sin(2*pi*50*t)   ...  % 主频 50 Hz，幅度 2.0
-          + 1.0 * sin(2*pi*120*t)  ...  % 120 Hz 分量，幅度 1.0
-          + 0.5 * sin(2*pi*200*t)  ...  % 200 Hz 分量，幅度 0.5
-          + 0.2 * randn(size(t));        % 加性高斯白噪声（噪声很小）
+x_signal = 2.0 * sin(2*pi*50*t)   ...  % 主频 50 Hz，幅度 2.0  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+          + 1.0 * sin(2*pi*120*t)  ...  % 120 Hz 分量，幅度 1.0  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+          + 0.5 * sin(2*pi*200*t)  ...  % 200 Hz 分量，幅度 0.5  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+          + 0.2 * randn(size(t));        % 加性高斯白噪声（噪声很小）  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
 % randn(size(t))：生成与 t 等大小的标准正态随机向量
 % ... 是 MATLAB 续行符（一条语句分多行书写）
 
-fprintf('合成音频信号：\n');
-fprintf('  采样频率 Fs = %d Hz\n', Fs);
-fprintf('  信号长度 N = %d 点（时长 %.1f 秒）\n', N_sig, N_sig/Fs);
-fprintf('  成分：50 Hz（幅度2.0）+ 120 Hz（幅度1.0）+ 200 Hz（幅度0.5）+ 噪声\n\n');
+fprintf('合成音频信号：\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('  采样频率 Fs = %d Hz\n', Fs);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('  信号长度 N = %d 点（时长 %.1f 秒）\n', N_sig, N_sig/Fs);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('  成分：50 Hz（幅度2.0）+ 120 Hz（幅度1.0）+ 200 Hz（幅度0.5）+ 噪声\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % ---- 补零到最近的2的幂（提高 FFT 效率）----
 % nextpow2(n)：返回满足 2^p ≥ n 的最小整数 p
 % 语法：p = nextpow2(n)
-N_fft = 2^nextpow2(N_sig);
+N_fft = 2^nextpow2(N_sig);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 % 补零（Zero-Padding）：在信号末尾填充零到 N_fft 个点
 % 数值分析含义：补零不改变信号信息，但提高频率分辨率，并使长度为2的幂（FFT最优）
-x_padded = [x_signal, zeros(1, N_fft - N_sig)];
+x_padded = [x_signal, zeros(1, N_fft - N_sig)];  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 % [A, B]：水平拼接向量 A 和 B；zeros(1, n)：1×n 全零行向量
-fprintf('信号补零：%d → %d 点（= 2^%d，满足基-2 FFT 要求）\n\n', ...
-    N_sig, N_fft, nextpow2(N_sig));
+fprintf('信号补零：%d → %d 点（= 2^%d，满足基-2 FFT 要求）\n\n', ...  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+    N_sig, N_fft, nextpow2(N_sig));  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
 
 % ---- 计算 FFT ----
-X_freq = my_fft(x_padded);   % 自实现 FFT（复数数组，长度 N_fft）
+X_freq = my_fft(x_padded);   % 自实现 FFT（复数数组，长度 N_fft）  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 % X_freq(k+1) 是频率 k·Fs/N_fft Hz 处的复数 Fourier 系数
 
 % ---- 频率轴（单边，只取 0 ~ Fs/2）----
 % 对实数信号，FFT 输出具有共轭对称性：X[N-k] = conj(X[k])
 % 只需取前半部分（单边谱）：k=0,...,N_fft/2-1，对应频率 0,...,Fs/2 Hz
 % 频率分辨率 = Fs / N_fft（Hz/点）
-freq_axis = (0 : N_fft/2 - 1) * Fs / N_fft;
+freq_axis = (0 : N_fft/2 - 1) * Fs / N_fft;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 % (0:N_fft/2-1)：整数序列 0,1,...,N_fft/2-1
 % * Fs/N_fft：换算为 Hz（每个频率间隔 = 采样率/总点数）
 
 % ---- 幅度谱（单边，归一化）----
-X_mag = abs(X_freq(1 : N_fft/2));  % 取前半部分的复数模（幅度）
+X_mag = abs(X_freq(1 : N_fft/2));  % 取前半部分的复数模（幅度）  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
 % abs(z)：复数 z 的模（幅度），即 |z| = sqrt(实部^2 + 虚部^2)
 % 工程上有时乘以 2/N_fft 归一化，这里只看相对幅度
 
-fprintf('频谱分析（前5个主要频率分量）：\n');
-[sorted_mag, sort_idx] = sort(X_mag, 'descend');
+fprintf('频谱分析（前5个主要频率分量）：\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+[sorted_mag, sort_idx] = sort(X_mag, 'descend');  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
 % sort(v, 'descend')：对向量 v 降序排列
 % 返回两个值：sorted_mag（排序后的值）和 sort_idx（原始下标）
-for k = 1:5
-    fprintf('  第%d大：f = %6.2f Hz, 幅度 = %.2f\n', k, ...
-        freq_axis(sort_idx(k)), sorted_mag(k));
-end
-fprintf('\n');
+for k = 1:5  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    fprintf('  第%d大：f = %6.2f Hz, 幅度 = %.2f\n', k, ...  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+        freq_axis(sort_idx(k)), sorted_mag(k));  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+fprintf('\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 %% =========================================================
 %  频域截断压缩：保留幅度最大的 K 个系数
 %  =========================================================
 
-fprintf('===== 频域截断压缩实验 =====\n\n');
+fprintf('===== 频域截断压缩实验 =====\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % 测试三种压缩比（保留系数的百分比）
-compress_ratios = [0.20, 0.05, 0.01];  % 保留 20%, 5%, 1% 的系数
-n_ratios = length(compress_ratios);
+compress_ratios = [0.20, 0.05, 0.01];  % 保留 20%, 5%, 1% 的系数  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+n_ratios = length(compress_ratios);  % 逐行注释：length 返回数组最长维度的长度；对向量就是元素个数。
 
 % 预分配存储各压缩比的结果
-fit_signals = cell(n_ratios, 1);   % cell 数组：存储重建信号
-snr_results = zeros(n_ratios, 1);  % 信噪比
-rms_results = zeros(n_ratios, 1);  % 重建误差
+fit_signals = cell(n_ratios, 1);   % cell 数组：存储重建信号  % 逐行注释：创建 cell 数组；cell 可以用来存放长度或类型不同的数据，读取内容时用花括号 {}。
+snr_results = zeros(n_ratios, 1);  % 信噪比  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+rms_results = zeros(n_ratios, 1);  % 重建误差  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
 
-for r_idx = 1:n_ratios
-    ratio = compress_ratios(r_idx);    % 当前保留比例
-    K = max(1, round(ratio * N_fft));  % 保留的系数个数（至少1个）
+for r_idx = 1:n_ratios  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    ratio = compress_ratios(r_idx);    % 当前保留比例  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    K = max(1, round(ratio * N_fft));  % 保留的系数个数（至少1个）  % 逐行注释：max 取最大值；也可和另一个数比较实现下界保护。
     % round(x)：四舍五入取整；max(a,b)：取两值的较大值
 
     % ---- 选取幅度最大的 K 个频率系数 ----
     % 对完整双边谱操作（保持实数信号的共轭对称性）
-    X_mag_full = abs(X_freq);   % 完整幅度谱（N_fft 个点，双边）
-    [~, idx_sorted] = sort(X_mag_full, 'descend');
+    X_mag_full = abs(X_freq);   % 完整幅度谱（N_fft 个点，双边）  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
+    [~, idx_sorted] = sort(X_mag_full, 'descend');  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
     % ~ 是占位符（忽略 sort 的第一个返回值，只取下标 idx_sorted）
 
     % 创建稀疏频谱：只保留最大 K 个系数，其余清零
-    X_compressed = zeros(size(X_freq));   % zeros(size(v))：生成与 v 等大的全零数组
-    X_compressed(idx_sorted(1:K)) = X_freq(idx_sorted(1:K));
+    X_compressed = zeros(size(X_freq));   % zeros(size(v))：生成与 v 等大的全零数组  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+    X_compressed(idx_sorted(1:K)) = X_freq(idx_sorted(1:K));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
     % 只保留幅度排名前 K 的频率系数，其余为 0
 
     % ---- 逆 FFT 重建信号 ----
     % my_ifft：利用正 FFT 实现逆 FFT（详见局部函数）
-    x_reconstructed = real(my_ifft(X_compressed));
+    x_reconstructed = real(my_ifft(X_compressed));  % 逐行注释：real 取复数实部；常用于消除 IFFT 后由舍入误差产生的微小虚部。
     % real(z)：取复数的实部（消除数值误差引入的微小虚部）
-    x_reconstructed = x_reconstructed(1:N_sig);  % 截取到原信号长度
+    x_reconstructed = x_reconstructed(1:N_sig);  % 截取到原信号长度  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 
     % ---- 计算重建质量指标 ----
     % 均方根误差（RMS）：衡量重建信号与原信号的差异
-    rms_err = sqrt(mean((x_reconstructed - x_signal).^2));
+    rms_err = sqrt(mean((x_reconstructed - x_signal).^2));  % 逐行注释：sqrt 开平方；常用于由均方误差得到均方根误差。
 
     % 信噪比（Signal-to-Noise Ratio，SNR），单位 dB：
     % SNR = 20·log10(||信号||_2 / ||误差||_2)
     % 越大表示重建质量越好（SNR > 20dB 通常可接受）
     % norm(v)：向量 v 的 2-范数 = sqrt(Σv_i^2)
     % log10(x)：以 10 为底的对数
-    snr_db = 20 * log10(norm(x_signal) / (norm(x_reconstructed - x_signal) + 1e-20));
+    snr_db = 20 * log10(norm(x_signal) / (norm(x_reconstructed - x_signal) + 1e-20));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
     % + 1e-20：防止分母为零
 
-    rms_results(r_idx) = rms_err;
-    snr_results(r_idx) = snr_db;
-    fit_signals{r_idx} = x_reconstructed;
+    rms_results(r_idx) = rms_err;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    snr_results(r_idx) = snr_db;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    fit_signals{r_idx} = x_reconstructed;  % 逐行注释：使用花括号访问 cell 内容；与圆括号索引不同，{} 取出 cell 里真正存放的数据。
 
-    fprintf('保留比例 %5.1f%%（K = %4d 个系数）：RMS = %.4f, SNR = %.1f dB\n', ...
-        ratio*100, K, rms_err, snr_db);
-end
-fprintf('\n');
+    fprintf('保留比例 %5.1f%%（K = %4d 个系数）：RMS = %.4f, SNR = %.1f dB\n', ...  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+        ratio*100, K, rms_err, snr_db);  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+fprintf('\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 %% =========================================================
 %  第三部分：图像压缩示例（使用二维 FFT）
 %  =========================================================
 
-fprintf('===== 第三部分：图像的 FFT 压缩（示例）=====\n\n');
+fprintf('===== 第三部分：图像的 FFT 压缩（示例）=====\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % 生成简单的测试图像（实际使用中可替换为 imread 读入的真实图像）
 % 构造 64×64 的合成图像：多个频率的正弦条纹
-Nx = 64;   Ny = 64;   % 图像尺寸（必须是2的幂以便 FFT）
-[X_img, Y_img] = meshgrid(0:Nx-1, 0:Ny-1);
+Nx = 64;   Ny = 64;   % 图像尺寸（必须是2的幂以便 FFT）  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+[X_img, Y_img] = meshgrid(0:Nx-1, 0:Ny-1);  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
 % meshgrid(x, y)：生成网格坐标矩阵
 % X_img(i,j) = x(j)（列方向）；Y_img(i,j) = y(i)（行方向）
 
 % 合成图像：低频和高频正弦条纹的叠加
-img_orig = 128 + 60*sin(2*pi*3*X_img/Nx) + 40*cos(2*pi*5*Y_img/Ny) ...
-           + 20*sin(2*pi*7*(X_img+Y_img)/Nx) + 10*randn(Ny,Nx);
+img_orig = 128 + 60*sin(2*pi*3*X_img/Nx) + 40*cos(2*pi*5*Y_img/Ny) ...  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+           + 20*sin(2*pi*7*(X_img+Y_img)/Nx) + 10*randn(Ny,Nx);  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
 % 128：灰度中值（使图像在0-255范围内）
-img_orig = min(255, max(0, img_orig));  % 裁剪到合法灰度范围 [0, 255]
+img_orig = min(255, max(0, img_orig));  % 裁剪到合法灰度范围 [0, 255]  % 逐行注释：min 取最小值；对数组时按元素或按列比较，常用于裁剪范围。
 % min/max：逐元素裁剪（MATLAB 对矩阵操作时逐元素处理）
 
-fprintf('合成测试图像：%d × %d 像素\n', Nx, Ny);
+fprintf('合成测试图像：%d × %d 像素\n', Nx, Ny);  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 % 二维 FFT（使用 MATLAB 内置 fft2，因为自实现 FFT 按行/列分解即可）
 % fft2(img)：二维离散 Fourier 变换，等效于先对每列 FFT，再对每行 FFT
 % 数值分析含义：二维 DFT 可分解为多次一维 DFT（可分离性）
 % F = fft2(img) 的元素 F(k+1,l+1) 是空间频率 (k,l) 的复数系数
-F_img = fft2(img_orig);
+F_img = fft2(img_orig);  % 逐行注释：Fourier 变换相关调用；fft/fft2 转到频域，ifft/ifft2 从频域重建。
 
 % 二维频谱中心化（将零频移到中间，便于可视化）
 % fftshift(F)：将 FFT 输出的零频从左上角移到中心
-F_img_shift = fftshift(F_img);
+F_img_shift = fftshift(F_img);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 % 注意：压缩时对未移位的 F_img 操作，fftshift 只用于可视化
 
 % ---- 图像频域压缩 ----
-img_compress_ratios = [0.10, 0.02];   % 保留 10% 和 2% 的频率系数
-fprintf('图像 FFT 压缩（保留不同比例频率系数）：\n');
+img_compress_ratios = [0.10, 0.02];   % 保留 10% 和 2% 的频率系数  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+fprintf('图像 FFT 压缩（保留不同比例频率系数）：\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
-img_reconstructed = cell(length(img_compress_ratios), 1);
-img_snr = zeros(length(img_compress_ratios), 1);
+img_reconstructed = cell(length(img_compress_ratios), 1);  % 逐行注释：创建 cell 数组；cell 可以用来存放长度或类型不同的数据，读取内容时用花括号 {}。
+img_snr = zeros(length(img_compress_ratios), 1);  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
 
-for r_idx = 1:length(img_compress_ratios)
-    ratio = img_compress_ratios(r_idx);
-    K_img = max(1, round(ratio * Nx * Ny));  % 保留的总系数个数
+for r_idx = 1:length(img_compress_ratios)  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    ratio = img_compress_ratios(r_idx);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    K_img = max(1, round(ratio * Nx * Ny));  % 保留的总系数个数  % 逐行注释：max 取最大值；也可和另一个数比较实现下界保护。
     % Nx * Ny：图像总像素数（= 总频率系数数）
 
     % 选取幅度最大的 K_img 个二维频率系数
-    F_flat = F_img(:);    % (:) 将矩阵展开为列向量
-    [~, idx2d] = sort(abs(F_flat), 'descend');   % 按幅度降序排列
+    F_flat = F_img(:);    % (:) 将矩阵展开为列向量  % 逐行注释：使用冒号索引；: 表示取某一维的全部元素，(:) 可把数组拉平成列向量。
+    [~, idx2d] = sort(abs(F_flat), 'descend');   % 按幅度降序排列  % 逐行注释：多输出赋值；方括号左侧一次接收函数返回的多个结果，顺序与函数输出顺序一致。
 
-    F_compressed = zeros(size(F_img));    % 压缩后的频域（全零初始化）
-    F_compressed_flat = F_compressed(:);
-    F_compressed_flat(idx2d(1:K_img)) = F_flat(idx2d(1:K_img));
-    F_compressed = reshape(F_compressed_flat, Ny, Nx);
+    F_compressed = zeros(size(F_img));    % 压缩后的频域（全零初始化）  % 逐行注释：用 zeros 预分配全零数组；提前分配内存比在循环中不断扩容更高效。
+    F_compressed_flat = F_compressed(:);  % 逐行注释：使用冒号索引；: 表示取某一维的全部元素，(:) 可把数组拉平成列向量。
+    F_compressed_flat(idx2d(1:K_img)) = F_flat(idx2d(1:K_img));  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    F_compressed = reshape(F_compressed_flat, Ny, Nx);  % 逐行注释：reshape 改变数组形状但不改变元素顺序；MATLAB 按列优先重排。
     % reshape(v, m, n)：将向量 v 重排为 m×n 矩阵（按列填充）
 
     % 二维 IFFT 重建图像
     % ifft2(F)：二维逆离散 Fourier 变换
-    img_rec = real(ifft2(F_compressed));
-    img_rec = min(255, max(0, img_rec));   % 裁剪灰度范围
+    img_rec = real(ifft2(F_compressed));  % 逐行注释：real 取复数实部；常用于消除 IFFT 后由舍入误差产生的微小虚部。
+    img_rec = min(255, max(0, img_rec));   % 裁剪灰度范围  % 逐行注释：min 取最小值；对数组时按元素或按列比较，常用于裁剪范围。
 
     % 图像 SNR
-    img_snr(r_idx) = 20 * log10(norm(img_orig(:)) / ...
-        (norm(img_rec(:) - img_orig(:)) + 1e-20));
-    img_reconstructed{r_idx} = img_rec;
+    img_snr(r_idx) = 20 * log10(norm(img_orig(:)) / ...  % 逐行注释：使用冒号索引；: 表示取某一维的全部元素，(:) 可把数组拉平成列向量。
+        (norm(img_rec(:) - img_orig(:)) + 1e-20));  % 逐行注释：使用冒号索引；: 表示取某一维的全部元素，(:) 可把数组拉平成列向量。
+    img_reconstructed{r_idx} = img_rec;  % 逐行注释：使用花括号访问 cell 内容；与圆括号索引不同，{} 取出 cell 里真正存放的数据。
 
-    fprintf('  保留 %5.1f%%（%d个系数）：SNR = %.1f dB\n', ...
-        ratio*100, K_img, img_snr(r_idx));
-end
-fprintf('\n');
+    fprintf('  保留 %5.1f%%（%d个系数）：SNR = %.1f dB\n', ...  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+        ratio*100, K_img, img_snr(r_idx));  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
+fprintf('\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 %% =========================================================
 %  绘图：信号压缩效果
 %  =========================================================
 
-figure('Name', 'FFT 音频信号压缩效果', 'NumberTitle', 'off', ...
-    'Position', [50, 50, 1400, 900]);
+figure('Name', 'FFT 音频信号压缩效果', 'NumberTitle', 'off', ...  % 逐行注释：创建新的图形窗口；属性名-属性值成对出现，用来设置窗口标题、位置等。
+    'Position', [50, 50, 1400, 900]);  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
 
 % 第1行：原始信号时域和频域
-subplot(n_ratios+1, 2, 1);
+subplot(n_ratios+1, 2, 1);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
 % plot(t, x)：绘制时域信号
-plot(t, x_signal, 'b-', 'LineWidth', 0.8);
-xlabel('时间 (s)');  ylabel('幅值');
-title(sprintf('原始信号（时域）：50+120+200 Hz 正弦叠加+噪声'), 'FontSize', 9);
-xlim([0, 0.1]);   % 只显示前0.1秒，更清晰
-grid on;
+plot(t, x_signal, 'b-', 'LineWidth', 0.8);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('时间 (s)');  ylabel('幅值');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title(sprintf('原始信号（时域）：50+120+200 Hz 正弦叠加+噪声'), 'FontSize', 9);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlim([0, 0.1]);   % 只显示前0.1秒，更清晰  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(n_ratios+1, 2, 2);
+subplot(n_ratios+1, 2, 2);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
 % stem(x, y)：用垂直线画离散点图（适合展示离散频谱）
-stem(freq_axis, X_mag, 'b', 'Marker', 'none', 'LineWidth', 0.5);
-xlabel('频率 (Hz)');  ylabel('幅度');
-title('原始信号幅度谱（单边 0~500 Hz）', 'FontSize', 9);
-xlim([0, 300]);   % 只显示 0~300 Hz 范围
-grid on;
+stem(freq_axis, X_mag, 'b', 'Marker', 'none', 'LineWidth', 0.5);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+xlabel('频率 (Hz)');  ylabel('幅度');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('原始信号幅度谱（单边 0~500 Hz）', 'FontSize', 9);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+xlim([0, 300]);   % 只显示 0~300 Hz 范围  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
 % 第2~4行：各压缩比的重建信号
-for r_idx = 1:n_ratios
-    ratio = compress_ratios(r_idx);
-    K = max(1, round(ratio * N_fft));
+for r_idx = 1:n_ratios  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    ratio = compress_ratios(r_idx);  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    K = max(1, round(ratio * N_fft));  % 逐行注释：max 取最大值；也可和另一个数比较实现下界保护。
 
-    subplot(n_ratios+1, 2, 2*r_idx+1);
-    plot(t, x_signal, 'k-', 'LineWidth', 0.8, 'DisplayName', '原始信号');
-    hold on;
-    plot(t, fit_signals{r_idx}, 'r-', 'LineWidth', 1.2, 'DisplayName', '重建信号');
-    xlabel('时间 (s)');  ylabel('幅值');
-    title(sprintf('保留 %.0f%% 系数（K=%d），SNR=%.1f dB', ...
-        ratio*100, K, snr_results(r_idx)), 'FontSize', 9);
-    legend('Location', 'northeast', 'FontSize', 7);
-    xlim([0, 0.1]);
-    grid on;  hold off;
+    subplot(n_ratios+1, 2, 2*r_idx+1);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+    plot(t, x_signal, 'k-', 'LineWidth', 0.8, 'DisplayName', '原始信号');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+    hold on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+    plot(t, fit_signals{r_idx}, 'r-', 'LineWidth', 1.2, 'DisplayName', '重建信号');  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+    xlabel('时间 (s)');  ylabel('幅值');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+    title(sprintf('保留 %.0f%% 系数（K=%d），SNR=%.1f dB', ...  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+        ratio*100, K, snr_results(r_idx)), 'FontSize', 9);  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+    legend('Location', 'northeast', 'FontSize', 7);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+    xlim([0, 0.1]);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+    grid on;  hold off;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-    subplot(n_ratios+1, 2, 2*r_idx+2);
+    subplot(n_ratios+1, 2, 2*r_idx+2);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
     % 计算压缩后的幅度谱（重建后的频谱）
-    X_rec_fft = my_fft([fit_signals{r_idx}, zeros(1, N_fft - N_sig)]);
-    X_rec_mag  = abs(X_rec_fft(1:N_fft/2));
-    stem(freq_axis, X_rec_mag, 'r', 'Marker', 'none', 'LineWidth', 0.5);
-    xlabel('频率 (Hz)');  ylabel('幅度');
-    title(sprintf('压缩后幅度谱（%.0f%% 系数）', ratio*100), 'FontSize', 9);
-    xlim([0, 300]);
-    grid on;
-end
+    X_rec_fft = my_fft([fit_signals{r_idx}, zeros(1, N_fft - N_sig)]);  % 逐行注释：使用花括号访问 cell 内容；与圆括号索引不同，{} 取出 cell 里真正存放的数据。
+    X_rec_mag  = abs(X_rec_fft(1:N_fft/2));  % 逐行注释：abs 取绝对值或复数模；常用于计算误差大小。
+    stem(freq_axis, X_rec_mag, 'r', 'Marker', 'none', 'LineWidth', 0.5);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+    xlabel('频率 (Hz)');  ylabel('幅度');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+    title(sprintf('压缩后幅度谱（%.0f%% 系数）', ratio*100), 'FontSize', 9);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+    xlim([0, 300]);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+    grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
 
-sgtitle('FFT 频域截断压缩：保留不同比例频率系数的重建效果对比', 'FontSize', 12);
-print(gcf, 'p4_fig1', '-dpng', '-r150');   % 保存图1到磁盘（150 DPI）
+sgtitle('FFT 频域截断压缩：保留不同比例频率系数的重建效果对比', 'FontSize', 12);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+print(gcf, 'p4_fig1', '-dpng', '-r150');   % 保存图1到磁盘（150 DPI）  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
 % ---- 图像压缩效果图 ----
-figure('Name', 'FFT 图像压缩效果', 'NumberTitle', 'off', ...
-    'Position', [100, 100, 1000, 600]);
+figure('Name', 'FFT 图像压缩效果', 'NumberTitle', 'off', ...  % 逐行注释：创建新的图形窗口；属性名-属性值成对出现，用来设置窗口标题、位置等。
+    'Position', [100, 100, 1000, 600]);  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
 
-subplot(2, 3, 1);
+subplot(2, 3, 1);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
 % imagesc(img)：将矩阵 img 显示为图像，自动拉伸颜色范围
-imagesc(img_orig);
+imagesc(img_orig);  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
 % colormap gray：使用灰度色表
-colormap(gray);
+colormap(gray);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 % colorbar：显示颜色条（像素值刻度）
-colorbar;
-title('原始图像', 'FontSize', 10);
-axis equal tight;  % equal：等比例显示；tight：坐标轴贴合图像边缘
+colorbar;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('原始图像', 'FontSize', 10);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+axis equal tight;  % equal：等比例显示；tight：坐标轴贴合图像边缘  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-subplot(2, 3, 2);
+subplot(2, 3, 2);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
 % fftshift 后的二维频谱对数幅度（取 log 便于显示大动态范围）
-imagesc(log(1 + abs(F_img_shift)));
-colormap(gray);  colorbar;
-title('二维 FFT 幅度谱（log 刻度）', 'FontSize', 10);
+imagesc(log(1 + abs(F_img_shift)));  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+colormap(gray);  colorbar;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('二维 FFT 幅度谱（log 刻度）', 'FontSize', 10);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 % log(1+x)：避免 log(0)=-Inf，加1保证自变量>0
-axis equal tight;
+axis equal tight;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-for r_idx = 1:length(img_compress_ratios)
-    subplot(2, 3, r_idx + 2);
-    imagesc(img_reconstructed{r_idx});
-    colormap(gray);  colorbar;
-    title(sprintf('保留 %.0f%% 系数\nSNR = %.1f dB', ...
-        img_compress_ratios(r_idx)*100, img_snr(r_idx)), 'FontSize', 9);
-    axis equal tight;
-end
+for r_idx = 1:length(img_compress_ratios)  % 逐行注释：开始 for 循环；冒号表达式生成循环序列，每轮把当前值赋给循环变量。
+    subplot(2, 3, r_idx + 2);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+    imagesc(img_reconstructed{r_idx});  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+    colormap(gray);  colorbar;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+    title(sprintf('保留 %.0f%% 系数\nSNR = %.1f dB', ...  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+        img_compress_ratios(r_idx)*100, img_snr(r_idx)), 'FontSize', 9);  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+    axis equal tight;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
 
 % 最后一个子图：SNR vs 压缩比
-subplot(2, 3, 5);
-compress_pct = img_compress_ratios * 100;
+subplot(2, 3, 5);  % 逐行注释：把当前图窗分成多行多列子图，并切换到指定编号的子图区域。
+compress_pct = img_compress_ratios * 100;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
 % plot(x, y, '-o')：带圆圈标记的折线图
-plot(compress_pct, img_snr, 'b-o', 'LineWidth', 2, 'MarkerSize', 8, ...
-    'MarkerFaceColor', 'b');
-xlabel('保留系数比例（%）');
-ylabel('图像 SNR（dB）');
-title('图像质量 vs 压缩比', 'FontSize', 10);
-grid on;
+plot(compress_pct, img_snr, 'b-o', 'LineWidth', 2, 'MarkerSize', 8, ...  % 逐行注释：绘图命令；前几个参数给出数据，后面的字符串和属性名-属性值控制颜色、线型、宽度和图例名称。
+    'MarkerFaceColor', 'b');  % 逐行注释：执行一条 MATLAB 语句；分号通常表示抑制输出，行尾百分号后为注释说明。
+xlabel('保留系数比例（%）');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+ylabel('图像 SNR（dB）');  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+title('图像质量 vs 压缩比', 'FontSize', 10);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+grid on;  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-sgtitle('二维 FFT 图像压缩效果', 'FontSize', 12);
-print(gcf, 'p4_fig2', '-dpng', '-r150');   % 保存图2到磁盘（150 DPI）
+sgtitle('二维 FFT 图像压缩效果', 'FontSize', 12);  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
+print(gcf, 'p4_fig2', '-dpng', '-r150');   % 保存图2到磁盘（150 DPI）  % 逐行注释：图形修饰或保存命令；用于设置坐标轴、标题、图例、网格、标注、图片导出等显示效果。
 
-fprintf('图形已保存：p4_fig1.png, p4_fig2.png\n\n');
-fprintf('程序运行完毕。\n');
+fprintf('图形已保存：p4_fig1.png, p4_fig2.png\n\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
+fprintf('程序运行完毕。\n');  % 逐行注释：向命令行打印格式化文本；%d/%f/%e/%s 等占位符会被后面的变量替换。
 
 
 %% =========================================================
 %  局部函数（Local Functions）—— 必须置于脚本末尾
 %  =========================================================
 
-function X = my_fft(x)
+function X = my_fft(x)  % 逐行注释：定义局部函数；function 后写输出变量、函数名和输入参数，供本文件前面的脚本调用。
     % my_fft：Cooley-Tukey 基-2 DIT（时域抽取）FFT 递归实现
     %
     % 【数值分析：FFT 算法（教材§3.5.2）】
@@ -415,52 +415,52 @@ function X = my_fft(x)
     % 输入：x - 输入信号向量（长度 N 必须是 2 的幂，支持复数输入）
     % 输出：X - DFT 结果向量（与 x 等长的复数向量）
 
-    N = length(x);   % 信号长度
+    N = length(x);   % 信号长度  % 逐行注释：length 返回数组最长维度的长度；对向量就是元素个数。
 
     % 递归终止条件：N=1 时，1点 DFT = 原值本身（恒等变换）
-    if N == 1
-        X = x;
-        return;   % return：立即结束函数，返回结果
-    end
+    if N == 1  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
+        X = x;  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+        return;   % return：立即结束函数，返回结果  % 逐行注释：立即结束当前函数并把已经赋好的输出变量返回给调用者。
+    end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
 
     % 检查 N 是否为 2 的幂（基-2 FFT 的必要条件）
-    if mod(N, 2) ~= 0
+    if mod(N, 2) ~= 0  % 逐行注释：开始条件判断；条件为 true 时执行下面的代码块。
         % mod(a, b)：a 除以 b 的余数；~= 是"不等于"逻辑算符
-        error('my_fft：输入长度 N=%d 不是2的幂，请预先补零。', N);
+        error('my_fft：输入长度 N=%d 不是2的幂，请预先补零。', N);  % 逐行注释：主动抛出错误；常用于输入不合法时给出明确提示并终止函数。
         % error('msg')：抛出错误并终止程序，显示错误信息
-    end
+    end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
 
     % ---- 时域奇偶分解 ----
-    x_even = x(1:2:end);   % 取偶数下标元素：x[0], x[2], ..., x[N-2]
+    x_even = x(1:2:end);   % 取偶数下标元素：x[0], x[2], ..., x[N-2]  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
     % 1:2:end 是步长为2的整数序列，从1到最后（MATLAB 下标从1开始，对应数学下标 0,2,...）
-    x_odd  = x(2:2:end);   % 取奇数下标元素：x[1], x[3], ..., x[N-1]
+    x_odd  = x(2:2:end);   % 取奇数下标元素：x[1], x[3], ..., x[N-1]  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
     % 2:2:end 步长为2，从2开始（对应数学下标 1,3,...）
 
     % ---- 递归计算 N/2 点 FFT ----
-    E = my_fft(x_even);    % 偶数部分的 N/2 点 DFT：E[k] = DFT({x[0],x[2],...})
-    O = my_fft(x_odd);     % 奇数部分的 N/2 点 DFT：O[k] = DFT({x[1],x[3],...})
+    E = my_fft(x_even);    % 偶数部分的 N/2 点 DFT：E[k] = DFT({x[0],x[2],...})  % 逐行注释：使用花括号访问 cell 内容；与圆括号索引不同，{} 取出 cell 里真正存放的数据。
+    O = my_fft(x_odd);     % 奇数部分的 N/2 点 DFT：O[k] = DFT({x[1],x[3],...})  % 逐行注释：使用花括号访问 cell 内容；与圆括号索引不同，{} 取出 cell 里真正存放的数据。
     % 递归调用：每次规模减半，共 log_2(N) 层递归
 
     % ---- 计算旋转因子向量 W_N^k，k=0,...,N/2-1 ----
     % W_N^k = e^{-2πi·k/N}（复数指数，即单位圆上的旋转）
-    k = 0 : N/2 - 1;         % k 的取值范围，生成行向量 [0, 1, 2, ..., N/2-1]
-    W = exp(-2i * pi * k / N);  % 旋转因子向量（行向量，每个元素是复数）
+    k = 0 : N/2 - 1;         % k 的取值范围，生成行向量 [0, 1, 2, ..., N/2-1]  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
+    W = exp(-2i * pi * k / N);  % 旋转因子向量（行向量，每个元素是复数）  % 逐行注释：调用初等函数；MATLAB 对向量输入会逐元素计算函数值。
     % exp(z)：复数指数函数（当 z=iθ 时，exp(iθ) = cos(θ)+i·sin(θ)，Euler 公式）
     % -2i：乘以 -2i 确保 DFT 定义中的负号（-2πi·kn/N 中的负号来自于此）
     % pi：MATLAB 内置常量 π ≈ 3.14159...
 
     % ---- 蝴蝶运算：合并两个 N/2 点 DFT 为一个 N 点 DFT ----
-    WO = W .* O;   % W_N^k · O[k]：旋转因子与奇数 DFT 的逐元素乘积
+    WO = W .* O;   % W_N^k · O[k]：旋转因子与奇数 DFT 的逐元素乘积  % 逐行注释：包含点运算 .^、.* 或 ./；表示逐元素幂、乘、除，是 MATLAB 向量化计算的核心语法。
     % .* 是逐元素乘法（W 和 O 都是长度 N/2 的行向量）
 
     % 上半部分 X[k] = E[k] + W_N^k·O[k]，k=0,...,N/2-1
     % 下半部分 X[k+N/2] = E[k] - W_N^k·O[k]，k=0,...,N/2-1
-    X = [E + WO, E - WO];   % 水平拼接上下两半，得到长度 N 的输出
+    X = [E + WO, E - WO];   % 水平拼接上下两半，得到长度 N 的输出  % 逐行注释：赋值语句；等号左边是变量名或数组位置，右边表达式计算后存入左边。
     % [A, B]：水平拼接行向量 A 和 B
-end
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
 
 
-function x = my_ifft(X)
+function x = my_ifft(X)  % 逐行注释：定义局部函数；function 后写输出变量、函数名和输入参数，供本文件前面的脚本调用。
     % my_ifft：逆 FFT（IFFT），利用正 FFT 实现（共轭对称技巧）
     %
     % 【数值分析：IFFT 的对称性推导】
@@ -479,9 +479,9 @@ function x = my_ifft(X)
     % 输入：X - 频域信号向量（长度 N 的复数向量）
     % 输出：x - IDFT 重建的时域信号（复数向量，实信号取 real(x) 即可）
 
-    N = length(X);
+    N = length(X);  % 逐行注释：length 返回数组最长维度的长度；对向量就是元素个数。
     % conj(v)：向量 v 的逐元素共轭（虚部变号）
     % 步骤：① conj(X) → ② my_fft(...) → ③ conj(...) → ④ /N
-    x = conj(my_fft(conj(X))) / N;
+    x = conj(my_fft(conj(X))) / N;  % 逐行注释：conj 取复共轭；虚部变号，常用于由 FFT 实现 IFFT。
     % 除以 N：IDFT 的归一化因子（DFT 和 IDFT 之间的 1/N 约定）
-end
+end  % 逐行注释：结束最近的 for/if/function 等代码块，MATLAB 用 end 标记块结构收尾。
