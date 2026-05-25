@@ -1,0 +1,546 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\setlength{\parindent}{2em}
+\linespread{1.2}
+\setlength{\headheight}{13.6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{数值分析\quad 第八次理论作业\quad 学号：241098117，姓名：张城宗}
+\fancyhead[R]{习题四、五}
+
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\ee}{\mathrm e}
+\newcommand{\QED}{\hfill$\square$}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries 数值分析\quad 第八次理论作业}\\[6pt]
+  {\large 习题四第 21、28、34、35、37、38 题；习题五第 3、4 题}\\[4pt]
+  {\normalsize 学号：241098117\quad 姓名：张城宗}
+\end{center}
+
+\bigskip
+
+%=====================================================
+\noindent\textbf{习题四\quad 第 21 题}\quad
+设函数 $f(x)$ 在 $[-1,1]$ 上有六阶连续导数，$p_5(x)\in \mathbb R_5[x]$ 是满足
+\[
+  p_5(x_i)=f(x_i),\qquad p_5'(x_i)=f'(x_i),
+  \qquad x_i=-1,0,1
+\]
+的 Hermite 插值多项式。试证明
+\[
+\begin{aligned}
+  \int_{-1}^{1}f(x)\dd x
+  \approx \int_{-1}^{1}p_5(x)\dd x
+  &=
+  \frac{7}{15}f(-1)+\frac{16}{15}f(0)+\frac{7}{15}f(1)  \\
+  &\quad+\frac{1}{15}f'(-1)-\frac{1}{15}f'(1),
+\end{aligned}
+\]
+并推导其余项。
+
+\medskip
+\noindent\textbf{证明}\quad
+由于节点和积分区间关于原点对称，设
+\[
+  \int_{-1}^{1}p_5(x)\dd x
+  =A[f(-1)+f(1)]+Bf(0)+C f'(-1)-C f'(1).
+\]
+该公式应对所有不超过五次的多项式精确成立。分别令
+$f(x)=1,x^2,x^4$，得
+\[
+  2A+B=2,\qquad
+  2A-4C=\frac23,\qquad
+  2A-8C=\frac25.
+\]
+解得
+\[
+  A=\frac{7}{15},\qquad B=\frac{16}{15},\qquad C=\frac{1}{15}.
+\]
+而奇次多项式的积分为零，上式由对称性也自动给出零值，因此对
+$0,1,\ldots,5$ 次多项式均精确成立。于是对 Hermite 插值多项式
+$p_5$ 有
+\[
+  \int_{-1}^{1}p_5(x)\dd x
+  =
+  \frac{7}{15}f(-1)+\frac{16}{15}f(0)+\frac{7}{15}f(1)
+  +\frac{1}{15}f'(-1)-\frac{1}{15}f'(1).
+\]
+
+由 Hermite 插值余项，
+\[
+  f(x)-p_5(x)
+  =
+  \frac{f^{(6)}(\xi_x)}{6!}
+  (x+1)^2x^2(x-1)^2,\qquad -1<\xi_x<1.
+\]
+因为 $(x+1)^2x^2(x-1)^2\ge 0$，由积分中值定理，存在
+$\xi\in(-1,1)$，使得
+\[
+\begin{aligned}
+  R(f)
+  &=\int_{-1}^{1}\bigl(f(x)-p_5(x)\bigr)\dd x  \\
+  &=\frac{f^{(6)}(\xi)}{720}
+    \int_{-1}^{1}x^2(x^2-1)^2\dd x  \\
+  &=\frac{f^{(6)}(\xi)}{720}
+    \left(\frac{2}{7}-\frac{4}{5}+\frac{2}{3}\right)
+   =\frac{1}{4725}f^{(6)}(\xi).
+\end{aligned}
+\]
+所以
+\[
+  \boxed{
+  \int_{-1}^{1}f(x)\dd x
+  =
+  \frac{7}{15}f(-1)+\frac{16}{15}f(0)+\frac{7}{15}f(1)
+  +\frac{1}{15}f'(-1)-\frac{1}{15}f'(1)
+  +\frac{1}{4725}f^{(6)}(\xi).}
+\]
+\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题四\quad 第 28 题}\quad
+应用自适应 Simpson 求积法计算积分
+\[
+  I=\int_{0}^{3}x\sqrt{1+x^2}\dd x,
+\]
+要求误差不超过 $10^{-2}$。
+
+\medskip
+\noindent\textbf{解}\quad
+记 $f(x)=x\sqrt{1+x^2}$。在区间 $[a,b]$ 上的 Simpson 值记为
+\[
+  S(a,b)=\frac{b-a}{6}
+  \left[f(a)+4f\!\left(\frac{a+b}{2}\right)+f(b)\right].
+\]
+先在 $[0,3]$ 上计算
+\[
+  S(0,3)=10.1517434034.
+\]
+将区间二分后得到
+\[
+  S(0,1.5)+S(1.5,3)=10.2012724869.
+\]
+自适应 Simpson 的误差估计为
+\[
+  \frac{|S(0,1.5)+S(1.5,3)-S(0,3)|}{15}
+  =0.0033019389<10^{-2}.
+\]
+因此不必继续细分。若采用 Richardson 修正，则
+\[
+\begin{aligned}
+  I
+  &\approx S(0,1.5)+S(1.5,3)
+  +\frac{S(0,1.5)+S(1.5,3)-S(0,3)}{15} \\
+  &=10.2045744258.
+\end{aligned}
+\]
+所以
+\[
+  \boxed{I\approx 10.20457.}
+\]
+作为校验，精确值为
+\[
+  \int_0^3x\sqrt{1+x^2}\dd x
+  =\frac{(1+x^2)^{3/2}}{3}\bigg|_0^3
+  =\frac{10\sqrt{10}-1}{3}\approx 10.20759,
+\]
+实际误差约为 $3.02\times 10^{-3}$，满足题目要求。
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题四\quad 第 34 题}\quad
+给出计算积分
+\[
+  \int_{-1}^{1}f(x)(1+x^2)\dd x
+\]
+的两点插值求积公式，使它的代数精确度为 $3$，并导出求积公式的离散误差。
+
+\medskip
+\noindent\textbf{解}\quad
+这是权函数 $\rho(x)=1+x^2$ 下的两点 Gauss 型求积公式。设二次正交多项式为
+\[
+  \omega_2(x)=x^2-\alpha.
+\]
+由正交条件
+\[
+  \int_{-1}^{1}(x^2-\alpha)(1+x^2)\dd x=0
+\]
+可得
+\[
+  \alpha=
+  \frac{\int_{-1}^{1}x^2(1+x^2)\dd x}
+       {\int_{-1}^{1}(1+x^2)\dd x}
+  =
+  \frac{\frac23+\frac25}{2+\frac23}
+  =\frac25.
+\]
+因此求积节点为
+\[
+  x_1=-\sqrt{\frac25},\qquad x_2=\sqrt{\frac25}.
+\]
+由对称性 $A_1=A_2=A$，再令 $f(x)=1$，得
+\[
+  2A=\int_{-1}^{1}(1+x^2)\dd x=\frac83,
+  \qquad A=\frac43.
+\]
+所以所求公式为
+\[
+  \boxed{
+  \int_{-1}^{1}f(x)(1+x^2)\dd x
+  \approx
+  \frac43 f\!\left(-\sqrt{\frac25}\right)
+  +\frac43 f\!\left(\sqrt{\frac25}\right).}
+\]
+
+下面求离散误差。设
+\[
+  E(f)=\int_{-1}^{1}f(x)(1+x^2)\dd x
+  -\frac43 f\!\left(-\sqrt{\frac25}\right)
+  -\frac43 f\!\left(\sqrt{\frac25}\right).
+\]
+由两点 Gauss 型求积公式的余项形式，
+\[
+  E(f)=\frac{f^{(4)}(\xi)}{4!}
+  \int_{-1}^{1}(1+x^2)
+  \left(x^2-\frac25\right)^2\dd x,\qquad -1<\xi<1.
+\]
+而
+\[
+  \int_{-1}^{1}(1+x^2)
+  \left(x^2-\frac25\right)^2\dd x
+  =\frac{136}{525}.
+\]
+故
+\[
+  \boxed{E(f)=\frac{17}{1575}f^{(4)}(\xi),\qquad -1<\xi<1.}
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题四\quad 第 35 题}\quad
+求 Gauss 型求积公式
+\[
+  \int_0^1 f(x)\ln x\dd x
+  \approx A_1f(x_1)+A_2f(x_2)
+\]
+的系数 $A_1,A_2$ 以及节点 $x_1,x_2$，并导出离散误差。
+
+\medskip
+\noindent\textbf{解}\quad
+令
+\[
+  \omega_2(x)=x^2+ax+b.
+\]
+它应关于权函数 $\ln x$ 与 $1,x$ 正交。由
+\[
+  \int_0^1 x^k\ln x\dd x=-\frac{1}{(k+1)^2}
+\]
+得
+\[
+  \begin{cases}
+  \displaystyle
+  \int_0^1 (x^2+ax+b)\ln x\dd x=0,\\[2mm]
+  \displaystyle
+  \int_0^1 x(x^2+ax+b)\ln x\dd x=0.
+  \end{cases}
+\]
+即
+\[
+  \frac19+\frac{a}{4}+b=0,\qquad
+  \frac1{16}+\frac{a}{9}+\frac{b}{4}=0.
+\]
+解得
+\[
+  a=-\frac57,\qquad b=\frac{17}{252}.
+\]
+因此节点为方程
+\[
+  x^2-\frac57x+\frac{17}{252}=0
+\]
+的两个根：
+\[
+  \boxed{
+  x_1=\frac{15-\sqrt{106}}{42},\qquad
+  x_2=\frac{15+\sqrt{106}}{42}.}
+\]
+
+再由公式对 $1,x$ 精确成立，
+\[
+  A_1+A_2=-1,\qquad
+  A_1x_1+A_2x_2=-\frac14,
+\]
+解得
+\[
+  \boxed{
+  A_1=-\frac{2\sqrt{106}+9}{4\sqrt{106}},
+  \qquad
+  A_2=\frac{9-2\sqrt{106}}{4\sqrt{106}}.}
+\]
+于是
+\[
+  \boxed{
+  \int_0^1 f(x)\ln x\dd x
+  \approx
+  -\frac{2\sqrt{106}+9}{4\sqrt{106}}
+  f\!\left(\frac{15-\sqrt{106}}{42}\right)
+  +\frac{9-2\sqrt{106}}{4\sqrt{106}}
+  f\!\left(\frac{15+\sqrt{106}}{42}\right).}
+\]
+
+设离散误差为 $E(f)=I(f)-I_1(f)$。由两点 Gauss 型公式余项，
+\[
+  E(f)
+  =
+  \frac{f^{(4)}(\xi)}{4!}
+  \int_0^1
+  \left(x^2-\frac57x+\frac{17}{252}\right)^2\ln x\dd x,
+  \qquad 0<\xi<1.
+\]
+直接计算得
+\[
+  \int_0^1
+  \left(x^2-\frac57x+\frac{17}{252}\right)^2\ln x\dd x
+  =-\frac{647}{226800}.
+\]
+所以
+\[
+  \boxed{E(f)=-\frac{647}{5443200}f^{(4)}(\xi),\qquad 0<\xi<1.}
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题四\quad 第 37 题}\quad
+应用三点 Gauss--Legendre 求积公式计算积分
+\[
+  \int_0^1\frac{\sin x}{1+x}\dd x.
+\]
+
+\medskip
+\noindent\textbf{解}\quad
+三点 Gauss--Legendre 公式在 $[-1,1]$ 上为
+\[
+  \int_{-1}^{1}F(t)\dd t
+  \approx
+  \frac59F\!\left(-\sqrt{\frac35}\right)
+  +\frac89F(0)
+  +\frac59F\!\left(\sqrt{\frac35}\right).
+\]
+作变换
+\[
+  x=\frac{t+1}{2},\qquad \dd x=\frac12\dd t.
+\]
+记 $r=\sqrt{3/5}$，则
+\[
+\begin{aligned}
+  \int_0^1\frac{\sin x}{1+x}\dd x
+  &\approx
+  \frac{5}{18}
+  \frac{\sin\frac{1-r}{2}}{1+\frac{1-r}{2}}
+  +\frac49\frac{\sin\frac12}{1+\frac12}
+  +\frac{5}{18}
+  \frac{\sin\frac{1+r}{2}}{1+\frac{1+r}{2}}  \\
+  &\approx 0.2842484986.
+\end{aligned}
+\]
+故
+\[
+  \boxed{\displaystyle
+  \int_0^1\frac{\sin x}{1+x}\dd x\approx 0.28424850.}
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题四\quad 第 38 题}\quad
+作适当变换，应用 Gauss--Chebyshev 求积公式计算积分
+\[
+  I=\int_1^3 x\sqrt{4x-x^2-3}\dd x
+\]
+的准确值。
+
+\medskip
+\noindent\textbf{解}\quad
+注意到
+\[
+  4x-x^2-3=1-(x-2)^2.
+\]
+令
+\[
+  t=x-2,\qquad x=t+2,\qquad \dd x=\dd t,
+\]
+则
+\[
+  I=\int_{-1}^{1}(t+2)\sqrt{1-t^2}\dd t
+  =
+  \int_{-1}^{1}
+  \frac{(t+2)(1-t^2)}{\sqrt{1-t^2}}\dd t.
+\]
+因此可以使用 Gauss--Chebyshev 公式，其中
+\[
+  F(t)=(t+2)(1-t^2)
+\]
+是三次多项式。$n$ 点 Gauss--Chebyshev 公式的代数精确度为
+$2n-1$，故只要 $2n-1\ge3$，即 $n\ge2$，就能得到准确值。
+
+取 $n=2$，节点为
+\[
+  t_1=\frac{1}{\sqrt2},\qquad t_2=-\frac{1}{\sqrt2},
+\]
+权系数均为 $\pi/2$。于是
+\[
+\begin{aligned}
+  I
+  &=\frac{\pi}{2}
+  \left[
+  F\!\left(\frac1{\sqrt2}\right)
+  +F\!\left(-\frac1{\sqrt2}\right)
+  \right]  \\
+  &=\frac{\pi}{2}
+  \left[
+  \left(2+\frac1{\sqrt2}\right)\frac12
+  +\left(2-\frac1{\sqrt2}\right)\frac12
+  \right]
+  =\pi.
+\end{aligned}
+\]
+所以
+\[
+  \boxed{I=\pi.}
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题五\quad 第 3 题}\quad
+假设函数 $g(x)$ 与 $h(x)$ 在区间 $[a,b]$ 上连续，证明初值问题
+\[
+  y'=g(x)y+h(x),\qquad y(a)=\eta
+\]
+在 $[a,b]$ 上有唯一解，并且对任何初始值都是适定的。
+
+\medskip
+\noindent\textbf{证明}\quad
+令
+\[
+  f(x,y)=g(x)y+h(x).
+\]
+因为 $g,h$ 在 $[a,b]$ 上连续，所以 $f$ 在带形区域
+$D=\{(x,y):a\le x\le b,\ y\in\mathbb R\}$ 上连续。又
+\[
+  |f(x,y_1)-f(x,y_2)|
+  =|g(x)|\,|y_1-y_2|
+  \le L|y_1-y_2|,
+\]
+其中
+\[
+  L=\max_{a\le x\le b}|g(x)|.
+\]
+所以 $f$ 关于 $y$ 满足 Lipschitz 条件。由初值问题解的存在唯一性定理，
+对任意初值 $\eta$，该初值问题在 $[a,b]$ 上存在唯一解。
+
+也可以写出显式解。令
+\[
+  G(x)=\int_a^x g(s)\dd s,
+\]
+则
+\[
+  y(x)=\ee^{G(x)}
+  \left[
+  \eta+\int_a^x \ee^{-G(t)}h(t)\dd t
+  \right].
+\]
+若初值由 $\eta$ 改为 $\tilde\eta$，对应解为 $y,\tilde y$，则
+\[
+  y(x)-\tilde y(x)=\ee^{G(x)}(\eta-\tilde\eta),
+\]
+从而
+\[
+  |y(x)-\tilde y(x)|
+  \le \ee^{L(b-a)}|\eta-\tilde\eta|.
+\]
+这说明解连续依赖于初始值。若右端项中的 $h$ 也有微小扰动，则由同样的积分表达式可得
+\[
+  \|y-\tilde y\|_\infty
+  \le
+  \ee^{L(b-a)}
+  \left(
+  |\eta-\tilde\eta|+(b-a)\|h-\tilde h\|_\infty
+  \right),
+\]
+故解也连续依赖于右端项。因此该初值问题对任意初始值都是适定的。
+\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题五\quad 第 4 题}\quad
+试用 Taylor 级数法（取 $p=3$）导出求解初值问题
+\[
+  y'=\frac{1}{1+y^2},\qquad y(0)=1
+\]
+的数值方法。
+
+\medskip
+\noindent\textbf{解}\quad
+设 $x_n=nh$，$y_n\approx y(x_n)$。三阶 Taylor 方法为
+\[
+  y_{n+1}
+  =
+  y_n+h y'_n+\frac{h^2}{2}y''_n+\frac{h^3}{6}y'''_n.
+\]
+由微分方程
+\[
+  y'=\frac{1}{1+y^2}
+\]
+可得
+\[
+  y''
+  =
+  \frac{\dd}{\dd x}\left(1+y^2\right)^{-1}
+  =
+  -\frac{2y}{(1+y^2)^3}.
+\]
+继续求导，
+\[
+\begin{aligned}
+  y'''
+  &=
+  \frac{\dd}{\dd x}
+  \left[-2y(1+y^2)^{-3}\right]  \\
+  &=
+  \left[-2(1+y^2)^{-3}+12y^2(1+y^2)^{-4}\right]y'  \\
+  &=
+  \frac{10y^2-2}{(1+y^2)^5}.
+\end{aligned}
+\]
+代入三阶 Taylor 展开，得到数值格式
+\[
+  \boxed{
+  y_{n+1}
+  =
+  y_n
+  +\frac{h}{1+y_n^2}
+  -\frac{h^2y_n}{(1+y_n^2)^3}
+  +\frac{h^3(5y_n^2-1)}{3(1+y_n^2)^5},
+  \qquad y_0=1.}
+\]
+这就是取 $p=3$ 时的 Taylor 级数法。
+
+\end{document}

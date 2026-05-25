@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xelatex -interaction=nonstopmode \"上机4-241098117-张城宗.tex\")"
+    ]
+  }
+}
