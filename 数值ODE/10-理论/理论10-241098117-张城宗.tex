@@ -1,0 +1,369 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\setlength{\parindent}{2em}
+\linespread{1.2}
+\setlength{\headheight}{14pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{数值分析\quad 第十次理论作业\quad 学号：241098117，姓名：张城宗}
+\fancyhead[R]{第五章}
+
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\ee}{\mathrm{e}}
+\newcommand{\QED}{\hfill$\square$}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries 数值分析\quad 第十次理论作业}\\[6pt]
+  {\large 第五章第 13、15、17、23、28、30 题}\\[4pt]
+  {\normalsize 学号：241098117\quad 姓名：张城宗}
+\end{center}
+
+\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 13 题}\quad
+试证明，解初值问题
+\[
+  y'=f(t,y),\qquad y(t_0)=\eta
+\]
+的隐式单步法
+\[
+  y_{n+1}=y_n+\frac{h}{6}\left[
+  4f(t_n,y_n)+2f(t_{n+1},y_{n+1})+h f'(t_n,y_n)
+  \right]
+\]
+为三阶方法。
+
+\medskip
+\noindent\textbf{证明}\quad
+这里的 \(f'(t_n,y_n)\) 理解为沿微分方程解曲线的全导数，即
+\[
+  f'(t,y)=\frac{\dd}{\dd t}f(t,y(t))
+  = f_t(t,y)+f_y(t,y)f(t,y).
+\]
+把精确解 \(y(t)\) 代入该格式。记
+\[
+  y_n=y(t_n),\quad
+  y'_n=y'(t_n),\quad y''_n=y''(t_n),\quad \ldots .
+\]
+由微分方程有
+\[
+  f(t_n,y(t_n))=y'_n,\qquad
+  f'(t_n,y(t_n))=y''_n,
+\]
+并且
+\[
+\begin{aligned}
+  f(t_{n+1},y(t_{n+1}))
+  &=y'(t_n+h)  \\
+  &=y'_n+h y''_n+\frac{h^2}{2}y^{(3)}_n
+    +\frac{h^3}{6}y^{(4)}_n+O(h^4).
+\end{aligned}
+\]
+于是该格式右端给出的增量为
+\[
+\begin{aligned}
+  \frac{h}{6}\left[
+  4y'_n+2y'(t_n+h)+h y''_n
+  \right]
+  &=h y'_n+\frac{h^2}{2}y''_n
+    +\frac{h^3}{6}y^{(3)}_n
+    +\frac{h^4}{18}y^{(4)}_n+O(h^5).
+\end{aligned}
+\]
+而精确解的 Taylor 展开为
+\[
+  y(t_n+h)-y(t_n)
+  =h y'_n+\frac{h^2}{2}y''_n
+    +\frac{h^3}{6}y^{(3)}_n
+    +\frac{h^4}{24}y^{(4)}_n+O(h^5).
+\]
+二者相减得局部截断误差
+\[
+  \tau_{n+1}
+  =-\frac{h^4}{72}y^{(4)}_n+O(h^5)=O(h^4).
+\]
+因此该单步法的阶数为 \(3\)。一般情形下 \(y^{(4)}_n\) 项不恒为零，所以它不是四阶方法。\QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 15 题}\quad
+试写出经典的四阶 Runge--Kutta 方法解初值问题
+\[
+  y'=f(t),\qquad t_0\le t\le T,\qquad y(t_0)=y_0
+\]
+的计算公式。它与数值积分公式有什么关系？
+
+\medskip
+\noindent\textbf{解}\quad
+经典四阶 Runge--Kutta 方法为
+\[
+\begin{aligned}
+  K_1&=f(t_n),\\
+  K_2&=f\!\left(t_n+\frac h2\right),\\
+  K_3&=f\!\left(t_n+\frac h2\right),\\
+  K_4&=f(t_n+h),\\
+  y_{n+1}
+  &=y_n+\frac h6(K_1+2K_2+2K_3+K_4).
+\end{aligned}
+\]
+因为此处 \(f\) 与 \(y\) 无关，所以 \(K_2=K_3\)，从而
+\[
+  \boxed{
+  y_{n+1}
+  =y_n+\frac h6\left[
+  f(t_n)+4f\!\left(t_n+\frac h2\right)+f(t_n+h)
+  \right].}
+\]
+另一方面，精确解满足
+\[
+  y(t_{n+1})-y(t_n)=\int_{t_n}^{t_{n+1}}f(t)\dd t.
+\]
+上式正是用 Simpson 求积公式近似该积分。因此，当微分方程右端只依赖于 \(t\) 时，经典四阶 Runge--Kutta 方法退化为逐步应用 Simpson 公式的数值积分方法。
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 17 题}\quad
+试证明经典四阶 Runge--Kutta 方法解初值问题
+\[
+  y'=\lambda y,\qquad y(t_0)=y_0
+\]
+的计算公式可写成
+\[
+  y_{n+1}=\left(
+  1+\lambda h+\frac12(\lambda h)^2
+  +\frac16(\lambda h)^3+\frac1{24}(\lambda h)^4
+  \right)y_n,
+\]
+并对初值问题
+\[
+  y'=-10y,\qquad y(0)=1
+\]
+求 \(y(1)\) 的近似值，取步长 \(h=0.1\)。
+
+\medskip
+\noindent\textbf{解}\quad
+令 \(z=\lambda h\)。经典四阶 Runge--Kutta 方法的四个斜率为
+\[
+\begin{aligned}
+  K_1&=\lambda y_n,\\
+  K_2&=\lambda\left(y_n+\frac h2K_1\right)
+      =\lambda\left(1+\frac z2\right)y_n,\\
+  K_3&=\lambda\left(y_n+\frac h2K_2\right)
+      =\lambda\left(1+\frac z2+\frac{z^2}{4}\right)y_n,\\
+  K_4&=\lambda\left(y_n+hK_3\right)
+      =\lambda\left(1+z+\frac{z^2}{2}+\frac{z^3}{4}\right)y_n.
+\end{aligned}
+\]
+代入
+\[
+  y_{n+1}=y_n+\frac h6(K_1+2K_2+2K_3+K_4)
+\]
+可得
+\[
+\begin{aligned}
+  y_{n+1}
+  &=\left[
+  1+z+\frac{z^2}{2}+\frac{z^3}{6}+\frac{z^4}{24}
+  \right]y_n \\
+  &=\left(
+  1+\lambda h+\frac12(\lambda h)^2
+  +\frac16(\lambda h)^3+\frac1{24}(\lambda h)^4
+  \right)y_n.
+\end{aligned}
+\]
+这就是所要证明的公式。
+
+对 \(y'=-10y\)，取 \(h=0.1\)，则 \(z=\lambda h=-1\)，所以每一步的放大因子为
+\[
+  R(-1)=1-1+\frac12-\frac16+\frac1{24}=\frac38.
+\]
+从 \(t=0\) 到 \(t=1\) 共 \(10\) 步，且 \(y_0=1\)，故
+\[
+  y(1)\approx y_{10}
+  =\left(\frac38\right)^{10}
+  =\frac{59049}{1073741824}
+  \approx 5.49937\times 10^{-5}.
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 23 题}\quad
+应用 Heun 方法
+\[
+  y_{n+1}=y_n+\frac h4\left[
+  f(t_n,y_n)
+  +3f\left(t_n+\frac23h,\,
+  y_n+\frac23h f(t_n,y_n)\right)
+  \right]
+\]
+解初值问题
+\[
+  y'=-y,\qquad y(0)=y_0
+\]
+时，问步长 \(h\) 应取何值才能保证方法的绝对稳定性？
+
+\medskip
+\noindent\textbf{解}\quad
+对试验方程 \(y'=-y\)，有 \(f(t,y)=-y\)。代入 Heun 方法，
+\[
+\begin{aligned}
+  y_{n+1}
+  &=y_n+\frac h4\left[
+  -y_n
+  +3\left(-y_n+\frac23h y_n\right)
+  \right] \\
+  &=\left(1-h+\frac{h^2}{2}\right)y_n.
+\end{aligned}
+\]
+因此稳定放大因子为
+\[
+  R(h)=1-h+\frac{h^2}{2}.
+\]
+绝对稳定要求
+\[
+  |R(h)|<1.
+\]
+由于
+\[
+  R(h)=\frac12(h-1)^2+\frac12>0,
+\]
+所以只需
+\[
+  1-h+\frac{h^2}{2}<1.
+\]
+化简得
+\[
+  \frac{h^2}{2}-h<0
+  \quad\Longleftrightarrow\quad
+  h(h-2)<0.
+\]
+因此在 \(h>0\) 的步长条件下，
+\[
+  \boxed{0<h<2.}
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 28 题}\quad
+试从
+\[
+  y(t_{n+1})-y(t_{n-p})
+  =\int_{t_{n-p}}^{t_{n+1}} f(t,y(t))\dd t
+  =\int_{t_{n-p}}^{t_{n+1}} y'(t)\dd t
+\]
+导出解初值问题
+\[
+  y'=f(t,y),\qquad a\le t\le b,\qquad y(a)=y_0
+\]
+的 Nystrom 方法：
+\[
+  y_{n+1}=y_{n-1}+2hf_n.
+\]
+
+\medskip
+\noindent\textbf{解}\quad
+取 \(p=1\)，则
+\[
+  y(t_{n+1})-y(t_{n-1})
+  =\int_{t_{n-1}}^{t_{n+1}} y'(t)\dd t.
+\]
+在区间 \([t_{n-1},t_{n+1}]\) 上用中点公式近似右端积分。该区间长度为 \(2h\)，中点为 \(t_n\)，所以
+\[
+  \int_{t_{n-1}}^{t_{n+1}} y'(t)\dd t
+  \approx 2h\,y'(t_n)
+  =2h\,f(t_n,y(t_n)).
+\]
+以数值解 \(y_n\) 近似 \(y(t_n)\)，并记
+\[
+  f_n=f(t_n,y_n),
+\]
+便得到
+\[
+  y_{n+1}-y_{n-1}=2h f_n,
+\]
+即
+\[
+  \boxed{y_{n+1}=y_{n-1}+2h f_n.}
+\]
+这就是 Nystrom 方法。
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 30 题}\quad
+证明 BDF 方法
+\[
+  \sum_{m=1}^{k}\frac{\nabla^m y_n}{m}=h f(t_n,y_n)
+  \tag{5.4.23}
+\]
+是 \(k\) 阶收敛的。
+
+\medskip
+\noindent\textbf{证明}\quad
+BDF 方法的构造是：用经过
+\[
+  (t_n,y_n),(t_{n-1},y_{n-1}),\ldots,(t_{n-k},y_{n-k})
+\]
+的 \(k\) 次后差插值多项式 \(q_k(t)\) 的导数 \(q_k'(t_n)\) 来近似 \(y'(t_n)\)。令
+\[
+  s=\frac{t-t_n}{h}.
+\]
+Newton 后差插值多项式可写成
+\[
+  q_k(t_n+sh)
+  =y_n+s\nabla y_n+\frac{s(s+1)}{2!}\nabla^2y_n
+  +\cdots+
+  \frac{s(s+1)\cdots(s+k-1)}{k!}\nabla^k y_n.
+\]
+对 \(t\) 求导，并令 \(s=0\)，注意
+\[
+  \left.\frac{\dd}{\dd s}
+  \frac{s(s+1)\cdots(s+m-1)}{m!}\right|_{s=0}
+  =\frac{(m-1)!}{m!}=\frac1m,
+\]
+于是
+\[
+  q_k'(t_n)
+  =\frac1h\sum_{m=1}^{k}\frac{\nabla^m y_n}{m}.
+\]
+所以式 (5.4.23) 等价于
+\[
+  q_k'(t_n)=f(t_n,y_n).
+\]
+
+下面考察截断误差。把精确解 \(y(t)\) 代入，并令 \(q_k(t)\) 为它在
+\[
+  t_n,t_{n-1},\ldots,t_{n-k}
+\]
+上的 \(k\) 次插值多项式。插值导数误差满足
+\[
+  y'(t_n)-q_k'(t_n)=O(h^k).
+\]
+因此
+\[
+  \sum_{m=1}^{k}\frac{\nabla^m y(t_n)}{m}
+  -h y'(t_n)
+  =h\bigl(q_k'(t_n)-y'(t_n)\bigr)
+  =O(h^{k+1}).
+\]
+这说明 BDF 方法的局部截断误差为 \(O(h^{k+1})\)，即方法具有 \(k\) 阶相容精度。
+
+在线性多步法理论中，若出发值满足 \(O(h^k)\) 精度并且方法满足零稳定性，则局部截断误差 \(O(h^{k+1})\) 推出整体误差 \(O(h^k)\)。讲义中通常使用的 BDF 方法 \(k=1,\ldots,6\) 满足相应的零稳定条件，因此 BDF 方法 (5.4.23) 是 \(k\) 阶收敛的。\QED
+
+\end{document}

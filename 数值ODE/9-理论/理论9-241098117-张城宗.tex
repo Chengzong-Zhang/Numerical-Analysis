@@ -1,0 +1,254 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\setlength{\parindent}{2em}
+\linespread{1.2}
+\setlength{\headheight}{13.6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{数值分析\quad 第九次理论作业\quad 学号：241098117，姓名：张城宗}
+\fancyhead[R]{习题五}
+
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\ee}{\mathrm{e}}
+\newcommand{\QED}{\hfill$\square$}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries 数值分析\quad 第九次理论作业}\\[6pt]
+  {\large 习题五第 7、8、12 题}\\[4pt]
+  {\normalsize 学号：241098117\quad 姓名：张城宗}
+\end{center}
+
+\bigskip
+
+%=====================================================
+\noindent\textbf{习题五\quad 第 7 题}\quad
+对初值问题
+\[
+  y'=\frac{1}{1+y^2},\qquad 0\le t\le 1,\qquad y(0)=1,
+\]
+求 Euler 方法的整体离散误差界。
+
+\medskip
+\noindent\textbf{解}\quad
+记
+\[
+  f(t,y)=\frac{1}{1+y^2}.
+\]
+由于 $y(0)=1$ 且 $f(t,y)>0$，精确解在 $[0,1]$ 上单调递增，故 $y(t)\ge 1$。Euler 方法
+\[
+  y_{n+1}=y_n+h f(t_n,y_n),\qquad y_0=1,
+\]
+也保持 $y_n\ge 1$。因此在这里可取包含精确解和数值解的区域 $y\ge 1$。
+
+先估计 Lipschitz 常数。因为
+\[
+  f_y(t,y)=-\frac{2y}{(1+y^2)^2},
+\]
+所以当 $y\ge 1$ 时，
+\[
+  |f_y(t,y)|=\frac{2y}{(1+y^2)^2}\le \frac12.
+\]
+故可取
+\[
+  L=\frac12.
+\]
+
+再估计局部截断误差中的二阶导数界。由微分方程可得
+\[
+  y''=f_t+f_y y'
+      =-\frac{2y}{(1+y^2)^2}\cdot\frac{1}{1+y^2}
+      =-\frac{2y}{(1+y^2)^3}.
+\]
+当 $y\ge 1$ 时，
+\[
+  |y''|=\frac{2y}{(1+y^2)^3}\le \frac14,
+\]
+故可取
+\[
+  M=\frac14.
+\]
+
+Euler 方法的整体误差满足标准估计
+\[
+  |e_n|
+  \le \frac{Mh}{2L}\left(\ee^{L(t_n-t_0)}-1\right),
+  \qquad e_n=y(t_n)-y_n.
+\]
+代入 $t_0=0,\ L=\dfrac12,\ M=\dfrac14$，得到
+\[
+  |e_n|
+  \le \frac{h}{4}\left(\ee^{t_n/2}-1\right),
+  \qquad 0\le t_n\le 1.
+\]
+于是整个区间上的统一误差界为
+\[
+  \boxed{
+    |y(t_n)-y_n|
+    \le \frac{h}{4}\left(\ee^{1/2}-1\right),
+    \qquad 0\le t_n\le 1.}
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题五\quad 第 8 题}\quad
+试用改进的 Euler 方法解初值问题
+\[
+  y'=t+y,\qquad 0\le t\le 1,\qquad y(0)=1,
+\]
+取步长 $h=0.2$，并将计算结果与精确解比较。
+
+\medskip
+\noindent\textbf{解}\quad
+改进的 Euler 方法采用预估--校正格式
+\[
+\begin{cases}
+  \bar y_{n+1}=y_n+h f(t_n,y_n),\\[1mm]
+  y_{n+1}=y_n+\dfrac h2
+  \left[f(t_n,y_n)+f(t_{n+1},\bar y_{n+1})\right].
+\end{cases}
+\]
+本题中 $f(t,y)=t+y$，$h=0.2$，因此
+\[
+\begin{cases}
+  \bar y_{n+1}=y_n+0.2(t_n+y_n),\\[1mm]
+  y_{n+1}=y_n+0.1\left[(t_n+y_n)+(t_{n+1}+\bar y_{n+1})\right].
+\end{cases}
+\]
+
+精确解由
+\[
+  y'-y=t,\qquad y(0)=1
+\]
+解得
+\[
+  y(t)=2\ee^t-t-1.
+\]
+逐步计算并与精确解比较，得到下表。
+\[
+\begin{array}{c c c c c}
+\toprule
+n & t_n & y_n\text{（改进 Euler）} & y(t_n)\text{（精确解）} & y(t_n)-y_n\\
+\midrule
+0 & 0.0 & 1.00000000 & 1.00000000 & 0.00000000\\
+1 & 0.2 & 1.24000000 & 1.24280552 & 0.00280552\\
+2 & 0.4 & 1.57680000 & 1.58364940 & 0.00684940\\
+3 & 0.6 & 2.03169600 & 2.04423760 & 0.01254160\\
+4 & 0.8 & 2.63066912 & 2.65108186 & 0.02041274\\
+5 & 1.0 & 3.40541633 & 3.43656366 & 0.03114733\\
+\bottomrule
+\end{array}
+\]
+可见取 $h=0.2$ 时，在 $t=1$ 处的近似值为
+\[
+  y_5=3.40541633,
+\]
+而精确值为
+\[
+  y(1)=2\ee-2=3.43656366,
+\]
+误差约为
+\[
+  3.43656366-3.40541633=0.03114733.
+\]
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{习题五\quad 第 12 题}\quad
+试验证解初值问题
+\[
+  y'=f(t,y),\qquad y(t_0)=\eta
+\]
+的数值公式
+\[
+  y_{n+1}=y_n+\frac h2\left(f(t_n,y_n)+f(t_{n+1},y_{n+1})\right)
+\]
+对 $y(t)=1,t,t^2$ 均准确成立，但对 $y(t)=t^3$ 不准确成立，并说明理由。
+
+\medskip
+\noindent\textbf{解}\quad
+若把精确解 $y(t)$ 代入公式，则有
+\[
+  y(t_{n+1})=y(t_n)+\frac h2
+  \left(y'(t_n)+y'(t_{n+1})\right),
+  \qquad t_{n+1}=t_n+h.
+\]
+等价地说，需要验证
+\[
+  y(t_n+h)-y(t_n)
+  =
+  \frac h2\left(y'(t_n)+y'(t_n+h)\right).
+\]
+下面分别检验。
+
+当 $y(t)=1$ 时，左端为 $0$，右端也为 $0$，故公式准确成立。
+
+当 $y(t)=t$ 时，
+\[
+  y(t_n+h)-y(t_n)=h,
+\]
+且
+\[
+  \frac h2\left(y'(t_n)+y'(t_n+h)\right)
+  =\frac h2(1+1)=h,
+\]
+故公式准确成立。
+
+当 $y(t)=t^2$ 时，
+\[
+  y(t_n+h)-y(t_n)
+  =(t_n+h)^2-t_n^2=2t_nh+h^2,
+\]
+而
+\[
+  \frac h2\left(y'(t_n)+y'(t_n+h)\right)
+  =\frac h2\left(2t_n+2(t_n+h)\right)
+  =2t_nh+h^2.
+\]
+故公式也准确成立。
+
+当 $y(t)=t^3$ 时，
+\[
+  y(t_n+h)-y(t_n)
+  =(t_n+h)^3-t_n^3
+  =3t_n^2h+3t_nh^2+h^3,
+\]
+而
+\[
+\begin{aligned}
+  \frac h2\left(y'(t_n)+y'(t_n+h)\right)
+  &=\frac h2\left(3t_n^2+3(t_n+h)^2\right)\\
+  &=3t_n^2h+3t_nh^2+\frac32h^3.
+\end{aligned}
+\]
+两者相差
+\[
+  \frac32h^3-h^3=\frac12h^3\ne 0
+  \qquad (h\ne 0),
+\]
+因此该公式对 $y(t)=t^3$ 不准确成立。
+
+其原因是该公式本质上把
+\[
+  y(t_{n+1})-y(t_n)=\int_{t_n}^{t_{n+1}} y'(t)\dd t
+\]
+用梯形公式
+\[
+  \frac h2\left(y'(t_n)+y'(t_{n+1})\right)
+\]
+来近似。梯形公式对一次及一次以下多项式精确，所以当 $y(t)$ 为二次及二次以下多项式时，$y'(t)$ 为一次及一次以下多项式，公式准确；而当 $y(t)=t^3$ 时，$y'(t)=3t^2$ 为二次多项式，梯形公式一般不再精确。\QED
+
+\end{document}
