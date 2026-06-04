@@ -1,152 +1,133 @@
-% 定义Legendre多项式计算函数
-function p_val = legendre_poly(n, x)
-    if n == 0
-        p_val = ones(size(x));
-    elseif n == 1
-        p_val = x;
+%% 对称区间上 n 次最佳平方逼近多项式 (承接第一问)
+clear; clc; close all;
+
+%% 1. 定义参数
+d = 1;               % 半区间长度
+n = 3;               % 逼近多项式次数
+f = @(x) sin(pi*x);  % 被逼近函数
+x_plot = -1:0.01:1;  % 用于绘图和验证的网格点
+
+%% 2. 定义第一问的自适应积分函数 (嵌入主脚本)
+% 自适应两点 Gauss-Legendre 积分
+function result = AdaptiveGaussLegendre2(f, a, b, tol)
+    if nargin < 4
+        tol = 1e-8;
+    end
+    
+    [I, error_est] = AdaptiveStep(f, a, b, tol, 0);
+    
+    if error_est > tol
+        fprintf('警告：初始递归可能未完全收敛。\n');
+    end
+    
+    result = I;
+end
+
+function [I_val, I_err] = AdaptiveStep(f, a, b, tol, depth)
+    I_ab = Gauss2Points(f, a, b);
+    
+    m = (a + b) / 2;
+    I_left = Gauss2Points(f, a, m);
+    I_right = Gauss2Points(f, m, b);
+    I_sub = I_left + I_right;
+    
+    I_err = 16 * abs(I_sub - I_ab);
+    
+    if I_err <= tol || depth > 10
+        I_val = I_ab;
     else
-        % 使用递推公式计算Legendre多项式，避免数值不稳定
-        P_prev_prev = ones(size(x)); % P_0
-        P_prev = x;                 % P_1
-        
-        for k = 2:n
-            current_P = ( ((2*k - 1) * x .* P_prev) - (k - 1) * P_prev_prev ) ./ k;
-            P_prev_prev = P_prev;
-            P_prev = current_P;
-        end
-        p_val = current_P; % 返回第n个Legendre多项式
+        [I_left_val, I_left_err] = AdaptiveStep(f, a, m, tol/2, depth+1);
+        [I_right_val, I_right_err] = AdaptiveStep(f, m, b, tol/2, depth+1);
+        I_val = I_left_val + I_right_val;
+        I_err = 16 * abs(I_val - I_ab);
     end
 end
 
-% 自适应高斯-勒让德积分函数（部分实现）
-function [integral_result, num_evaluations] = gls_integrate(func, a, b, tol)
-    % 实际的自适应算法实现可能更复杂，这里简化为粗略说明。
-    % 这里应使用高效的自适应算法来计算积分值和评估次数。
-    num_evaluations = 0;
-    integral_result = integral_qng(func, a, b, tol);
-end
-
-% 自适应高斯-勒让德积分函数
-function [result, evaluations] = gls_adapt(f, a, b, tol)
-    % 实现自适应高斯-勒让德积分，返回积分结果和计算次数。
-    [integral_result, output] = integral_qng(f, a, b, tol);
-    evaluations = output.funcCount;
+function I_val = Gauss2Points(f, a, b)
+    sqrt3 = sqrt(3);
+    t1 = -1/sqrt3;
+    t2 = 1/sqrt3;
     
-    result = integral_result;
-end
-
-% 计算最佳平方逼近多项式系数
-function [a0, a1, a2, a3] = compute_coefficients(f_target, n)
-    d = 1; % 对称区间的半径
-    x = linspace(-d, d, 1000); % 定义x向量
-    
-    P = zeros(length(x), n+1); % 初始化Legendre多项式矩阵
-    
-    for k = 0:n
-        P(:,k+1) = legendre_poly(k, x);
-    end
-
-    % 计算分子部分（积分值）
-    [numerator, ~] = gls_adapt(f_target, -d, d, 1e-8); % 这里假设gls_adapt返回两个参数
-    
-    % 计算分母部分（Legendre多项式的归一化积分）
-    denominator = zeros(1, n+1);
-    
-    for k = 0:n
-        integrand = P(:,k+1) .^ 2; % 平方后的Legendre多项式
-        [denom(k+1), ~] = gls_adapt(@(x) integrand, -d, d, 1e-8);
-    end
-    
-    % 计算系数，避免除以零的情况
-    a = zeros(1, n+1);
-    for k = 0:n
-        if denominator(k+1) ~= 0
-            a(k+1) = numerator / denominator(k+1);
-        else
-            a(k+1) = 0; % 或者处理奇异情况，如增加正则化项
-        end
-    end
-    
-    [a0, a1, a2, a3] = deal(a(1), a(2), a(3), a(4)); % 根据n取值调整输出变量
-end
-
-% 主函数调用
-function main(n)
-    d = 1;
-    f_target = @(x) sin(pi * x); % 目标函数
-    
-    [I, evaluations] = gls_adapt(f_target, -d, d, 1e-8);
-    
-    fprintf('积分结果: %.15f\n', I);
-    fprintf('计算点数: %d\n', evaluations);
-    
-    exact_value = (2 * (pi^2 - 15)) / pi^3; % 精确值
-    fprintf('精确值: %.15f\n', exact_value);
-    fprintf('误差: %.15f\n', abs(I - exact_value));
-    
-    % 计算最佳平方逼近多项式的系数
-    [a0, a1, a2, a3] = compute_coefficients(f_target, n);
-end
-
-
-function adaptive_gauss_legendre()
-    exact = (2 * (pi^2 - 15)) / pi^3;
-    f = @(x) 0.5 .* (5 .* x.^3 - 3 .* x) .* sin(pi * x);
-    
-    tol = 1e-8; % 容差
-    
-    [I, cnt] = gls_adapt(f, -1, 1, tol);
-    
-    fprintf('积分结果: %.15f\n', I);
-    fprintf('计算点数: %d\n', cnt);
-    fprintf('精确值: %.15f\n', exact);
-    fprintf('误差: %.15f\n', abs(I - exact));
-end
-
-function [S, cnt] = gls_integrate(f, a, b)
     h = (b - a) / 2;
-    c = h * sqrt(1/3); % 计算c的值 因为高斯勒让德
-    x1 = a + c;
-    x2 = b - c;
-    f1 = f(x1);
-    f2 = f(x2);
-    S = h*(f1 + f2);
-    cnt = 2;  % 因为用了两点积分
+    x1 = h * t1 + (a + b) / 2;
+    x2 = h * t2 + (a + b) / 2;
+    
+    I_val = h * (f(x1) + f(x2));
 end
 
-function [I, cnt] = gls_adapt(f, a, b, tol)
-    % 初始计算
-    S_current = gls_integrate(f, a, b);
-    cnt_current = 2;  % 因为用了两点积分
-    
-    exact_val = pi;
-    error = abs(S_current - exact_val);
-    
-    if error < tol
-        I = S_current;
-        return;
-    else
-        m = (a + b) / 2;
-        
-        [S_am, cnt_am] = gls_integrate(f, a, m);
-        [S_mb, cnt_mb] = gls_integrate(f, m, b);
-        S_new = S_am + S_mb;
-        cnt = cnt_am + cnt_mb;
-        
-        error = abs(S_new - S_current);
-        
-        if error < tol / 2
-            I = S_new;
-            return;
-        else
-            % 继续递归处理每个子区间，使用更小的容限
-            [I_left, cnt_left] = gls_adapt(f, a, m, tol/2);
-            [I_right, cnt_right] = gls_adapt(f, m, b, tol/2);
-            I = I_left + I_right;
-            cnt = cnt_left + cnt_right;
+%% 3. 构建法方程组 A*c = b
+A = zeros(n+1, n+1);
+b = zeros(n+1, 1);
+
+for i = 0:n
+    for j = 0:n
+        k = i + j;
+        % 计算 A_ij = int_{-d}^{d} x^k dx
+        if mod(k, 2) == 0  % k 为偶数
+            A(i+1, j+1) = 2 * d^(k+1) / (k+1);
+        else                % k 为奇数
+            A(i+1, j+1) = 0;
         end
     end
+    
+    % 计算 b_i = int_{-d}^{d} f(x) * x^i dx
+    % 使用第一问的自适应积分函数
+    integrand = @(x_val) f(x_val) .* (x_val.^i);
+    b(i+1) = AdaptiveGaussLegendre2(integrand, -d, d, 1e-10);
 end
 
-% 调用主程序
-main(3); % 替换为所需的多项式次数，例如3
+%% 4. 求解系数 c
+c = A \ b;
+
+%% 5. 构造逼近多项式 P_n(x)
+% c 向量是 [c_0, c_1, ..., c_n]，polyval 需要 [c_n, ..., c_0]
+c_poly = flip(c); 
+P_n = @(x_val) polyval(c_poly, x_val);
+
+%% 6. 计算误差
+syms x_sym
+f_sym = sin(pi*x_sym);
+I_exact = int(f_sym, x_sym, -d, d); % 精确积分值
+
+% 近似积分值
+I_approx = AdaptiveGaussLegendre2(P_n, -d, d, 1e-10);
+
+% L2 范数误差
+error_L2 = abs(I_exact - I_approx);
+
+%% 7. 输出结果
+fprintf('----- 对称区间最佳平方逼近验证结果 -----\n');
+fprintf('区间: [-%.0f, %.0f]\n', -d, d);
+fprintf('函数: f(x) = sin(pi*x)\n');
+fprintf('次数: n = %d\n', n);
+fprintf('----- 法方程组系数矩阵 A -----\n');
+fprintf('A =\n');
+fprintf('  %.4f  %.4f  %.4f  %.4f\n', A(1,:));
+fprintf('  %.4f  %.4f  %.4f  %.4f\n', A(2,:));
+fprintf('  %.4f  %.4f  %.4f  %.4f\n', A(3,:));
+fprintf('  %.4f  %.4f  %.4f  %.4f\n', A(4,:));
+fprintf('----- 法方程组右端项 b -----\n');
+fprintf('b =\n');
+fprintf('  %.4f\n', b(1));
+fprintf('  %.4f\n', b(2));
+fprintf('  %.4f\n', b(3));
+fprintf('  %.4f\n', b(4));
+fprintf('----- 解向量 c (多项式系数) -----\n');
+fprintf('c = [c_0, c_1, c_2, c_3] =\n');
+fprintf('  %.10f\n', c(1));
+fprintf('  %.10f\n', c(2));
+fprintf('  %.10f\n', c(3));
+fprintf('  %.10f\n', c(4));
+fprintf('----- 逼近多项式表达式 -----\n');
+fprintf('P_3(x) = %.10f + %.10f*x + %.10f*x^2 + %.10f*x^3\n', c(1), c(2), c(3), c(4));
+fprintf('----- 误差分析 -----\n');
+fprintf('精确积分值: I_exact = %.15f\n', double(I_exact));
+fprintf('自适应近似积分值: I_approx = %.15f\n', I_approx);
+fprintf('绝对误差: |I_exact - I_approx| = %.2e\n', error_L2);
+fprintf('目标误差上界: tol = 1e-8\n');
+fprintf('----- 验证结论 -----\n');
+if error_L2 <= 1e-8
+    fprintf('验证成功！误差 %.2e 小于目标误差 1e-8。\n', error_L2);
+else
+    fprintf('验证未完全满足！误差 %.2e 略大于目标误差 1e-8。\n', error_L2);
+end
