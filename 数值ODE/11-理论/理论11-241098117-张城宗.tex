@@ -1,0 +1,223 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\setlength{\parindent}{2em}
+\linespread{1.2}
+\setlength{\headheight}{14pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{数值分析\quad 第十一次理论作业\quad 学号：241098117，姓名：张城宗}
+\fancyhead[R]{第五章}
+
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\ee}{\mathrm{e}}
+\newcommand{\QED}{\hfill$\square$}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries 数值分析\quad 第十一次理论作业}\\[6pt]
+  {\large 第五章第 32、34(2)、36(2)(4) 题}\\[4pt]
+  {\normalsize 学号：241098117\quad 姓名：张城宗}
+\end{center}
+
+\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 32 题}\quad
+证明 $m$ 阶齐次线性差分方程 (5.5.7) 的线性无关解的最大数目是 $m$.
+
+\medskip
+\noindent\textbf{证明}\quad
+$m$ 阶齐次线性差分方程为
+\[
+  a_0(n)y(n)+a_1(n)y(n+1)+\cdots+a_m(n)y(n+m)=0,
+  \tag{5.5.7}
+\]
+其中 $a_0(n)\neq 0$，$a_m(n)\neq 0$. 据习题 31（性质 5.5.2），方程 (5.5.7) 至少有 $m$ 个线性无关解，故线性无关解的最大数目至少为 $m$. 下面证明至多为 $m$.
+
+\textbf{至多 $m$ 个线性无关解.}\quad
+设 $y_1(n),y_2(n),\ldots,y_{m+1}(n)$ 是方程 (5.5.7) 的任意 $m+1$ 个解. 考虑关于未知常数 $C_1,C_2,\ldots,C_{m+1}$ 的齐次线性方程组：
+\[
+  \sum_{j=1}^{m+1} C_j\, y_j(i)=0,\qquad i=0,1,\ldots,m-1.
+\]
+这是含 $m$ 个方程、$m+1$ 个未知量的齐次线性方程组，由线性方程组理论知必存在非零解，即存在
+$(C_1,C_2,\ldots,C_{m+1})\neq\mathbf{0}$.
+
+令
+\[
+  g(n)=C_1 y_1(n)+C_2 y_2(n)+\cdots+C_{m+1}y_{m+1}(n).
+\]
+由方程 (5.5.7) 的线性性，$g(n)$ 也满足 (5.5.7)，且由上面方程组的解的性质有
+\[
+  g(0)=g(1)=\cdots=g(m-1)=0.
+\]
+由于 $a_m(n)\neq 0$，方程 (5.5.7) 可改写为
+\[
+  y(n+m)=-\frac{1}{a_m(n)}\bigl[a_0(n)y(n)+\cdots+a_{m-1}(n)y(n+m-1)\bigr],
+\]
+故解由 $m$ 个连续初始值唯一确定. 既然 $g$ 在 $0,1,\ldots,m-1$ 处均为零，由解的唯一性得
+\[
+  g(n)=0 \quad \text{对所有 } n\in N.
+\]
+这说明 $y_1(n),y_2(n),\ldots,y_{m+1}(n)$ 线性相关. 因为 $m+1$ 个解任意取均线性相关，所以线性无关解的数目至多为 $m$.
+
+综合两方面，$m$ 阶齐次线性差分方程 (5.5.7) 的线性无关解的最大数目恰好是 $m$. \QED
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 34 题 (2)}\quad
+求差分方程
+\[
+  y(n+2)+2y(n+1)+2y(n)=2^n
+\]
+的通解.
+
+\medskip
+\noindent\textbf{解}
+
+\textbf{第一步：求对应齐次方程的通解.}\quad
+对应的齐次差分方程为
+\[
+  y(n+2)+2y(n+1)+2y(n)=0.
+\]
+其特征方程为
+\[
+  z^2+2z+2=0,
+\]
+解得
+\[
+  z=\frac{-2\pm\sqrt{4-8}}{2}=-1\pm i.
+\]
+写成极坐标形式：$|-1+i|=\sqrt{2}$，$\arg(-1+i)=\dfrac{3\pi}{4}$，故特征根为
+\[
+  z=\sqrt{2}\,\ee^{\pm i\frac{3\pi}{4}}=\sqrt{2}\!\left(\cos\frac{3\pi}{4}\pm i\sin\frac{3\pi}{4}\right).
+\]
+由公式 (5.5.18)，齐次方程的通解为
+\[
+  y_h(n)=(\sqrt{2})^n\!\left(C_1\cos\frac{3n\pi}{4}+C_2\sin\frac{3n\pi}{4}\right),
+\]
+其中 $C_1,C_2$ 为任意常数.
+
+\textbf{第二步：求特解.}\quad
+右端 $2^n$ 对应 $z_0=2$，而 $z_0=2$ 不是特征方程 $z^2+2z+2=0$ 的根. 设特解形式为
+\[
+  y^*(n)=K\cdot 2^n.
+\]
+代入方程：
+\[
+  K\cdot 2^{n+2}+2K\cdot 2^{n+1}+2K\cdot 2^n
+  =\bigl(4+4+2\bigr)K\cdot 2^n
+  =10K\cdot 2^n=2^n,
+\]
+故 $K=\dfrac{1}{10}$，即
+\[
+  y^*(n)=\frac{1}{10}\cdot 2^n.
+\]
+
+\textbf{第三步：写出通解.}\quad
+由性质 5.5.4，非齐次方程的通解为齐次通解与特解之和：
+\[
+  \boxed{
+  y(n)=(\sqrt{2})^n\!\left(C_1\cos\frac{3n\pi}{4}+C_2\sin\frac{3n\pi}{4}\right)+\frac{2^n}{10},
+  }
+\]
+其中 $C_1,C_2$ 为任意常数.
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 36 题 (2)}\quad
+判断解初值问题 $y'=f(t,y)$，$y(t_0)=y_0$ 的多步法
+\[
+  y_{n+2}+y_{n+1}-2y_n=h(2f_{n+1}+f_n)
+\]
+是否收敛，并说明原因.
+
+\medskip
+\noindent\textbf{解}\quad
+将方法写成标准线性 $k$ 步法 (5.1.10) 的形式，这里 $k=2$，系数为
+\[
+  \alpha_2=1,\quad\alpha_1=1,\quad\alpha_0=-2;\qquad
+  \beta_2=0,\quad\beta_1=2,\quad\beta_0=1.
+\]
+对应的特征多项式为
+\[
+  \rho(\lambda)=\lambda^2+\lambda-2=(\lambda-1)(\lambda+2),\qquad
+  \sigma(\lambda)=2\lambda+1.
+\]
+
+\textbf{相容性检验.}\quad
+\[
+  \rho(1)=1+1-2=0\;\checkmark,\qquad
+  \rho'(\lambda)=2\lambda+1,\quad\rho'(1)=3,\quad\sigma(1)=2+1=3\;\checkmark.
+\]
+相容条件 (5.6.8) 满足，故方法是\textbf{相容的}.
+
+\textbf{零稳定性检验.}\quad
+$\rho(\lambda)=(\lambda-1)(\lambda+2)$ 的根为 $\lambda_1=1$ 和 $\lambda_2=-2$.
+由于 $|\lambda_2|=2>1$，存在模大于 $1$ 的根，\textbf{特征根条件不满足}.
+
+由定理 5.6.5，方法\textbf{不稳定（不满足零稳定性）}.
+
+\textbf{结论.}\quad
+方法不满足零稳定性，因此\textbf{不收敛}.
+
+\bigskip\bigskip
+
+%=====================================================
+\noindent\textbf{第五章\quad 第 36 题 (4)}\quad
+判断解初值问题 $y'=f(t,y)$，$y(t_0)=y_0$ 的多步法
+\[
+  y_{n+1}-y_{n-1}=\frac{h}{3}(3f_n-f_{n-1}+4f_{n-2})
+\]
+是否收敛，并说明原因.
+
+\medskip
+\noindent\textbf{解}\quad
+令 $n\to n+2$，将方法改写为标准线性 $k$ 步法形式：
+\[
+  y_{n+3}-y_{n+1}=\frac{h}{3}(3f_{n+2}-f_{n+1}+4f_n).
+\]
+这是 $k=3$ 步法，系数为
+\[
+  \alpha_3=1,\;\alpha_2=0,\;\alpha_1=-1,\;\alpha_0=0;\qquad
+  \beta_3=0,\;\beta_2=1,\;\beta_1=-\frac{1}{3},\;\beta_0=\frac{4}{3}.
+\]
+对应的特征多项式为
+\[
+  \rho(\lambda)=\lambda^3-\lambda=\lambda(\lambda-1)(\lambda+1),\qquad
+  \sigma(\lambda)=\lambda^2-\frac{1}{3}\lambda+\frac{4}{3}.
+\]
+
+\textbf{相容性检验.}\quad
+\[
+  \rho(1)=1-1=0\;\checkmark,\qquad
+  \rho'(\lambda)=3\lambda^2-1,\quad\rho'(1)=2,\quad
+  \sigma(1)=1-\frac{1}{3}+\frac{4}{3}=2\;\checkmark.
+\]
+相容条件 (5.6.8) 满足，故方法是\textbf{相容的}.
+
+\textbf{零稳定性检验.}\quad
+$\rho(\lambda)=\lambda(\lambda-1)(\lambda+1)$ 的根为
+\[
+  \lambda_1=0,\quad\lambda_2=1,\quad\lambda_3=-1.
+\]
+各根的模：$|\lambda_1|=0<1$，$|\lambda_2|=|\lambda_3|=1$.
+位于单位圆周上的根 $\lambda_2=1$ 与 $\lambda_3=-1$ 均为\textbf{单重根}.
+
+因此，$\rho(\lambda)$ 满足\textbf{特征根条件}，方法是\textbf{零稳定的}.
+
+\textbf{结论.}\quad
+方法既相容又零稳定，由定理 5.6.7，方法\textbf{收敛}.
+
+\end{document}
