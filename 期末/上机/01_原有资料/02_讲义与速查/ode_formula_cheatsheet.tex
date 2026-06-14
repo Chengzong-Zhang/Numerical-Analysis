@@ -1,0 +1,227 @@
+\documentclass[10pt,a4paper]{ctexart}
+\usepackage[margin=1.35cm]{geometry}
+\usepackage{amsmath,amssymb,array,booktabs,multicol}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+\pagestyle{plain}
+
+\begin{document}
+\begin{center}
+  {\LARGE 第五章 ODE 上机公式速查}\\
+  \small 只保留可直接写进答案和代码的公式
+\end{center}
+
+\begin{multicols}{2}
+\section*{0. 通用写法}
+\[
+y'=f(t,y),\quad y(a)=y_0,\qquad t_n=a+nh.
+\]
+单步法统一写为
+\[
+y_{n+1}=y_n+h\Phi(t_n,y_n,h).
+\]
+若已知精确解，计算
+\[
+E(h)=\max_n\|y(t_n)-y_n\|_\infty,\qquad
+p\approx\frac{\log(E(h)/E(h/2))}{\log 2}.
+\]
+
+\section*{1. Euler 与二阶 RK}
+\textbf{向前 Euler（一阶）}
+\[
+y_{n+1}=y_n+h f(t_n,y_n).
+\]
+
+\textbf{改进 Euler / 显式梯形（二阶）}
+\[
+K_1=f(t_n,y_n),\quad
+K_2=f(t_n+h,y_n+hK_1),
+\]
+\[
+y_{n+1}=y_n+\frac h2(K_1+K_2).
+\]
+
+\textbf{中点 RK2 / 变形 Euler（二阶）}
+\[
+K_1=f(t_n,y_n),\quad
+K_2=f\left(t_n+\frac h2,y_n+\frac h2K_1\right),
+\quad y_{n+1}=y_n+hK_2.
+\]
+
+\textbf{教材二阶 Heun（二阶）}
+\[
+K_1=f(t_n,y_n),\quad
+K_2=f\left(t_n+\frac{2h}{3},y_n+\frac{2h}{3}K_1\right),
+\]
+\[
+y_{n+1}=y_n+\frac h4(K_1+3K_2).
+\]
+
+\section*{2. 经典 RK4}
+\[
+\begin{aligned}
+K_1&=f(t_n,y_n),\\
+K_2&=f(t_n+h/2,y_n+hK_1/2),\\
+K_3&=f(t_n+h/2,y_n+hK_2/2),\\
+K_4&=f(t_n+h,y_n+hK_3),\\
+y_{n+1}&=y_n+\frac h6(K_1+2K_2+2K_3+K_4).
+\end{aligned}
+\]
+\textbf{RK4 Butcher 表}
+\[
+\begin{array}{c|cccc}
+0\\
+\frac12&\frac12\\
+\frac12&0&\frac12\\
+1&0&0&1\\ \hline
+&\frac16&\frac13&\frac13&\frac16
+\end{array}
+\]
+
+\section*{3. 一般显式 RK 与 Butcher 表}
+\[
+K_i=f\left(t_n+c_i h,\ y_n+h\sum_{j<i}a_{ij}K_j\right),
+\quad
+y_{n+1}=y_n+h\sum_{i=1}^s b_iK_i.
+\]
+\[
+\begin{array}{c|c}
+\boldsymbol c&A\\ \hline
+&\boldsymbol b^T
+\end{array}
+\]
+
+\section*{4. RKF45 自适应}
+\textbf{六个斜率}
+\[
+\begin{aligned}
+K_1={}&f(t,y),\\
+K_2={}&f(t+\tfrac14h,\ y+h\tfrac14K_1),\\
+K_3={}&f(t+\tfrac38h,\ y+h(\tfrac3{32}K_1+\tfrac9{32}K_2)),\\
+K_4={}&f(t+\tfrac{12}{13}h,\ y+h(\tfrac{1932}{2197}K_1-\tfrac{7200}{2197}K_2+\tfrac{7296}{2197}K_3)),\\
+K_5={}&f(t+h,\ y+h(\tfrac{439}{216}K_1-8K_2+\tfrac{3680}{513}K_3-\tfrac{845}{4104}K_4)),\\
+K_6={}&f(t+\tfrac12h,\ y+h(-\tfrac8{27}K_1+2K_2-\tfrac{3544}{2565}K_3+\tfrac{1859}{4104}K_4-\tfrac{11}{40}K_5)).
+\end{aligned}
+\]
+
+\textbf{四阶、五阶解与误差}
+\[
+y_4=y+h\left(\frac{25}{216}K_1+\frac{1408}{2565}K_3+
+\frac{2197}{4104}K_4-\frac15K_5\right),
+\]
+\[
+y_5=y+h\left(\frac{16}{135}K_1+\frac{6656}{12825}K_3+
+\frac{28561}{56430}K_4-\frac9{50}K_5+\frac2{55}K_6\right),
+\]
+\[
+\mathrm{err}=\|y_5-y_4\|_\infty.
+\]
+\[
+\mathrm{err}\leq\mathrm{tol}:\ \text{接受， }t\leftarrow t+h,\ y\leftarrow y_5;
+\]
+\[
+\mathrm{err}>\mathrm{tol}:\ \text{拒绝，不更新 }t,y.
+\]
+\[
+h_{\rm new}=0.84h\left(\frac{\mathrm{tol}}{\mathrm{err}}\right)^{1/4},
+\quad h_{\min}\leq h_{\rm new}\leq h_{\max}.
+\]
+若 $\mathrm{err}=0$，直接放大步长；每步先取
+\[
+h\leftarrow\min(h,T-t)
+\]
+保证最后一步不越过终点。
+
+\textbf{RKF45 Butcher 表}
+\[
+\renewcommand{\arraystretch}{1.15}
+\begin{array}{c|rrrrrr}
+0\\
+\frac14&\frac14\\
+\frac38&\frac3{32}&\frac9{32}\\
+\frac{12}{13}&\frac{1932}{2197}&-\frac{7200}{2197}&\frac{7296}{2197}\\
+1&\frac{439}{216}&-8&\frac{3680}{513}&-\frac{845}{4104}\\
+\frac12&-\frac8{27}&2&-\frac{3544}{2565}&\frac{1859}{4104}&-\frac{11}{40}\\ \hline
+y_4&\frac{25}{216}&0&\frac{1408}{2565}&\frac{2197}{4104}&-\frac15&0\\
+y_5&\frac{16}{135}&0&\frac{6656}{12825}&\frac{28561}{56430}&-\frac9{50}&\frac2{55}
+\end{array}
+\]
+
+\section*{5. 方程组与高阶方程}
+向量方程直接套同一个 RK 公式：
+\[
+\boldsymbol y'=\boldsymbol f(t,\boldsymbol y),\quad
+\boldsymbol y(a)=\boldsymbol y_0.
+\]
+二阶方程
+\[
+y''=g(t,y,y'),\quad y(a)=\eta_1,\ y'(a)=\eta_2
+\]
+令 $w_1=y,\ w_2=y'$，则
+\[
+\begin{pmatrix}w_1'\\w_2'\end{pmatrix}
+=
+\begin{pmatrix}w_2\\g(t,w_1,w_2)\end{pmatrix},
+\quad
+\boldsymbol w(a)=\begin{pmatrix}\eta_1\\\eta_2\end{pmatrix}.
+\]
+$m$ 阶方程：令 $w_1=y,w_2=y',\ldots,w_m=y^{(m-1)}$。
+
+\section*{6. Adams 最低限度模板}
+记 $f_n=f(t_n,y_n)$。四步 AB 预报：
+\[
+y_{n+1}^{P}=y_n+\frac h{24}
+(55f_n-59f_{n-1}+37f_{n-2}-9f_{n-3}).
+\]
+三步 AM 校正：
+\[
+y_{n+1}=y_n+\frac h{24}
+(9f_{n+1}^{P}+19f_n-5f_{n-1}+f_{n-2}).
+\]
+PECE：Predict $\to$ Evaluate $\to$ Correct $\to$ Evaluate。\\
+必须先用 RK4 得到 $y_1,y_2,y_3$；Adams 必须固定步长。
+
+\section*{7. 误差与阶数}
+若方法为 $p$ 阶：
+\[
+\text{局部截断误差}=O(h^{p+1}),\qquad
+\text{整体误差}=O(h^p).
+\]
+\[
+p\approx
+\frac{\log(E(h_1)/E(h_2))}
+{\log(h_1/h_2)}.
+\]
+常见整体阶数：
+\[
+\begin{array}{c|ccccc}
+\text{方法}&\text{Euler}&\text{改进Euler}&\text{中点}&\text{Heun}&\text{RK4}\\ \hline
+p&1&2&2&2&4
+\end{array}
+\]
+
+\section*{8. 刚性题最低限度}
+测试方程 $y'=\lambda y$：
+\[
+\text{Euler 稳定： }-2<h\lambda<0.
+\]
+线性系统 $\boldsymbol y'=A\boldsymbol y+\boldsymbol g(t)$ 的隐式梯形：
+\[
+\left(I-\frac h2A\right)\boldsymbol y_{n+1}
+=\left(I+\frac h2A\right)\boldsymbol y_n
++\frac h2[\boldsymbol g(t_n)+\boldsymbol g(t_{n+1})].
+\]
+若显式方法突然发散，先检查步长是否超出稳定范围。
+
+\section*{9. 考试固定答案句式}
+\begin{enumerate}
+\item 设步长 $h=(T-a)/N$，令 $t_n=a+nh$，取 $y_0=y(a)$。
+\item 按所选方法计算各斜率并递推得到 $y_{n+1}$。
+\item 若为高阶方程，先令 $w_1=y,w_2=y',\ldots$ 化为一阶系统。
+\item 若有精确解，列表给出 $t_n,y_n,y(t_n),|y(t_n)-y_n|$，并计算最大误差。
+\item 用 $h,h/2,h/4$ 重算，按对数误差比估计收敛阶。
+\item 自适应法中，误差合格才更新时间和解；最后一步缩短至 $T$。
+\end{enumerate}
+
+\end{multicols}
+\end{document}

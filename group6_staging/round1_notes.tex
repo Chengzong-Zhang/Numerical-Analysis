@@ -1,0 +1,449 @@
+\documentclass[12pt,a4paper]{ctexart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\setlist[enumerate]{itemsep=0.35em,topsep=0.35em}
+\setlist[itemize]{itemsep=0.35em,topsep=0.35em}
+
+\newcommand{\R}{\mathbb R}
+\newcommand{\dd}{\mathrm d}
+\newcommand{\vol}{\operatorname{vol}}
+\newcommand{\id}{\operatorname{id}}
+
+\title{流形与几何第 1 轮复习笔记}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{第 6 组：微分形式、定向与 Stokes 公式}
+
+\subsection*{教材最小包}
+
+\paragraph{本组解决什么问题}
+本组训练如何用反对称协变张量语言统一处理积分、定向、外微分和整体拓扑应用。考试中，局部微积分的混合偏导抵消会被压缩为 $d^2=0$，球面的方向会被压缩为处处非零的最高次形式，边界积分与内部积分会被 Stokes 公式连接。09-1 至 10-1 正好形成一条主线：先建立微分形式和定向，再验证外微分坐标无关，最后用 Stokes 从局部计算推出球面积分与 Brouwer 不动点定理等全局结论。
+
+\paragraph{对应教材}
+主线章节一是 \S 2.5「微分形式」，书内 pp.76--87、PDF 物理页 85--96，用于外代数、外微分、pullback、$d^2=0$ 与坐标公式。主线章节二是 \S 2.6「带边流形」，书内 pp.88--90、PDF 物理页 97--99，用于定向与边界定向。主线章节三是 \S 2.7「Stokes 积分公式」，书内 pp.91--98、PDF 物理页 100--107，用于边界积分、球面积分与 Brouwer 不动点证明。支撑章节 \S 1.4 用于理解形式作用在切向量上；\S 3.1 只在体积形式和球面积分处轻量参考。教材 PDF 为扫描版，若需精确核对边界定向约定，应手动查看对应页码，不必整本 OCR。
+
+\paragraph{必须掌握的定义}
+\begin{enumerate}
+  \item \textbf{$k$-形式：}$M$ 上的 $k$-形式是外幂丛 $\Lambda^kT^*M$ 的光滑截面；逐点看，它是反对称的 $k$ 阶协变张量。
+  \item \textbf{外积：}若 $\alpha\in\Omega^p(M)$、$\beta\in\Omega^q(M)$，则 $\alpha\wedge\beta\in\Omega^{p+q}(M)$，并满足
+  \[
+    \alpha\wedge\beta=(-1)^{pq}\beta\wedge\alpha.
+  \]
+  \item \textbf{外微分：}外微分是映射 $d:\Omega^k(M)\to\Omega^{k+1}(M)$，在局部坐标中对系数求微分，并满足分次 Leibniz 法则与 $d^2=0$。
+  \item \textbf{pullback：}对光滑映射 $F:M\to N$ 和 $\omega\in\Omega^k(N)$，
+  \[
+    (F^*\omega)_p(v_1,\ldots,v_k)
+    =
+    \omega_{F(p)}(dF_pv_1,\ldots,dF_pv_k).
+  \]
+  \item \textbf{定向：}一个 $n$ 维流形的定向可由正向标架的连续等价类给出，也等价于选择一个处处非零的光滑 $n$-形式。
+  \item \textbf{边界定向：}本组采用“外法向优先”约定：若 $\nu$ 是外法向量，则
+  \[
+    (\nu,v_1,\ldots,v_{n-1})\text{ 在 }M\text{ 中正向}
+    \Longleftrightarrow
+    (v_1,\ldots,v_{n-1})\text{ 在 }\partial M\text{ 中正向}.
+  \]
+  \item \textbf{体积形式：}定向 $n$ 维流形上的体积形式是处处非零且与定向相容的 $n$-形式。
+  \item \textbf{内乘：}对向量场 $X$ 与 $k$-形式 $\omega$，
+  \[
+    (i_X\omega)(X_2,\ldots,X_k)=\omega(X,X_2,\ldots,X_k).
+  \]
+  \item \textbf{Stokes 公式：}若 $M^n$ 是紧定向带边流形，$\eta\in\Omega^{n-1}(M)$，则
+  \[
+    \int_M d\eta=\int_{\partial M}i^*\eta,
+  \]
+  其中 $i:\partial M\hookrightarrow M$ 是包含映射。
+  \item \textbf{光滑收缩：}若 $A\subset X$，收缩是映射 $r:X\to A$，满足 $r|_A=\id_A$；本组用的是假设存在光滑 $r:D^n\to S^{n-1}$ 后由 Stokes 导出矛盾。
+  \item \textbf{Brouwer 不动点定理的 Stokes 思路：}先证明不存在 $D^n\to S^{n-1}$ 的光滑收缩；再假设 $f:D^n\to D^n$ 无不动点，沿从 $f(x)$ 经过 $x$ 的射线构造收缩，得到矛盾。
+\end{enumerate}
+
+\paragraph{必须掌握的关键公式或结论}
+\begin{enumerate}
+  \item 局部表达：
+  \[
+    \omega=\sum_I a_I\,dx^{i_1}\wedge\cdots\wedge dx^{i_k}.
+  \]
+  \item 外微分坐标公式：
+  \[
+    d\omega=\sum_I da_I\wedge dx^{i_1}\wedge\cdots\wedge dx^{i_k}.
+  \]
+  \item 基本性质：
+  \[
+    d^2=0,\qquad
+    d(\alpha\wedge\beta)
+    =
+    d\alpha\wedge\beta+(-1)^{\deg\alpha}\alpha\wedge d\beta.
+  \]
+  \item pullback 与外微分交换：
+  \[
+    F^*(d\omega)=d(F^*\omega).
+  \]
+  \item Stokes 公式：
+  \[
+    \int_Md\eta=\int_{\partial M}i^*\eta.
+  \]
+  \item 在 $\R^{n+1}$ 中令
+  \[
+    E=\sum_{i=1}^{n+1}x_i\frac{\partial}{\partial x_i},
+    \qquad
+    \Omega=dx^1\wedge\cdots\wedge dx^{n+1},
+  \]
+  则本作业中的具体计算为
+  \[
+    d(i_E\Omega)=(\operatorname{div}E)\Omega=(n+1)\Omega.
+  \]
+\end{enumerate}
+
+\paragraph{考场常见写法}
+\begin{enumerate}
+  \item 遇到定向题，先说明定向由处处非零的最高次形式、整体法向量场或边界定向诱导。
+  \item 遇到外微分计算题，先局部展开，再用楔积反对称性和混合偏导相等消去重复项。
+  \item 遇到“外微分定义恰当”，重点是说明局部坐标公式在坐标变换下相容。
+  \item 遇到球面积分，优先把球面视为闭球边界，用 Stokes 转化为球内积分。
+  \item 遇到 Brouwer 不动点定理，先排除光滑收缩，再由无不动点构造收缩。
+  \item 使用 Stokes 前必须检查紧性、边界定向与形式次数。
+\end{enumerate}
+
+\subsection{09-1：球面可定向}
+
+\paragraph{题目关键词}
+球面；可定向；整体外法向量场；边界定向；体积形式；$i_E\Omega$。
+
+\paragraph{考点}
+至少用两种方法证明 $S^n$ 可定向，并说明两种方法实际上给出同一个标准定向。
+
+\paragraph{对应教材}
+\S 2.6，书内 pp.88--90、PDF 物理页 97--99；同时用到 \S 2.5 中“处处非零最高次形式给出定向”的表述。
+
+\paragraph{所需定义与定理}
+正则超曲面若存在整体光滑非零法向量场，则可由环境定向和法向量诱导定向。有定向带边流形的边界自然可定向。
+
+\paragraph{答案第一步}
+把
+\[
+  S^n=\{x\in\R^{n+1}:|x|^2=1\}
+\]
+看作欧氏空间中的超曲面，并取径向向量场在球面上的限制 $N_p=p$。
+
+\paragraph{关键公式}
+令
+\[
+  \Omega=dx^1\wedge\cdots\wedge dx^{n+1},\qquad
+  \omega=i_N\Omega.
+\]
+对任意 $T_pS^n$ 的基 $v_1,\ldots,v_n$，
+\[
+  \omega_p(v_1,\ldots,v_n)=\Omega_p(N_p,v_1,\ldots,v_n)\ne0.
+\]
+另一方面，
+\[
+  S^n=\partial D^{n+1},
+\]
+故单位闭球的标准定向通过外法向优先规则诱导球面定向。
+
+\paragraph{证明骨架}
+\begin{enumerate}
+  \item 方法一：$N_p=p$ 是整体光滑单位外法向；$i_N\Omega$ 是球面上处处非零的 $n$-形式，故球面可定向。
+  \item 方法二：$D^{n+1}$ 继承欧氏空间标准定向，且 $\partial D^{n+1}=S^n$；有定向流形的边界可定向。
+  \item 两种方法的联系：在球面上，边界外法向正是 $N=E|_{S^n}$，因此边界定向的体积形式就是 $i_N\Omega$。
+\end{enumerate}
+
+\paragraph{易错点}
+法向量必须整体连续且处处非零。$i_N\Omega$ 在环境空间中是 $n$-形式，真正用于球面定向的是它对球面的限制。若改用内法向量，定向会整体反号。
+
+\paragraph{遮住答案后的最短复写版}
+取标准体积形式 $\Omega$ 与球面外单位法向 $N_p=p$。因为 $N_p,v_1,\ldots,v_n$ 对任意球面切基都组成环境空间的基，故 $i_N\Omega$ 在球面上处处非零，球面可定向。又因 $S^n=\partial D^{n+1}$，闭球的标准定向也诱导球面定向；其外法向正是 $N$，所以两种方法一致。
+
+\subsection{09-2：Jacobian 恒等式与外微分}
+
+\paragraph{题目关键词}
+Jacobian 行列式；$df\wedge dg$；$d^2=0$；混合偏导；反对称性。
+
+\paragraph{考点}
+验证
+\[
+  \partial_x\frac{\partial(f,g)}{\partial(y,z)}
+  -
+  \partial_y\frac{\partial(f,g)}{\partial(x,z)}
+  +
+  \partial_z\frac{\partial(f,g)}{\partial(x,y)}
+  =0,
+\]
+并理解它是 $d(df\wedge dg)=0$ 的坐标系数。
+
+\paragraph{对应教材}
+\S 2.5，书内 pp.76--87、PDF 物理页 85--96，重点是外微分坐标公式、分次 Leibniz 法则与 $d^2=0$。
+
+\paragraph{所需定义与定理}
+\[
+  \frac{\partial(f,g)}{\partial(y,z)}=f_yg_z-f_zg_y,
+\]
+其余两个 Jacobian 类似。光滑函数混合偏导可交换，且 $dx^i\wedge dx^i=0$。
+
+\paragraph{答案第一步}
+把 $df\wedge dg$ 按 $dx\wedge dy$、$dx\wedge dz$、$dy\wedge dz$ 展开。
+
+\paragraph{关键公式}
+\[
+\begin{aligned}
+  df\wedge dg
+  ={}&
+  \frac{\partial(f,g)}{\partial(x,y)}dx\wedge dy
+  +
+  \frac{\partial(f,g)}{\partial(x,z)}dx\wedge dz\\
+  &+
+  \frac{\partial(f,g)}{\partial(y,z)}dy\wedge dz.
+\end{aligned}
+\]
+于是 $d(df\wedge dg)$ 的 $dx\wedge dy\wedge dz$ 系数正是题目中的交错和，而
+\[
+  d(df\wedge dg)=d^2f\wedge dg-df\wedge d^2g=0.
+\]
+
+\paragraph{证明骨架}
+\begin{enumerate}
+  \item 写出三个二阶 Jacobian。
+  \item 对 $df\wedge dg$ 取外微分，只保留能组成 $dx\wedge dy\wedge dz$ 的项。
+  \item 调整楔积次序时产生中间项的负号。
+  \item 由 $d^2=0$ 得交错和为零；若完全展开，则每项由混合偏导相等两两抵消。
+\end{enumerate}
+
+\paragraph{易错点}
+第二项是负号，来自把 $dy\wedge dx\wedge dz$ 调整为标准次序。不能只说“反对称所以为零”；真正同时使用了混合偏导相等和楔积反对称性。
+
+\paragraph{遮住答案后的最短复写版}
+展开 $df\wedge dg$，其三个系数分别是三个二阶 Jacobian。对它取 $d$，$dx\wedge dy\wedge dz$ 的系数正是题目中的“正、负、正”交错和。又
+\[
+  d(df\wedge dg)=d^2f\wedge dg-df\wedge d^2g=0,
+\]
+故该系数为零。
+
+\subsection{09-3：外微分定义的坐标无关性}
+
+\paragraph{题目关键词}
+外微分局部定义；一般 Jacobian 恒等式；坐标变换相容；自然性；唯一性。
+
+\paragraph{考点}
+把 09-2 推广到 $\R^n$，并用它验证
+\[
+  d\alpha=\sum_I da_I\wedge dx^I
+\]
+不依赖局部坐标选择。
+
+\paragraph{对应教材}
+\S 2.5，书内 pp.76--87、PDF 物理页 85--96，重点核对外微分的局部公式、$d^2=0$ 与 pullback 自然性。
+
+\paragraph{所需定义与定理}
+设 $f_1,\ldots,f_k\in C^\infty(\R^n)$，并取 $i_0<\cdots<i_k$。删去第 $s$ 个变量所得 Jacobian 记作 $J(i_0,\ldots,\widehat{i_s},\ldots,i_k)$，则
+\[
+  \sum_{s=0}^k(-1)^s
+  \partial_{x^{i_s}}
+  J(i_0,\ldots,\widehat{i_s},\ldots,i_k)=0.
+\]
+
+\paragraph{答案第一步}
+展开
+\[
+  df_1\wedge\cdots\wedge df_k
+\]
+并观察 $d(df_1\wedge\cdots\wedge df_k)$ 中每个 $(k+1)$ 次坐标基形式的系数。
+
+\paragraph{关键公式}
+\[
+  df_1\wedge\cdots\wedge df_k
+  =
+  \sum_{j_1<\cdots<j_k}
+  \frac{\partial(f_1,\ldots,f_k)}
+  {\partial(x^{j_1},\ldots,x^{j_k})}
+  dx^{j_1}\wedge\cdots\wedge dx^{j_k},
+\]
+而
+\[
+  d(df_1\wedge\cdots\wedge df_k)=0.
+\]
+坐标变换后，每个 $dy^{j_1}\wedge\cdots\wedge dy^{j_q}$ 都是若干函数微分的楔积，故
+\[
+  d(dy^{j_1}\wedge\cdots\wedge dy^{j_q})=0.
+\]
+
+\paragraph{证明骨架}
+\begin{enumerate}
+  \item 从 $d(df_1\wedge\cdots\wedge df_k)=0$ 读出一般 Jacobian 恒等式。
+  \item 在 $x$ 坐标中定义 $d\alpha=\sum_I da_I\wedge dx^I$。
+  \item 换到 $y$ 坐标；因为所有 $dy^J$ 的外微分为零，应用分次 Leibniz 法则得到同样的局部公式。
+  \item 因而两套坐标计算相容，外微分良定义。
+  \item 也可用自然性表述：坐标变换是微分同胚，且 $F^*d=dF^*$；外微分由“函数上等于通常微分、分次 Leibniz、$d^2=0$”唯一刻画。
+\end{enumerate}
+
+\paragraph{易错点}
+“在每套坐标中都能写公式”不等于良定义；必须证明交叠处结果一致。不要把 $d^2=0$ 当成坐标无关性的全部证明，它在这里用于保证坐标基形式的外微分为零并产生 Jacobian 恒等式。
+
+\paragraph{遮住答案后的最短复写版}
+先由
+\[
+  d(df_1\wedge\cdots\wedge df_k)=0
+\]
+得到一般 Jacobian 交错恒等式。若 $\alpha=\sum_Jb_Jdy^J$，则每个 $dy^J$ 是函数微分的楔积，故 $d(dy^J)=0$。于是
+\[
+  d\alpha=\sum_Jdb_J\wedge dy^J,
+\]
+与先换成 $x$ 坐标再计算的结果一致，所以局部公式坐标无关。
+
+\subsection{09-5：球面上 \(i_E\Omega\) 的积分}
+
+\paragraph{题目关键词}
+径向向量场；内乘；球面体积形式；边界定向；Stokes；散度。
+
+\paragraph{考点}
+计算 $\omega=i_E\Omega$ 在带有单位闭球诱导定向的 $S^n$ 上的积分。
+
+\paragraph{对应教材}
+\S 2.6 用于边界定向，\S 2.7 用于 Stokes；\S 3.1 只用于识别球面体积与欧氏体积。
+
+\paragraph{所需定义与定理}
+在 $\R^{n+1}$ 中，
+\[
+  E=\sum_{i=1}^{n+1}x_i\partial_{x_i},\qquad
+  \Omega=dx^1\wedge\cdots\wedge dx^{n+1}.
+\]
+在 $S^n$ 上，$E$ 是外单位法向，所以 $i_E\Omega$ 的限制是标准球面体积形式。
+
+\paragraph{答案第一步}
+先识别题目给出的交错和正是
+\[
+  \omega=i_E\Omega.
+\]
+
+\paragraph{关键公式}
+\[
+  d\omega=d(i_E\Omega)=(n+1)\Omega.
+\]
+因此
+\[
+  \int_{S^n}\omega
+  =
+  \int_{D^{n+1}}d\omega
+  =
+  (n+1)\vol(D^{n+1})
+  =
+  \frac{2\pi^{(n+1)/2}}{\Gamma((n+1)/2)}.
+\]
+
+\paragraph{证明骨架}
+\begin{enumerate}
+  \item 写出 $\omega=i_E\Omega$。
+  \item 检查 $S^n=\partial D^{n+1}$ 采用外法向优先边界定向。
+  \item 逐项求外微分，得到每项都贡献一个 $\Omega$，总计 $(n+1)\Omega$。
+  \item 用 Stokes 把球面积分化为闭球内积分。
+  \item 代入单位 $(n+1)$ 维球体积，得到球面面积。
+\end{enumerate}
+
+\paragraph{易错点}
+环境维数是 $n+1$，所以系数是 $n+1$，不是 $n$。若球面定向与闭球边界定向相反，答案整体变号。Stokes 中球面上积分的是 $n$-形式，球内积分的是其 $(n+1)$-形式外微分。
+
+\paragraph{遮住答案后的最短复写版}
+题目形式为 $\omega=i_E\Omega$。逐项求导得
+\[
+  d\omega=(n+1)\Omega.
+\]
+球面采用闭球诱导定向，故由 Stokes
+\[
+  \int_{S^n}\omega=(n+1)\vol(D^{n+1})
+  =\frac{2\pi^{(n+1)/2}}{\Gamma((n+1)/2)}.
+\]
+
+\subsection{10-1：Stokes 公式证明 Brouwer 不动点定理}
+
+\paragraph{题目关键词}
+Brouwer 不动点；反证；无收缩；体积形式；Stokes；整体积分矛盾。
+
+\paragraph{考点}
+掌握标准两段式证明：Stokes 排除光滑收缩；无不动点映射产生光滑收缩。
+
+\paragraph{对应教材}
+\S 2.7，书内 pp.91--98、PDF 物理页 100--107，重点是 Stokes、边界定向和无收缩论证。
+
+\paragraph{所需定义与定理}
+若存在光滑收缩
+\[
+  r:D^n\to S^{n-1},\qquad r|_{S^{n-1}}=\id,
+\]
+则对球面的标准体积形式 $\omega$，边界上的 $r^*\omega$ 就是 $\omega$。因为 $\omega$ 是 $S^{n-1}$ 上最高次形式，所以 $d\omega=0$。
+
+\paragraph{答案第一步}
+先不直接讨论不动点，而是假设存在光滑收缩，并用 Stokes 得到矛盾。
+
+\paragraph{关键公式}
+\[
+\begin{aligned}
+  0
+  &\ne \int_{S^{n-1}}\omega
+   =\int_{\partial D^n}r^*\omega\\
+  &=\int_{D^n}d(r^*\omega)
+   =\int_{D^n}r^*(d\omega)
+   =0.
+\end{aligned}
+\]
+若 $f:D^n\to D^n$ 无不动点，令 $a(x)=x-f(x)\ne0$，沿射线
+\[
+  f(x)+t\,a(x)
+\]
+取与 $S^{n-1}$ 的交点 $r(x)$；在边界上有 $r(x)=x$。
+
+\paragraph{证明骨架}
+\begin{enumerate}
+  \item 取 $S^{n-1}$ 的标准体积形式 $\omega$，其积分严格为正。
+  \item 假设存在光滑收缩 $r$，由 $r|_{\partial D^n}=\id$ 把边界积分写成 $\int_{\partial D^n}r^*\omega$。
+  \item 用 Stokes、pullback 与 $d$ 交换，以及最高次形式 $d\omega=0$，得到该积分为零，矛盾。
+  \item 假设光滑 $f:D^n\to D^n$ 无不动点，从 $f(x)$ 经过 $x$ 的射线与边界交于 $r(x)$，从而构造光滑收缩。
+  \item 与无收缩结论矛盾，因此 $f$ 有不动点；连续情形再由标准光滑逼近或无收缩定理推广。
+\end{enumerate}
+
+\paragraph{易错点}
+矛盾不是“球内体积积分本身为零”，而是同一个边界体积积分一方面非零，另一方面因它是某个 pullback 的 Stokes 积分而为零。Stokes 使用了 $D^n$ 的紧性与边界定向。构造 retraction 时必须说明 $f(x)\ne x$ 保证射线方向非零，并说明边界点被固定。
+
+\paragraph{遮住答案后的最短复写版}
+若有光滑收缩 $r:D^n\to S^{n-1}$，取球面标准体积形式 $\omega$，则
+\[
+  0\ne\int_{S^{n-1}}\omega
+  =\int_{\partial D^n}r^*\omega
+  =\int_{D^n}r^*(d\omega)=0,
+\]
+矛盾。若 $f:D^n\to D^n$ 无不动点，则从 $f(x)$ 经 $x$ 向外作射线，与边界的交点给出固定边界的光滑收缩，仍矛盾。因此 $f$ 必有不动点。
+
+\subsection*{第 6 组自测题}
+
+\begin{enumerate}
+  \item 什么是 $k$-形式？为什么说它是反对称协变张量场？
+  \item 外微分的局部公式是什么？形式次数如何变化？
+  \item 为什么 $d^2=0$？混合偏导相等和楔积反对称性分别起什么作用？
+  \item pullback 为什么和外微分交换？为什么微分形式通常没有自然 pushforward？
+  \item 球面可定向可以用哪两种方法证明？两种方法怎样联系？
+  \item 边界定向的符号应如何用“外法向优先”检查？
+  \item 如何用 $d(df\wedge dg)=0$ 推出 09-2 的 Jacobian 恒等式？
+  \item 如何计算 $d(i_E\Omega)$？为什么系数是 $n+1$？
+  \item Stokes 公式中，流形维数、边界维数和形式次数如何匹配？
+  \item Brouwer 不动点定理的 Stokes 证明中，哪个积分非零，哪个计算又迫使它为零？
+\end{enumerate}
+
+\subsection*{30 分钟行动清单}
+
+\begin{enumerate}
+  \item 前 5 分钟：只看教材最小包，口述 $k$-形式、外微分、pullback、定向、边界定向、Stokes 六个定义，并默写四条核心公式：局部 $d$、$d^2=0$、$F^*d=dF^*$、Stokes。
+  \item 第 5--10 分钟：遮住答案复写 09-1。必须写出 $N_p=p$、$i_N\Omega$ 处处非零，以及 $S^n=\partial D^{n+1}$ 两条路线。
+  \item 第 10--16 分钟：遮住答案复写 09-2 与 09-3。先从 $d(df\wedge dg)=0$ 读出三维恒等式，再口述一般 Jacobian 恒等式如何保证坐标相容。
+  \item 第 16--21 分钟：遮住答案复写 09-5。必须先识别 $i_E\Omega$，再写 $d(i_E\Omega)=(n+1)\Omega$ 和 Stokes。
+  \item 第 21--28 分钟：遮住答案复写 10-1 的两段式框架：先证无光滑收缩，再由无不动点构造收缩。
+  \item 最后 2 分钟：逐题只看题号，口述“第一步、关键公式、最后一跳”。五题都能独立写出证明骨架，并能主动检查形式次数与边界定向时，才把状态从 1 改成 2；若还需看答案寻找第一步，则保持 1。
+\end{enumerate}
+
+\end{document}
