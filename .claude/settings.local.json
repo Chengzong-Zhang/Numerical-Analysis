@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xelatex -interaction=nonstopmode \"上机4-241098117-张城宗.tex\")"
+      "Bash(xelatex -interaction=nonstopmode \"上机4-241098117-张城宗.tex\")",
+      "Bash(/c/Users/zcz/anaconda3/envs/rl310/python.exe -c ' *)",
+      "Bash(/c/Users/zcz/anaconda3/envs/rl310/python.exe \"c:/coding/matlab/期末/上机/03_Python算法模板/02_Runge_Kutta/T05_Adaptive_RKF45.py\")"
     ]
   }
 }

@@ -1,0 +1,145 @@
+% !TeX program = xelatex
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+% ======================== 考前只改这里 ========================
+\newcommand{\CourseName}{数值分析期末上机}
+\newcommand{\ProblemTitle}{题目一：经典四阶 Runge--Kutta 方法}
+\newcommand{\StudentID}{241098117}
+\newcommand{\StudentName}{张城宗}
+\newcommand{\PythonFile}{单题Python代码模板.py}
+% ============================================================
+
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0.25em}
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\CourseName\quad 学号：\StudentID\quad 姓名：\StudentName}
+\fancyhead[R]{\thepage}
+
+\lstdefinestyle{python}{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue!75!black},
+  commentstyle=\color{green!45!black},
+  stringstyle=\color{orange!70!black},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  frame=single,
+  breaklines=true,
+  showstringspaces=false
+}
+
+% 图片不存在时显示占位框，因此可以先写报告、后运行 Python。
+\newcommand{\resultfigure}[2]{
+  \begin{figure}[H]
+    \centering
+    \IfFileExists{#1}{
+      \includegraphics[width=0.78\textwidth]{#1}
+    }{
+      \fbox{\parbox{0.72\textwidth}{\centering
+        \vspace{1.2em}运行 \texttt{\PythonFile} 后自动生成 \texttt{#1}\vspace{1.2em}}}
+    }
+    \caption{#2}
+  \end{figure}
+}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries \CourseName 报告}
+
+  \vspace{0.3em}
+  学号：\StudentID\qquad 姓名：\StudentName
+\end{center}
+
+\section{\ProblemTitle}
+
+\subsection{问题描述}
+
+% 【必须替换】抄清楚方程、区间、初值、步长、要求。
+求解初值问题
+\[
+  y'=f(x,y),\qquad x\in[x_0,X],\qquad y(x_0)=y_0,
+\]
+取步长 $h=\underline{\hspace{2cm}}$，使用
+\underline{\hspace{4cm}} 方法计算数值解，并分析误差。
+
+\subsection{方法与公式}
+
+% 【必须替换】保留本题真正使用的方法，删除无关文字。
+以经典四阶 Runge--Kutta 方法为例：
+\[
+  \begin{aligned}
+    K_1&=f(x_n,y_n),\\
+    K_2&=f\left(x_n+\frac h2,y_n+\frac h2K_1\right),\\
+    K_3&=f\left(x_n+\frac h2,y_n+\frac h2K_2\right),\\
+    K_4&=f(x_n+h,y_n+hK_3),\\
+    y_{n+1}&=y_n+\frac h6(K_1+2K_2+2K_3+K_4).
+  \end{aligned}
+\]
+
+若题目给出精确解 $y(x)$，使用最大绝对误差
+\[
+  E_\infty=\max_n|y_n-y(x_n)|
+\]
+评价数值结果。若需验证收敛阶，则使用
+\[
+  p\approx\frac{\log(E(h_1)/E(h_2))}{\log(h_1/h_2)}.
+\]
+
+\subsection{Python 实现说明}
+
+程序首先建立等距网格，再按上述公式逐步推进；最后输出节点结果、
+最大绝对误差和终点误差，并生成解曲线与误差曲线。
+
+% 【必须替换】若有隐式迭代、起步方法或特殊停止条件，在这里说明。
+
+\subsection{数值结果}
+
+% Python 会生成 result_table.tex；未运行程序时显示提示。
+\IfFileExists{result_table.tex}{
+  \input{result_table.tex}
+}{
+  \begin{center}
+    \fbox{\parbox{0.72\textwidth}{\centering
+      运行 \texttt{\PythonFile} 后自动插入数值结果表。}}
+  \end{center}
+}
+
+\resultfigure{solution.pdf}{数值解与精确解比较}
+\resultfigure{error.pdf}{各节点绝对误差}
+
+\subsection{结果分析}
+
+\begin{enumerate}
+  \item \textbf{数值现象：}【必须替换】说明数值解的变化趋势，以及是否符合题意。
+  \item \textbf{误差与精度：}【必须替换】报告最大误差、终点误差或估计收敛阶。
+  \item \textbf{原因解释：}【必须替换】联系方法阶数、步长、稳定性或迭代容差解释结果。
+\end{enumerate}
+
+\subsection{结论}
+
+【必须替换】用两三句话回答题目要求，并给出最重要的数值结论。
+
+\clearpage
+\section*{附录：Python 程序}
+\addcontentsline{toc}{section}{附录：Python 程序}
+
+\IfFileExists{\PythonFile}{
+  \lstinputlisting[style=python,caption={本题 Python 程序}]{\PythonFile}
+}{
+  未找到 \texttt{\PythonFile}。
+}
+
+\end{document}

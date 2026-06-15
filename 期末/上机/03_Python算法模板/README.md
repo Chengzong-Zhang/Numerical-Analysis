@@ -26,7 +26,8 @@ python ".\期末\上机\03_Python算法模板\verify_all_templates.py"
 | Euler 与二阶单步法 | `01_单步法/T02_Euler_RK2_Family.py` |
 | 显式 RK、Heun3、RK3、RK4 | `02_Runge_Kutta/T03_Explicit_Runge_Kutta.py` |
 | 隐式 Gauss-RK | `02_Runge_Kutta/T04_Implicit_Gauss_RK.py` |
-| 自适应 RKF45 | `02_Runge_Kutta/T05_Adaptive_RKF45.py` |
+| 自适应嵌套 RK2(3)：变形 Euler + 三阶 RK | `02_Runge_Kutta/T05A_Adaptive_Embedded_RK23.py` |
+| 自适应 RKF45：Fehlberg 四阶 RK + 五阶 RK | `02_Runge_Kutta/T05_Adaptive_RKF45.py` |
 | Adams-Bashforth | `03_线性多步法/T06_Adams_Bashforth.py` |
 | Adams-Moulton 与 PECE | `03_线性多步法/T07_Adams_Moulton_PECE.py` |
 | Milne、Hamming、Nyström | `03_线性多步法/T08_Milne_Hamming_Nystrom.py` |
@@ -35,3 +36,10 @@ python ".\期末\上机\03_Python算法模板\verify_all_templates.py"
 | 隐式方程迭代器 | `04_方程组与高阶方程/T11_Implicit_Equation_Iterators.py` |
 | 误差、收敛阶、Richardson、稳定函数 | `05_误差与稳定性/T12_Error_Order_Stability.py` |
 | 一般线性多步法阶数与根条件 | `05_误差与稳定性/T13_Linear_Multistep_Order_Root_Check.py` |
+
+## 第五章中可以组合的算法
+
+- 可直接组成**自适应步长算法**：任意可共享阶段函数值的 `p` 阶与 `p+1` 阶嵌套 Runge-Kutta 方法。
+- 教材给出的具体嵌套对 1：变形 Euler（二阶中点型）与三阶 Runge-Kutta，见 `T05A_Adaptive_Embedded_RK23.py`。
+- 教材给出的具体嵌套对 2：Fehlberg 四阶与五阶 Runge-Kutta，即 RKF45，见 `T05_Adaptive_RKF45.py`。
+- 可组合但教材此处作为**预测-校正算法**而非自适应步长算法：Euler + 梯形公式、Adams-Bashforth + Adams-Moulton，以及 RK4 启动 + Adams PECE。
