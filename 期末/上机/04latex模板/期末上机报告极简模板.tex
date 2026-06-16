@@ -41,341 +41,262 @@
 \end{center}
 
 % ======================================================================
-\section{题目一：单步法与 Adams PECE 方法比较}
+\section{梯形方法、BDF2、改进Euler方法比较}
 
 \subsection{问题描述}
 
-求解初值问题
+分别利用梯形方法、BDF2格式数值求解如下问题
 \[
-  y'=-\frac{1}{x^2}-\frac{y}{x}-y^2,\qquad
-  1\le x\le 2,\qquad y(1)=-1,
+  y'=-exp(10t)(y-sin(t))+cos(t),\qquad
+  0 <t\le 1,\qquad y(0)=0
 \]
-取固定步长 $h=0.1$。
+
 
 \begin{enumerate}
-  \item 分别使用向前 Euler、改进 Euler、Heun、中点和经典四阶 Runge--Kutta
-        方法计算数值解，并比较不同方法的结果。
-  \item 使用 RK4 提供起步值，实现四阶 Adams PECE 预测校正方法，并与 RK4 比较。
+  \item 分别取步长$h=0.1,0.05,0.025,0.0125,0.00625$进行计算，根据数值结果计算两种方法的误差收敛阶，并对计算结果进行比较分析。
+  \item 如利用改进的 Euler 方法会出现什么样的结果，试对计算结果进行分析。
 \end{enumerate}
 
 \subsection{方法介绍}
 
-向前 Euler 方法采用当前节点斜率推进：
+梯形方法对积分使用了更精确的梯形公式，是隐式离散化方法：
 \[
-  y_{n+1}=y_n+h f(x_n,y_n),
+  y_{n+1}=y_n+\frac{h}{2}(f_n+f_{n+1}),
 \]
-它实现简单，但只有一阶精度。
 
-改进 Euler、Heun 和中点方法均属于二阶显式 Runge--Kutta 方法。以改进 Euler 为例，
+BDF方法，即基于插值型数值微分构造的多步法，用 $(t_n,y_n),(t_{n-1},y_{n-1}),\cdots,(t_{n-k},y_{n-k})$ 共 $k+1$ 点构造插值多项式 $q_k(t)$，用 $q_k'(t_n)$ 近似 $f(t_n, y(t_n))$：
+
+$$\sum_{m=1}^{k} \frac{\nabla^m y_n}{m} = hf(t_n, y_n)$$
+
+通用形式：$y_n + \sum_{j=1}^{k} \alpha_j y_{n-j} = h\beta_0 f(t_n, y_n)$,
+\\2阶公式为$y_n - \frac{4}{3}y_{n-1} + \frac{1}{3}y_{n-2} = \frac{2}{3}hf_n$
+BDF方法对刚性方程有优良稳定性。BDF2 的绝对稳定区间比显式方法大得多
+
+改进 Euler属于二阶显式 Runge--Kutta 方法。
 \[
   K_1=f(x_n,y_n),\qquad K_2=f(x_n+h,y_n+hK_1),\qquad
   y_{n+1}=y_n+\frac{h}{2}(K_1+K_2).
 \]
 
-经典 RK4 方法为
-\[
-  \begin{aligned}
-    K_1&=f(x_n,y_n),&
-    K_2&=f(x_n+h/2,y_n+hK_1/2),\\
-    K_3&=f(x_n+h/2,y_n+hK_2/2),&
-    K_4&=f(x_n+h,y_n+hK_3),\\
-    y_{n+1}&=y_n+\frac{h}{6}(K_1+2K_2+2K_3+K_4).
-  \end{aligned}
-\]
-它每步需要四次函数计算，理论收敛阶为四阶。
 
-四阶 Adams PECE 方法先用四步 Adams--Bashforth 公式预报，
-\[
-  y_{n+1}^{P}=y_n+\frac{h}{24}
-  (55f_n-59f_{n-1}+37f_{n-2}-9f_{n-3}),
-\]
-再用 Adams--Moulton 公式校正，
-\[
-  y_{n+1}=y_n+\frac{h}{24}
-  \left(9f(x_{n+1},y_{n+1}^{P})+19f_n-5f_{n-1}+f_{n-2}\right).
-\]
-由于多步法需要历史值，前三步使用 RK4 起步。
 
 \subsection{数值结果}
 
 \begin{table}[H]
   \centering
-  \caption{不同方法在终点 $x=2$ 处的数值解}
+  \caption{不同方法不同步长时的最大绝对误差}
   \begin{tabular}{lc}
     \toprule
-    方法 & 终点数值解 $y(2)$ \\
+    方法 & 0.1 & 0.05 & 0.025 & 0.0125 & 0.00625\\
     \midrule
-    向前 Euler & $-3.5510956192$ \\
-    改进 Euler & $-5.1032101606$ \\
-    Heun & $-5.0041974679$ \\
-    中点 & $-4.9557885785$ \\
-    RK4 & $-5.4009915651$ \\
-    Adams PECE & $-5.3802222860$ \\
+    梯形方法 & 1.79e-01 &4.48e-02 &1.12e-02& 2.80e-03& 7.00e-04\\
+    BDF2 & 1.79e-01 & 2.84e-01 & 9.83e-01 & 3.45e+02 &  1.79e+09\\
+    改进 Euler &  2.80e+20 & 4.63e+34 & 4.99e+56 & 1.90e+89 & 3.05e+134\\
     \bottomrule
   \end{tabular}
 \end{table}
-
-Adams PECE 与 RK4 在终点的绝对差为
-\[
-  |y_{\mathrm{PECE}}(2)-y_{\mathrm{RK4}}(2)|
-  \approx 2.077\times 10^{-2}.
-\]
-
-\IfFileExists{python_p1_solutions.pdf}{
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.78\textwidth]{python_p1_solutions.pdf}
-    \caption{五种单步法与 Adams PECE 数值解比较}
-  \end{figure}
-}{}
-
-\subsection{结果分析}
-
-\begin{enumerate}
-  \item 本题解在区间后半段下降较快，因此不同格式在步长 $h=0.1$ 下产生了较明显差异。
-        向前 Euler 只有一阶精度，与高阶方法结果差异最大。
-  \item 三种二阶方法的结果较为接近，但仍与 RK4 存在明显差异，说明该步长对于本题并不算小。
-  \item Adams PECE 使用 RK4 起步，其结果与 RK4 最接近。它在主循环中复用历史函数值，
-        每步函数计算次数少于 RK4，适合固定步长下的连续计算。
-  \item 原数值 ODE 报告中本题终点结果约为 $-0.6$，但该结果与报告所写方程不一致；
-        本报告中的数据由附录 Python 程序按上述方程重新计算得到。
-\end{enumerate}
-
-% ======================================================================
-\clearpage
-\section{题目二：二阶方程化为一阶系统并验证 RK4 收敛阶}
-
-\subsection{问题描述}
-
-求解二阶常微分方程初值问题
-\[
-  y''+\frac{2}{x}y'-\frac{6}{x^2}y=5-6x+7x^2,\qquad 1<x<2,
-\]
-\[
-  y(1)=\frac12,\qquad y'(1)=2.
-\]
-精确解为
-\[
-  y(x)=x^2-x^3+\frac12x^4+x^2\ln x.
-\]
-分别取步长
-\[
-  h=\frac1{200},\frac1{100},\frac1{50},\frac1{25},
-  \frac1{10},\frac15,\frac14,
-\]
-使用经典 RK4 方法计算最大绝对误差并分析收敛阶。
-
-\subsection{方法介绍}
-
-令
-\[
-  w_1=y,\qquad w_2=y',
-\]
-则二阶方程可化为一阶系统
-\[
-  \bm w'=
-  \begin{bmatrix}
-    w_2\\
-    -\dfrac{2}{x}w_2+\dfrac{6}{x^2}w_1+5-6x+7x^2
-  \end{bmatrix},
-  \qquad
-  \bm w(1)=
-  \begin{bmatrix}
-    1/2\\2
-  \end{bmatrix}.
-\]
-对向量状态 $\bm w$ 使用 RK4 时，计算公式与标量情形相同。第一分量 $w_1$ 即为原方程的数值解。
-
-定义最大绝对误差
-\[
-  E(h)=\max_n|w_{1,n}-y(x_n)|.
-\]
-对相邻两个步长，数值收敛阶估计为
-\[
-  p\approx
-  \frac{\log(E(h_1)/E(h_2))}{\log(h_1/h_2)}.
-\]
-
-\subsection{数值结果}
 
 \begin{table}[H]
   \centering
-  \caption{不同步长下 RK4 最大误差与估计收敛阶}
-  \begin{tabular}{ccc}
+  \caption{不同方法的收敛阶估计}
+  \begin{tabular}{lc}
     \toprule
-    步长 $h$ & 最大绝对误差 $E(h)$ & 估计收敛阶 $p$ \\
+    方法 & 收敛阶估计\\
     \midrule
-    $1/200$ & $2.4661\times10^{-10}$ & --- \\
-    $1/100$ & $3.9227\times10^{-9}$  & $3.9915$ \\
-    $1/50$  & $6.1913\times10^{-8}$  & $3.9803$ \\
-    $1/25$  & $9.6405\times10^{-7}$  & $3.9608$ \\
-    $1/10$  & $3.4751\times10^{-5}$  & $3.9123$ \\
-    $1/5$   & $4.8875\times10^{-4}$  & $3.8140$ \\
-    $1/4$   & $1.1220\times10^{-3}$  & $3.7243$ \\
+    梯形方法 & $[ 1.9854, 1.9971, 2.0012, 2.0001 ]$ \\
+    BDF2 & $[ -0.6692, -1.7923, -8.4542, -22.3094 ]$ \\
+    改进 Euler & $[ 47.2311, 73.1903, 108.2347, 150.1670 ]$ \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\IfFileExists{python_p2_solution.pdf}{
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.48\textwidth]{python_p2_solution.pdf}
-    \includegraphics[width=0.48\textwidth]{python_p2_convergence.pdf}
-    \caption{RK4 数值解与误差收敛阶}
-  \end{figure}
-}{}
 
 \subsection{结果分析}
 
 \begin{enumerate}
-  \item 当步长由 $1/4$ 缩小至 $1/200$ 时，最大误差由约 $10^{-3}$ 降至约 $10^{-10}$，
-        表明 RK4 对该光滑问题具有较高精度。
-  \item 在较小步长下，估计收敛阶接近 $4$，与经典 RK4 的理论四阶精度一致。
-        较大步长下估计阶略低，是因为渐近误差关系 $E(h)\approx Ch^4$ 尚未完全成立。
-  \item 将高阶方程化为一阶系统后，可以直接复用向量 RK4 程序；
-        这种状态变量方法也适用于更高阶方程和一般常微分方程组。
+  \item 梯形法 (Trapezoid): A-稳定，二阶精度。对于刚性方程 e^(10t)，表现稳健，误差随 h² 衰减。这表明梯形方法在该测试问题中充分发挥了其二阶精度，且数值稳定性良好，进入了渐近收敛
+区。
+  \item BDF2:A-稳定，二阶精度。起步值需 RK4 提供，牛顿迭代求解隐式方程，计算量略大但精度相当。收敛阶为负数且绝对值增大（如 `-22.3`），说明误差随步长减小而指数级增长，验证了其在特定条件下（可能是刚性方
+程的大步长或小步长耦合）的不稳定性。
+观察：若梯形法收敛阶接近 2.0，BDF2 也接近 2.0，则说明两者在该问题下均发挥预期性能。
+  \item 改进 Euler:刚性特征：由于 ODE 中包含项 -exp(10t)y，特征值 λ(t) ≈ -exp(10t)，在 t=1 时 λ ≈ -22026。Improved Euler (显式) 的绝对稳定区域约为 h*λ > -4.5，即 h < 0.0002 * exp(-10t)。在 t=1 附近，Improved Euler 需要极小的步长才能维持稳定，否则误差会随阶数平方指数增长。收敛阶极高（$>40$），这通常意味着在初始阶段误差对 $h$ 极度敏感，或者初始误差主要由舍入误差主导，导致
+计算出的“阶”虚高；随着 $h$ 进一步减小，数值解可能进入精度极限。
 \end{enumerate}
 
-\subsection{结论}
-
-两道题均使用 Python 完成数值计算。第一题说明不同单步法和多步法在精度与计算量上存在差异；
-第二题验证了经典 RK4 对光滑问题具有四阶收敛性。实际计算时应根据精度要求、稳定性以及函数计算成本选择方法和步长。
-
-% ======================================================================
+-----------------------------------------------------------------------------------
 \clearpage
 \section*{附录：Python 程序}
 \addcontentsline{toc}{section}{附录：Python 程序}
 
 \subsection*{A.1\quad 题目一 Python 程序}
 
-\begin{lstlisting}[style=python,caption={题目一：五种单步法与 Adams PECE 比较}]
-import numpy as np  # 导入 NumPy；用于创建网格、预分配数组和进行向量运算。
-import matplotlib.pyplot as plt  # 导入 Matplotlib；用于绘制数值解比较图。
+\begin{lstlisting}[style=python,caption={梯形方法、BDF2、改进Euler方法比较}]
+import numpy as np
 
-f = lambda x, y: -1 / x**2 - y / x - y**2  # 定义 ODE 右端 f(x,y)；** 表示乘方。
-x0, x_end, y0, h = 1.0, 2.0, -1.0, 0.1  # 设置区间、初值和固定步长。
-N = round((x_end - x0) / h)  # 计算固定步长下的总推进步数。
-x = x0 + np.arange(N + 1) * h  # 构造等距节点 x_0,...,x_N。
+# ==================== 1. 定义基础函数 (全局作用域) ====================
+def f(t, y):
+    """ODE 右端项：y' = -exp(10t)*(y-sin(t)) + cos(t)"""
+    return -np.exp(10 * t) * (y - np.sin(t)) + np.cos(t)
 
-def rk4(f, x, y0, h):  # 定义经典四阶 Runge--Kutta 求解函数。
-    y = np.zeros(x.size)  # 预分配数值解数组，避免循环中反复扩容。
-    y[0] = y0  # 写入初值 y(x_0)=y_0。
-    for n in range(x.size - 1):  # 从左端点逐步推进到右端点。
-        k1 = f(x[n], y[n])  # 第一阶段使用当前点斜率。
-        k2 = f(x[n] + h/2, y[n] + h*k1/2)  # 第二阶段在预测中点计算斜率。
-        k3 = f(x[n] + h/2, y[n] + h*k2/2)  # 第三阶段再次修正中点斜率。
-        k4 = f(x[n] + h, y[n] + h*k3)  # 第四阶段在右端预测点计算斜率。
-        y[n+1] = y[n] + h*(k1 + 2*k2 + 2*k3 + k4)/6  # 加权组合四个阶段，得到四阶近似。
-    return y  # 返回全部节点上的 RK4 数值解。
+def fy(t, y):
+    """偏导数 ∂f/∂y：用于牛顿迭代和隐式方程求解"""
+    return -np.exp(10 * t)
 
-y_euler = np.zeros(N + 1)  # 预分配向前 Euler 数值解。
-y_improved = np.zeros(N + 1)  # 预分配改进 Euler 数值解。
-y_heun = np.zeros(N + 1)  # 预分配二阶 Heun 数值解。
-y_midpoint = np.zeros(N + 1)  # 预分配中点方法数值解。
-for y in (y_euler, y_improved, y_heun, y_midpoint):  # 依次访问四个数值解数组。
-    y[0] = y0  # 为每种单步法写入相同初值。
+def y_exact(t):
+    """精确解函数（解析推导结果）"""
+    # 根据 ODE 解析解推导，特解为 sin(t)，初值 y(0)=0 满足 sin(0)=0
+    return np.sin(t)
 
-for n in range(N):  # 对四种单步法同时逐步推进。
-    y_euler[n+1] = y_euler[n] + h*f(x[n], y_euler[n])  # 向前 Euler 是一阶显式方法。
-    k1 = f(x[n], y_improved[n])  # 改进 Euler 的左端斜率。
-    k2 = f(x[n] + h, y_improved[n] + h*k1)  # 在 Euler 预测点计算右端斜率。
-    y_improved[n+1] = y_improved[n] + h*(k1+k2)/2  # 两端斜率平均得到二阶结果。
-    k1 = f(x[n], y_heun[n])  # Heun 方法的第一阶段斜率。
-    k2 = f(x[n] + 2*h/3, y_heun[n] + 2*h*k1/3)  # 在 2/3 步位置计算第二阶段。
-    y_heun[n+1] = y_heun[n] + h*(k1+3*k2)/4  # 使用满足二阶条件的权重组合。
-    k1 = f(x[n], y_midpoint[n])  # 中点方法先计算当前点斜率。
-    k2 = f(x[n] + h/2, y_midpoint[n] + h*k1/2)  # 用 k1 预测中点并计算中点斜率。
-    y_midpoint[n+1] = y_midpoint[n] + h*k2  # 使用中点斜率推进整步。
+# ==================== 2. 数值求解器 Solve_Step(h, method) ====================
+def Solve_Step(h, method):
+    # 全局参数 (假设与主程序一致)
+    t0 = 0.0
+    T = 1.0
+    y0_val = 0.0
 
-y_rk4 = rk4(f, x, y0, h)  # 调用 RK4 函数计算四阶参考数值解。
-y_pece = np.zeros(N + 1)  # 预分配 Adams PECE 数值解。
-f_values = np.zeros(N + 1)  # 保存历史函数值，以供多步公式重复使用。
-y_pece[:4] = y_rk4[:4]  # 使用 RK4 提供 y_0,y_1,y_2,y_3 四个起步值。
-for i in range(4):  # 计算四个起步节点对应的函数值。
-    f_values[i] = f(x[i], y_pece[i])  # 保存 f_i=f(x_i,y_i)。
-for n in range(3, N):  # 从已有四个历史点的位置开始执行 PECE。
-    y_pred = y_pece[n] + h*(55*f_values[n]-59*f_values[n-1]+37*f_values[n-2]-9*f_values[n-3])/24  # AB4 预报。
-    f_pred = f(x[n+1], y_pred)  # 在预测值处计算新节点函数值。
-    y_pece[n+1] = y_pece[n] + h*(9*f_pred+19*f_values[n]-5*f_values[n-1]+f_values[n-2])/24  # AM4 校正。
-    f_values[n+1] = f(x[n+1], y_pece[n+1])  # 保存校正值对应的函数值，供下一步使用。
+    # 计算总步数与时间网格
+    N = int(round((T - t0) / h))
+    t = t0 + np.arange(N + 1) * h
 
-print("method          y(2)")  # 打印结果表表头。
-for name, y in [("Euler", y_euler), ("Improved Euler", y_improved), ("Heun", y_heun), ("Midpoint", y_midpoint), ("RK4", y_rk4), ("Adams PECE", y_pece)]:  # 配对方法名和结果数组。
-    print(f"{name:15s} {y[-1]:.10f}")  # 输出每种方法的终点数值解。
-print("PECE-RK4 difference =", abs(y_pece[-1] - y_rk4[-1]))  # 输出 PECE 与 RK4 的终点差。
+    # 预分配数值解数组
+    y = np.zeros(N + 1, dtype=float)
+    y[0] = y0_val
 
-for name, y in [("Euler", y_euler), ("Improved Euler", y_improved), ("Heun", y_heun), ("Midpoint", y_midpoint), ("RK4", y_rk4), ("Adams PECE", y_pece)]:  # 遍历全部方法。
-    plt.plot(x, y, marker="o", label=name)  # 在同一坐标系绘制各方法数值解。
-plt.xlabel("x")  # 设置横轴名称。
-plt.ylabel("y")  # 设置纵轴名称。
-plt.grid(True)  # 打开网格，便于比较曲线。
-plt.legend()  # 显示方法图例。
-plt.tight_layout()  # 自动调整边距，避免文字被裁切。
-plt.savefig("python_p1_solutions.pdf")  # 保存矢量 PDF，供 LaTeX 自动插入。
-plt.close()  # 关闭当前图，释放绘图资源。
+    # 迭代参数 (常量定义)
+    tol, max_iter = 1e-6, 2000
+
+    if method == "trapezoid":
+        for n in range(N):
+            tn, yn = t[n], y[n]
+            z = yn + h * f(tn, yn)
+            # Newton 迭代求解隐式方程：z - yn - (h/2)[f(tn,yn) + f(tn+h,z)] = 0
+            for _ in range(max_iter):
+                z_new = yn + h*(f(tn, yn)+f(t[n+1], z))/2  # 梯形公式 z=y_n+h/2*(f_n+f_{n+1})。
+                if abs(z_new-z) < tol: break  # 达到迭代容差后停止。
+                z = z_new  # 更新隐式未知量。
+            y[n + 1] = z
+
+
+    elif method == "BDF2":
+        k = 2
+        # BDF2 系数：标准形式 y_{n+1} - 4/3*y_n + 1/3*y_{n-1} = h * 2/3 * f(t_{n+1})
+        # 对应系数 alpha (y_{n+1}, y_n, y_{n-1}): [1, -4/3, 1/3]
+        # beta: 2/3
+        coeffs_alpha = np.array([1.0, -4.0 / 3.0, 1.0 / 3.0])
+        beta_val = 2.0 / 3.0
+
+        # 起步阶段 (RK4 提供前 k-1=1 步值，即 y[0], y[1])
+        for n_start in range(k - 1):
+            tn = t[n_start]
+            yn = y[n_start]
+            
+            q1 = f(tn, yn)
+            q2 = f(tn + h / 2.0, yn + h * q1 / 2.0)
+            q3 = f(tn + h / 2.0, yn + h * q2 / 2.0)
+            q4 = f(tn + h, yn + h * q3)
+            
+            y[n_start + 1] = yn + h * (q1 + 2*q2 + 2*q3 + q4) / 6.0
+
+        # BDF 主推进阶段
+        for n in range(k - 1, N):
+            # 计算已知项 (历史值移项到右侧，注意系数对应 y[n], y[n-1])
+            known = coeffs_alpha[1] * y[n] + coeffs_alpha[2] * y[n - 1]
+            
+            z = y[n]  # 初始猜测
+            
+            # Newton 迭代求解隐式方程：z - known - h*beta*f(t_{n+1}, z) = 0
+            for iteration in range(max_iter):
+                G = z - known - h * beta_val * f(t[n + 1], z)
+                
+                dG = 1.0 - h * beta_val * fy(t[n + 1], z)
+                
+                if abs(dG) < 1e-15:
+                    break
+                
+                delta = G / dG
+                z_new = z - delta
+                
+                if abs(z_new - z) < tol:
+                    z = z_new
+                    break
+                z = z_new
+            
+            y[n + 1] = z
+    
+    elif method == "improved_euler":  
+        for n in range(N):
+            tn, yn = t[n], y[n]
+            k1 = f(tn, yn)  
+            k2 = f(tn+h, yn+h*k1) 
+            y[n+1] = yn + h*(k1+k2)/2 
+
+
+
+    return t, y  # 返回时间和解，便于后续误差对齐
+
+# ==================== 3. 主程序：测试与验证 ====================
+def main():
+    # 【配置参数】步长列表
+    h_list = [0.1, 0.05, 0.025, 0.0125, 0.00625]
+    
+    # 【方法选择】
+    methods = ["trapezoid", "BDF2","improved_euler"]
+
+    print("=" * 80)
+    print("数值方法求解与误差验证报告")
+    print("ODE: y' + e^(10t)y = e^(10t)sin(t) + cos(t), y(0)=0, t in (0, 1]")
+    print("=" * 80)
+
+    for method in methods:
+        print(f"\n=== 方法：{method} ===")
+        all_max_errors = []
+        
+        # 遍历步长列表
+        for h in h_list:
+            try:
+                # 【调用主算法得到结果】
+                t_num, y_num = Solve_Step(h, method)
+                
+                # 【计算绝对误差 (点态 + 最大)】
+                # 精确解直接传入时间数组
+                exact_vals = y_exact(t_num)
+                abs_errors = np.abs(y_num - exact_vals)
+                max_err = np.max(abs_errors)
+                
+                all_max_errors.append(max_err)
+                
+                print(f"步长 h={h:.5f} | Max Absolute Error: {max_err:.2e}")
+
+            except Exception as e:
+                print(f"步长 h={h:.5f} 发生异常：{e}")
+        
+        # 【计算收敛阶】(取相邻步长的误差比)
+        if len(all_max_errors) >= 2:
+            p_values = []
+            for i in range(len(all_max_errors)-1):
+                err_curr, err_prev = all_max_errors[i], all_max_errors[i+1]
+                # h_current / h_previous = 0.5
+                p = np.log(err_curr / err_prev) / np.log(2.0)
+                p_values.append(p)
+            
+            print(f"收敛阶估计: [ {', '.join([f'{p:.4f}' for p in p_values])} ]")
+
+        print("-" * 80)
+
+    # 【最终比较分析】
+    print("\n=== 结果比较与分析 ===")
+    print("梯形法 (Trapezoid): A-稳定，二阶精度。对于刚性方程 e^(10t)，表现稳健，误差随 h² 衰减。")
+    print("BDF2 格式：A-稳定，二阶精度。起步值需 RK4 提供，牛顿迭代求解隐式方程，计算量略大但精度相当。")
+    print("观察：若梯形法收敛阶接近 2.0，BDF2 也接近 2.0，则说明两者在该问题下均发挥预期性能。")
+    print("Improved Euler (显式): 条件稳定。")
+    print("\n   - 刚性特征：由于 ODE 中包含项 -exp(10t)y，特征值 λ(t) ≈ -exp(10t)，在 t=1 时 λ ≈ -22026。")
+    print("   - Improved Euler (显式) 的绝对稳定区域约为 h*λ > -4.5，即 h < 0.0002 * exp(-10t)。")
+    print("   - 结论：在 t=1 附近，Improved Euler 需要极小的步长才能维持稳定，否则误差会随阶数平方指数增长。")
+    print("=" * 80)
+
+if __name__ == "__main__":
+    main()
 \end{lstlisting}
 
-\subsection*{A.2\quad 题目二 Python 程序}
-
-\begin{lstlisting}[style=python,caption={题目二：二阶 ODE 化为一阶系统并验证 RK4 收敛阶}]
-import numpy as np  # 导入 NumPy；用于向量状态、网格、误差和对数运算。
-import matplotlib.pyplot as plt  # 导入 Matplotlib；用于绘制解曲线和双对数误差图。
-
-def F(x, w):  # 定义一阶系统右端；w[0]=y，w[1]=y'。
-    return np.array([w[1], -2*w[1]/x + 6*w[0]/x**2 + 5 - 6*x + 7*x**2])  # 返回列状态的两个导数分量。
-
-def exact(x):  # 定义题目给出的精确解。
-    return x**2 - x**3 + 0.5*x**4 + x**2*np.log(x)  # NumPy 运算自动逐元素作用于数组。
-
-def solve_rk4(h):  # 定义给定步长下的向量 RK4 求解器。
-    x0, x_end = 1.0, 2.0  # 设置积分区间。
-    N = round((x_end - x0) / h)  # 计算总步数。
-    x = x0 + np.arange(N + 1) * h  # 创建等距节点。
-    w = np.zeros((N + 1, 2))  # 每一行保存一个节点的 [y,y']。
-    w[0] = [0.5, 2.0]  # 写入初始状态 [y(1),y'(1)]。
-    for n in range(N):  # 对向量状态逐步执行 RK4。
-        k1 = F(x[n], w[n])  # 第一阶段斜率向量。
-        k2 = F(x[n] + h/2, w[n] + h*k1/2)  # 第二阶段中点斜率向量。
-        k3 = F(x[n] + h/2, w[n] + h*k2/2)  # 第三阶段修正的中点斜率向量。
-        k4 = F(x[n] + h, w[n] + h*k3)  # 第四阶段右端斜率向量。
-        w[n+1] = w[n] + h*(k1 + 2*k2 + 2*k3 + k4)/6  # 使用 RK4 权重更新全部状态分量。
-    return x, w  # 返回节点与完整状态数组。
-
-h_values = np.array([1/200, 1/100, 1/50, 1/25, 1/10, 1/5, 1/4])  # 设置题目要求的步长。
-errors = np.zeros(h_values.size)  # 预分配每个步长对应的最大绝对误差。
-for i, h in enumerate(h_values):  # enumerate 同时给出数组下标和步长。
-    x, w = solve_rk4(h)  # 计算当前步长下的向量数值解。
-    errors[i] = np.max(np.abs(w[:, 0] - exact(x)))  # 第一分量是 y；对全部节点误差取最大值。
-
-orders = np.full(h_values.size, np.nan)  # 第一组数据没有前一误差，因此初始填为 nan。
-for i in range(1, h_values.size):  # 从第二个步长开始估计相邻误差的收敛阶。
-    orders[i] = np.log(errors[i-1]/errors[i]) / np.log(h_values[i-1]/h_values[i])  # 使用一般步长比公式。
-
-print("h          max_error          order")  # 打印误差与阶数表头。
-for h, error, order in zip(h_values, errors, orders):  # zip 将三组对应数据逐行配对。
-    print(f"{h:.6f}   {error:.10e}   {order:.6f}")  # 格式化输出步长、最大误差与估计阶。
-
-x, w = solve_rk4(1/200)  # 使用最小步长生成数值解与精确解对比图。
-plt.plot(x, exact(x), "k-", label="exact")  # 绘制精确解实线。
-plt.plot(x, w[:, 0], "r--", label="RK4")  # 绘制 RK4 第一分量虚线。
-plt.xlabel("x")  # 设置横轴名称。
-plt.ylabel("y")  # 设置纵轴名称。
-plt.grid(True)  # 打开网格。
-plt.legend()  # 显示精确解与数值解图例。
-plt.tight_layout()  # 自动调整图像边距。
-plt.savefig("python_p2_solution.pdf")  # 保存解曲线图供 LaTeX 插入。
-plt.close()  # 关闭解曲线图。
-
-plt.loglog(h_values, errors, "bo-", label="RK4 error")  # 在双对数坐标绘制误差曲线。
-reference = errors[0] * (h_values / h_values[0])**4  # 构造经过首个误差点的四阶参考线。
-plt.loglog(h_values, reference, "k--", label="O(h^4)")  # 绘制理论四阶误差参考线。
-plt.xlabel("step size h")  # 设置横轴为步长。
-plt.ylabel("maximum error")  # 设置纵轴为最大绝对误差。
-plt.grid(True, which="both")  # 对主刻度和次刻度均显示网格。
-plt.legend()  # 显示误差曲线和参考线图例。
-plt.tight_layout()  # 自动调整图像边距。
-plt.savefig("python_p2_convergence.pdf")  # 保存收敛阶图供 LaTeX 插入。
-plt.close()  # 关闭误差图并释放资源。
-\end{lstlisting}
 
 \end{document}                                                % 报告结束。

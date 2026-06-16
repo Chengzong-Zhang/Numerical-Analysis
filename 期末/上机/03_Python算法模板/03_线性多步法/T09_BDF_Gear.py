@@ -3,9 +3,9 @@ import math  # 标准库 math 用于默认例题中的三角函数。
 import numpy as np  # NumPy 用于系数、网格和历史值数组。
 import matplotlib.pyplot as plt  # Matplotlib 用于画数值解与精确解。
 
-f = lambda t, y: -10*(y-math.cos(t))-math.sin(t)  # 【必须替换】ODE 右端；默认例题精确解为 cos(t)。
-fy = lambda t, y: -10.0  # 【必须替换】偏导 df/dy；Newton 解隐式方程时必须提供。
-t0, T, y0, h, k = 0.0, 1.0, 1.0, 0.05, 2  # 【必须替换】区间、初值、步长、BDF 阶数 1...6。
+f = lambda t, y: -math.exp(10*t)*(y-math.sin(t))+math.cos(t)  # 【必须替换】ODE 右端；默认例题精确解为 cos(t)。
+fy = lambda t, y: -math.exp(10*t)  # 【必须替换】偏导 df/dy；Newton 解隐式方程时必须提供。
+t0, T, y0, h, k = 0.0, 1.0, 0.0, 0.1, 2  # 【必须替换】区间、初值、步长、BDF 阶数 1...6。
 tol, max_iter = 1e-12, 200  # Newton 迭代停止阈值与最大迭代次数。
 alpha = [np.array([1,-1]),np.array([1,-4/3,1/3]),np.array([1,-18/11,9/11,-2/11]),np.array([1,-48/25,36/25,-16/25,3/25]),np.array([1,-300/137,300/137,-200/137,75/137,-12/137]),np.array([1,-360/147,450/147,-400/147,225/147,-72/147,10/147])]  # 归一化 BDF1...BDF6 左端系数。
 beta = np.array([1,2/3,6/11,12/25,60/137,60/147], dtype=float)  # 右端 h*beta_k*f(t_{n+1},y_{n+1}) 系数。
