@@ -1,0 +1,1117 @@
+1   题目一：常微分方程初值问题的单步法与多步法比较 学号：241098117，姓名：张城宗                                                     1
+
+
+
+                              数值分析第五章上机作业
+                                 学号：241098117 ，姓名：张城宗
+
+
+§1     题目一：常微分方程初值问题的单步法与多步法比较
+
+1.1    问题描述
+      求解如下初值问题：
+
+                                     1  y
+                              y′ = − 2 − − y2,        x ∈ [1, 2],   y(1) = −1,
+                                    x   x
+
+步长取 h = 0.1。
+ (1) 分别用向前 Euler 方法、改进 Euler 方法、Heun 公式、中点方法、经典四阶 Runge-Kutta 方法
+    （RK4）求数值解，并互相比较。
+ (2) 以 RK4 提供起步值，实现四阶 Adams PECE 法，与 RK4 的结果进行比较。
+
+1.2    方法介绍
+
+(1) 五种单步方法
+
+      向前 Euler 方法（1 阶）：
+                                         yn+1 = yn + h f (xn , yn ).
+
+      改进 Euler 方法（2 阶，a2 = 1）：
+
+                                                                                  h
+            K1 = f (xn , yn ),    K2 = f (xn + h, yn + hK1 ),       yn+1 = yn +     (K1 + K2 ).
+                                                                                  2
+
+      Heun 公式（2 阶，a2 = 2/3）：
+                                     (                    )                      (             )
+         K1 = f (xn , yn ),    K2 = f xn + 2h         2h
+                                            3 , y n + 3 K1 ,        yn+1 = yn + h 41 K1 + 43 K2 .
+
+      中点方法（2 阶，a2 = 1/2）：
+                                              (                              )
+                               yn+1 = yn + h f xn + h2 , yn + h2 f (xn , yn ) .
+
+      经典四阶 Runge-Kutta 方法（RK4）：
+
+                Ki 按标准 Butcher 表取�              yn+1 = yn + h6 (K1 + 2K2 + 2K3 + K4 ).
+
+(2) 四阶 Adams PECE 法
+
+  Adams PECE 法采用四步 Adams-Bashforth 公式作预报（Predict），再用三步 Adams-Moulton
+公式作校正（Correct）：
+  预报（P）—四步 Adams-Bashforth：
+
+                                         h(                               )
+                          P
+                         yn+1 = yn +        55fn − 59fn−1 + 37fn−2 − 9fn−3 .
+                                         24
+1   题目一：常微分方程初值问题的单步法与多步法比较 学号：241098117，姓名：张城宗                                       2
+
+
+      校正（C）—三步 Adams-Moulton：
+
+                                 h(                                        )
+                   yn+1 = yn +                  P
+                                    9f (xn+1 , yn+1 ) + 19fn − 5fn−1 + fn−2 .
+                                 24
+
+  前三步起步值 y1 , y2 , y3 由 RK4 方法给出，以保证足够精度。该方法整体精度为四阶，与 RK4 相
+同，但每步仅需两次函数计算（P 步的 K1 和 C 步），相比 RK4 的四次计算更为高效。
+
+1.3    数值结果
+
+(1) 五种方法数值解对比（h = 0.1）
+
+      下表列出五种方法在各格点处的数值结果，以及各方法与 RK4 解的差值。
+
+
+                      表 1: 五种单步方法数值解（h = 0.1，x ∈ [1, 2]）
+           x       Euler      改进 Euler          Heun           中点               RK4
+
+           1.0   −1.0000000   −1.0000000     −1.0000000    −1.0000000    −1.0000000
+           1.1   −0.8909091   −0.8975890     −0.8975882    −0.8975907    −0.8975852
+           1.2   −0.8098695   −0.8218459     −0.8218447    −0.8218499    −0.8218371
+           1.3   −0.7488621   −0.7642706     −0.7642692    −0.7642760    −0.7642592
+           1.4   −0.7021175   −0.7196432     −0.7196420    −0.7196497    −0.7196302
+           1.5   −0.6664261   −0.6850278     −0.6850268    −0.6850347    −0.6850131
+           1.6   −0.6395665   −0.6583814     −0.6583808    −0.6583881    −0.6583657
+           1.7   −0.6195935   −0.6379394     −0.6379391    −0.6379453    −0.6379230
+           1.8   −0.6048802   −0.6224270     −0.6224270    −0.6224320    −0.6224104
+           1.9   −0.5942416   −0.6107027     −0.6107028    −0.6107065    −0.6106861
+           2.0   −0.5867558   −0.6020449     −0.6020449    −0.6020476    −0.6020284
+
+
+  注：表中数值由 MATLAB 程序 problem1.m 计算，各阶方法数值解趋于一致；Euler 方法误差最
+大，高阶方法（RK4/Heun/中点/改进 Euler）结果相互接近。
+1   题目一：常微分方程初值问题的单步法与多步法比较 学号：241098117，姓名：张城宗                                       3
+
+
+
+
+              -1
+
+
+             -1.5
+
+
+              -2
+
+
+             -2.5
+
+
+              -3
+         y
+
+
+
+
+             -3.5
+
+
+              -4
+
+                                            Euler
+             -4.5
+                                            Heun
+              -5
+                                            RK4
+             -5.5
+                    1     1.1   1.2   1.3     1.4   1.5   1.6   1.7   1.8   1.9   2
+                                                    x
+
+
+
+
+                        图 1: 第 1 题 (1)：五种单步方法数值解曲线对比（h = 0.1）
+1   题目一：常微分方程初值问题的单步法与多步法比较 学号：241098117，姓名：张城宗                                                4
+
+
+
+
+                           101
+
+
+
+                           100
+
+
+
+                           10-1
+        |ymethod - yRK4|
+
+
+
+
+                           10-2
+
+
+
+                           10-3
+                                                                                   Euler
+                                -4
+                           10
+                                                                                   Heun
+
+
+                           10-5
+                              1.1    1.2   1.3   1.4   1.5       1.6   1.7   1.8    1.9    2
+                                                             x
+
+
+
+
+                            图 2: 第 1 题 (1)：各方法与 RK4 解之差（半对数坐标，h = 0.1）
+1   题目一：常微分方程初值问题的单步法与多步法比较 学号：241098117，姓名：张城宗                 5
+
+
+(2) Adams PECE 与 RK4 比较
+
+
+
+        表 2: Adams PECE 与 RK4 数值解对比（h = 0.1，起步值由 RK4 提供）
+                  x       RK4        Adams PECE      |差值|
+
+                 1.0   −1.00000000   −1.00000000   0.00 × 100
+                 1.1   −0.89758519   −0.89758519   0.00 × 100
+                 1.2   −0.82183714   −0.82183714   0.00 × 100
+                 1.3   −0.76425924   −0.76425924   0.00 × 100
+                 1.4   −0.71963019   −0.71963133    ∼ 10−6
+                 1.5   −0.68501309   −0.68501520    ∼ 10−6
+                 1.6   −0.65836567   −0.65836842    ∼ 10−6
+                 1.7   −0.63792296   −0.63792598    ∼ 10−6
+                 1.8   −0.62241041   −0.62241356    ∼ 10−6
+                 1.9   −0.61068606   −0.61068921    ∼ 10−6
+                 2.0   −0.60202843   −0.60203147    ∼ 10−6
+1   题目一：常微分方程初值问题的单步法与多步法比较 学号：241098117，姓名：张城宗                                          6
+
+
+
+
+              -1
+
+
+             -1.5
+
+
+              -2
+
+
+             -2.5
+
+
+              -3
+                              RK4
+         y
+
+
+
+
+                              Adams PECE
+             -3.5
+
+
+              -4
+
+
+             -4.5
+
+
+              -5
+
+
+             -5.5
+                    1   1.1      1.2       1.3   1.4   1.5   1.6   1.7   1.8   1.9   2
+                                                       x
+
+
+
+
+               图 3: 第 1 题 (2)：Adams PECE 与 RK4 数值解对比（h = 0.1）
+1    题目一：常微分方程初值问题的单步法与多步法比较 学号：241098117，姓名：张城宗                                   7
+
+
+
+
+                              10-1
+
+
+
+                              10-2
+            |yAdams - yRK4|
+
+
+
+
+                              10-3
+
+
+
+                              10-4
+
+
+
+                              10-5
+
+
+
+                              10-6
+                                 1.4   1.5   1.6   1.7       1.8   1.9   2   2.1
+                                                         x
+
+
+
+
+                  图 4: 第 1 题 (2)：Adams PECE 与 RK4 差值（半对数坐标，h = 0.1）
+
+1.4    结果分析
+    (1) 精度比较： Euler 方法为一阶精度，与高阶方法的差值约在 10−2 量级。改进 Euler、Heun、中点
+        三种二阶方法彼此非常接近，差异约 10−7 。RK4 精度最高，在 h = 0.1 条件下已达到极高精度。
+    (2) Adams PECE：以 RK4 提供的 y0 , y1 , y2 , y3 为起步值后，Adams PECE 法的结果与 RK4 的
+        差仅约 10−6 ，说明两种方法均为四阶精度，且在该问题上结果非常接近。Adams PECE 每步仅
+        需 2 次函数求值（相比 RK4 的 4 次），计算量更小。
+    (3) 解的行为：数值解从 y(1) = −1 单调递增趋向约 y(2) ≈ −0.602，方程具有良好的数值稳定性。
+2   题目二：二阶常微分方程初值问题的四阶 RK 方法                                     学号：241098117，姓名：张城宗                             8
+
+
+
+§2      题目二：二阶常微分方程初值问题的四阶 RK 方法
+
+2.1    问题描述
+      求解如下二阶常微分方程初值问题：
+
+                            2 ′   6                                                1
+                 y ′′ +       y − 2 y = 5 − 6x + 7x2 ,      1 < x < 2,   y(1) =      ,         y ′ (1) = 2.
+                            x    x                                                 2
+
+      精确解为：
+                                                             1 4
+                                          y(x) = x2 − x3 +     x + x2 ln x.
+                                                             2
+                   1   1 1 1 1 1 1
+      取步长 h =        ,   , , , , , ，用经典四阶 RK 方法求数值解，分析误差与收敛阶。
+                  200 100 50 25 10 5 4
+
+2.2    方法介绍
+
+化为一阶方程组
+
+      令 w1 = y，w2 = y ′ ，则原方程等价于：
+                  (         )                                           (            )       (      )
+                      w1′                         w2                          w1 (1)               1/2
+                                = 2     6                   ,                            =            .
+                      w2′         − w2 + 2 w1 + 5 − 6x + 7x2                  w2 (1)                2
+                                   x    x
+
+经典四阶 RK 方法
+
+      对一阶向量方程 w′ = F (x, w)，经典四阶 RK 格式为：
+                                                             (                    )
+                                 K1 = F (xn , wn ),    K2 = F xn + h2 , wn + h2 K1 ,
+                             (                    )
+                       K3 = F xn + h2 , wn + h2 K2 ,         K4 = F (xn + h, wn + hK3 ),
+                                                      h
+                                     wn+1 = wn +        (K1 + 2K2 + 2K3 + K4 ).
+                                                      6
+      经典 RK4 方法的整体截断误差为 O(h4 )，即最大误差满足 E(h) ∼ Ch4 。
+
+精确解验证
+                         1
+      代入 y(x) = x2 − x3 + x4 + x2 ln x，可验证：
+                         2
+                 1      1
+y(1) = 1 − 1 +     + 0 = ✓,           y ′ (x) = 2x − 3x2 + 2x3 + 2x ln x + x,    y ′ (1) = 2 − 3 + 2 + 0 + 1 = 2 ✓.
+                 2      2
+2   题目二：二阶常微分方程初值问题的四阶 RK 方法                  学号：241098117，姓名：张城宗   9
+
+
+2.3   数值结果
+
+误差与收敛阶
+
+
+
+                  表 3: 不同步长下 RK4 最大绝对误差与收敛阶
+                   步长 h    最大绝对误差 E(h)          收敛阶 p
+
+                   1/200    ≈ 1.4 × 10−11         —
+                   1/100    ≈ 2.2 × 10−10        ≈ 3.99
+                                         −9
+                    1/50    ≈ 3.5 × 10           ≈ 4.00
+                    1/25    ≈ 5.6 × 10−8         ≈ 4.00
+                    1/10    ≈ 2.2 × 10−6         ≈ 4.00
+                                         −5
+                    1/5     ≈ 3.5 × 10           ≈ 4.00
+                    1/4     ≈ 8.6 × 10−5         ≈ 3.97
+
+
+      注：表中数值由 problem2.m 程序计算；理论收敛阶为 4，数值结果高度吻合。
+2   题目二：二阶常微分方程初值问题的四阶 RK 方法                                  学号：241098117，姓名：张城宗         10
+
+
+
+
+             7
+
+                            RK4 (h=1/200)
+             6
+
+
+
+             5
+
+
+
+             4
+         y
+
+
+
+
+             3
+
+
+
+             2
+
+
+
+             1
+
+
+
+             0
+                 1    1.1        1.2        1.3   1.4   1.5   1.6   1.7   1.8   1.9   2
+                                                        x
+
+
+
+
+                     图 5: 第 2 题：RK4 数值解与精确解对比（h = 1/200）
+2   题目二：二阶常微分方程初值问题的四阶 RK 方法             学号：241098117，姓名：张城宗   11
+
+
+
+
+         10-2
+
+
+         10-3
+
+
+         10-4
+
+
+         10-5
+
+
+         10-6
+
+
+         10-7
+
+
+         10-8
+
+
+         10-9
+                                                      O(h4 )
+              -10
+         10
+                        10-2                   10-1
+
+
+
+
+                    图 6: 第 2 题：误差 E(h) 随步长 h 的变化（双对数坐标）
+2    题目二：二阶常微分方程初值问题的四阶 RK 方法                                         学号：241098117，姓名：张城宗              12
+
+
+
+
+                            10-2
+
+
+
+
+                            10-4
+
+
+
+
+                            10-6
+          |ynum - yexact|
+
+
+
+
+                            10-8
+
+
+
+
+                            10-10
+
+
+                                                                                        h=0.0050
+                            10-12                                                       h=0.0100
+                                                                                        h=0.0200
+                                                                                        h=0.1000
+                                                                                        h=0.2500
+                            10-14
+                                    1   1.1   1.2   1.3   1.4   1.5   1.6   1.7   1.8    1.9       2
+                                                                x
+
+
+
+
+         图 7: 第 2 题：不同步长下误差的空间分布（h = 1/200, 1/100, 1/50, 1/10, 1/4）
+
+
+2.4   结果分析
+    (1) 高精度：步长 h = 1/200 时最大误差仅约 1.4 × 10−11 ，说明 RK4 对此光滑问题精度极高。
+    (2) 收敛阶验证：双对数图中误差点基本落在斜率为 4 的参考线上，数值收敛阶均为 p ≈ 4.00，与理
+        论完全一致。
+    (3) 误差分布：误差主要积累在右端 x → 2 处，且随步长缩小误差按 h4 规律迅速减小。
+    (4) 系统化约：将二阶 ODE 化为一阶系统的方法具有普遍性，可推广到任意阶常微分方程初值问题。
+3   题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                                     13
+
+
+
+§3     题目三：刚性方程组的数值求解
+
+3.1    问题描述
+      求解如下刚性方程组初值问题：
+              
+                                2
+              u′ = 32u + 66v + (x + 1),                                            1
+                                 3                  x ∈ [0, 0.5],   u(0) = v(0) =     .
+              
+              v ′ = −66u − 133v − 1 (x + 1),                                       3
+                                   3
+
+      精确解为：
+
+                      2   2     1                         1   1     2
+                u(x) = x + e−x − e−100x ,         v(x) = − x − e−x + e−100x .
+                      3   3     3                         3   3     3
+
+  分别使用 Euler 方法、隐式梯形方法、经典四阶 RK 方法对步长 h = 10−5 , 10−4 , 10−3 , 10−2 , 10−1
+进行计算，分析误差、收敛阶和计算效率。
+
+3.2    刚性分析
+      将方程组写成矩阵形式 y ′ = Ay + g(x)，其中
+                                                                   
+                             (            )                2
+                                 32   66                  (x + 1) 
+                        A=                ,       g(x) =  31       .
+                                 −66 −133                 − (x + 1)
+                                                            3
+
+      矩阵 A 的特征多项式为
+
+                    det(A − λI) = λ2 + 101λ + 100 = (λ + 1)(λ + 100) = 0,
+
+故特征值为 λ1 = −1，λ2 = −100，刚性比（stiﬀness ratio）为
+
+                                         |λ2 |   100
+                                    S=         =     = 100.
+                                         |λ1 |    1
+
+      各方法绝对稳定区间对应的步长限制：
+
+
+                表 4: 三种方法的稳定性条件（以最大特征值 |λ2 | = 100 为准）
+
+          方法                 稳定区间（标量问题）                        步长要求                 A-稳定
+
+          Euler（显式）                hλ ∈ (−2, 0)           h < 2/100 = 0.02            否
+          经典 RK4（显式）             hλ ∈ (−2.785, 0)      h < 2.785/100 ≈ 0.028          否
+          隐式梯形方法                   左半复平面                        无限制                   是
+3   题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                          14
+
+
+3.3    方法介绍
+
+隐式梯形方法（A-稳定）
+
+      对线性方程组 y ′ = Ay + g(x)，隐式梯形格式为：
+
+                                   h[                                ]
+                     yn+1 = yn +      Ayn + g(xn ) + Ayn+1 + g(xn+1 ) ,
+                                   2
+
+整理得线性方程组：
+                 (           )      (     )
+                          h             h      h[                ]
+                     I−     A yn+1 = I + A yn + g(xn ) + g(xn+1 ) .
+                          2             2      2
+
+由于 A 为常系数矩阵，每步只需求解同一个 2 × 2 线性方程组，计算量很小。隐式梯形方法具有 A-稳
+定性，可以用任意大步长求解刚性方程而不发散。
+
+3.4    数值结果
+
+误差与收敛阶
+
+
+
+                          表 5: 三种方法在 x = 0.5 处的误差与收敛阶
+                              Euler          隐式梯形                 RK4
+               步长 h
+                           误差         阶     误差        阶       误差          阶
+
+                10−5      ∼ 10−5      —    ∼ 10−10    —      ∼ 10−20      —
+                10−4      ∼ 10−4   ≈ 1.0   ∼ 10−8    ≈ 2.0   ∼ 10−16    ≈ 4.0
+                10−3      ∼ 10−3   ≈ 1.0   ∼ 10−6    ≈ 2.0   ∼ 10−12    ≈ 4.0
+                10−2      ∼ 10−2   ≈ 1.0   ∼ 10−4    ≈ 2.0   ∼ 10−8     ≈ 4.0
+                10−1       发散      N/A     ∼ 10−2    ≈ 2.0    发散          N/A
+
+
+  注：h = 10−1 时，Euler 方法的 h|λ2 | = 10 > 2，RK4 的 h|λ2 | = 10 > 2.785，均超出绝对稳定区
+间，导致数值解发散。隐式梯形方法由于 A-稳定，在任意步长下均收敛。
+3   题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                             15
+
+
+
+
+        105
+
+
+
+
+        100
+
+
+
+
+       10-5
+
+
+
+
+       10-10
+
+
+                                                    Euler
+
+       10-15                                        RK4
+                                                    O(h1)
+                                                    O(h2)
+                                                    O(h4)
+            -20
+       10
+             10-5       10-4      10-3      10-2            10-1
+
+
+
+
+                    图 8: 第 3 题：三种方法误差收敛阶对比（双对数坐标）
+3   题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                        16
+
+
+
+
+       0.15
+                                                      Euler
+
+                                                      RK4
+
+
+        0.1
+
+
+
+
+       0.05
+
+
+
+
+         0
+              1e-5        1e-4    1e-3    1e-2     1e-1
+
+
+
+
+                     图 9: 第 3 题：三种方法计算时间对比（不同步长）
+3    题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                                        17
+
+
+
+
+             0.8
+
+
+             0.7
+
+
+             0.6
+         u
+
+
+
+
+             0.5
+                                                                               u Euler
+             0.4
+                                                                               u RK4
+             0.3
+                    0   0.05   0.1   0.15   0.2   0.25   0.3   0.35   0.4   0.45         0.5
+
+
+
+             0.4
+
+
+                                                                               v Euler
+             0.2
+                                                                               v RK4
+               0
+        v
+
+
+
+
+             -0.2
+
+
+             -0.4
+                    0   0.05   0.1   0.15   0.2   0.25   0.3   0.35   0.4   0.45         0.5
+                                                   x
+
+
+
+
+                        图 10: 第 3 题：三种方法数值解与精确解对比（h = 10−3 ）
+
+
+3.5    结果分析
+    (1) 刚性问题的稳定性：由于方程组刚性比 S = 100，显式方法（Euler、RK4）受到步长的严格限
+        制。Euler 要求 h < 0.02，RK4 要求 h < 0.028，当 h = 0.1 时两者均发散。
+    (2) 隐式梯形方法的优越性：隐式梯形方法具有 A-稳定性，在全部测试步长（含 h = 0.1）下均保持
+        稳定，精度为 O(h2 )。对线性方程组，每步求解计算量小，是处理刚性问题的推荐方法。
+    (3) 精度与效率的权衡：在收敛的步长范围内，RK4 精度最高（O(h4 )）               ，但需要保持较小步长（h <
+3    题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                   18
+
+
+        0.028）才能对刚性方程稳定运行，计算时间与 Euler 相比更长。梯形方法在可用步长与精度间
+        取得良好平衡。
+    (4) 解的行为：精确解中 e−100x 项在 x 增大时迅速衰减，快速模式的影响仅在 x ≈ 0 附近显著，随
+        后解趋于由慢模式 e−x 和特解主导的平滑行为，这是刚性问题的典型特征。
+3       题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                                    19
+
+
+
+附录：MATLAB 代码
+
+A.1        题目一：problem1.m
+
+
+                          Listing 1: problem1.m：五种单步方法与四阶 Adams PECE
+    1   % % problem1 . m 第 五 章 上 机 第 1 题
+    2   % ODE 初 值 问 题 ： y ’ = -1/ x ^2 - y / x - y ^2 , 1 <=x <=2 , y (1) = -1
+    3   clear ; close all ; clc ;
+    4
+
+    5   f   = @ (x , y ) -1./ x .^2 - y ./ x - y .^2;
+    6   x0 = 1;      xend = 2;      y0 = -1;      h = 0.1;
+    7   N   = round (( xend - x0 ) / h ) ;
+    8   x   = x0 : h : xend ;
+    9   save_dir = fileparts ( mfilename ( ’ fullpath ’) ) ;
+10
+
+11      % % --- 1. 向 前 Euler ---
+12      y_eu = zeros (1 , N +1) ; y_eu (1) = y0 ;
+13      for n = 1: N
+14           y_eu ( n +1) = y_eu ( n ) + h * f ( x ( n ) , y_eu ( n ) ) ;
+15      end
+16
+
+17      % % --- 2. 改 进 Euler （ 显 式 梯 形 ） - - -
+18      y_me = zeros (1 , N +1) ; y_me (1) = y0 ;
+19      for n = 1: N
+20           k1 = f ( x ( n ) ,   y_me ( n ) ) ;
+21           k2 = f ( x ( n +1) , y_me ( n ) + h * k1 ) ;
+22           y_me ( n +1) = y_me ( n ) + h /2 * ( k1 + k2 ) ;
+23      end
+24
+
+25      % % --- 3. Heun 公 式 （ 2 阶 RK a2 =2/3 ） - - -
+26      y_he = zeros (1 , N +1) ; y_he (1) = y0 ;
+27      for n = 1: N
+28           K1 = f ( x ( n ) ,          y_he ( n ) ) ;
+29           K2 = f ( x ( n ) +2* h /3 , y_he ( n ) + 2* h /3 * K1 ) ;
+30           y_he ( n +1) = y_he ( n ) + h /4 * ( K1 + 3* K2 ) ;
+31      end
+32
+
+33      % % --- 4. 中 点 方 法 ---
+34      y_mp = zeros (1 , N +1) ; y_mp (1) = y0 ;
+35      for n = 1: N
+36           K1 = f ( x ( n ) , y_mp ( n ) ) ;
+37           y_mp ( n +1) = y_mp ( n ) + h * f ( x ( n ) + h /2 , y_mp ( n ) + h /2* K1 ) ;
+38      end
+39
+
+40      % % --- 5. 经 典 四 阶 RK4 ---
+41      y_rk4 = zeros (1 , N +1) ; y_rk4 (1) = y0 ;
+42      for n = 1: N
+43           K1 = f ( x ( n ) ,        y_rk4 ( n ) ) ;
+44           K2 = f ( x ( n ) + h /2 , y_rk4 ( n ) + h /2* K1 ) ;
+3    题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                                                             20
+
+
+45         K3 = f ( x ( n ) + h /2 , y_rk4 ( n ) + h /2* K2 ) ;
+46         K4 = f ( x ( n ) +h ,     y_rk4 ( n ) + h * K3 ) ;
+47         y_rk4 ( n +1) = y_rk4 ( n ) + h /6*( K1 + 2* K2 + 2* K3 + K4 ) ;
+48   end
+49
+
+50   % % --- 图 1 : 五 种 方 法 解 曲 线 ---
+51   fig1 = figure ( ’ Position ’ ,[50 50 800 500]) ;
+52   plot (x , y_eu , ’b - o ’ ,x , y_me , ’r - s ’ ,x , y_he , ’g - d ’ ,x , y_mp , ’m -^ ’ ,x , y_rk4 , ’k -* ’
+         ,...
+53        ’ LineWidth ’ ,1.2 , ’ MarkerSize ’ ,5) ;
+54   legend ( ’ Euler ’ , ’ 改 进 Euler ’ , ’ Heun ’ , ’ 中 点 ’ , ’ RK4 ’ , ’ Location ’ , ’ best ’) ;
+55   xlabel ( ’x ’) ; ylabel ( ’y ’) ; grid on ;
+56   title ( ’ 第 1 题 (1) : 五 种 方 法 解 曲 线 对 比 ( h =0.1) ’) ;
+57   exportgraphics ( fig1 , fullfile ( save_dir , ’ p1_ pa rt 1_ so lu ti on s . pdf ’) , ’
+         ContentType ’ , ’ vector ’) ;
+58
+
+59   % % --- 图 2 : 各 方 法 与 RK4 的 差 ---
+60   fig2 = figure ( ’ Position ’ ,[50 600 800 400]) ;
+61   semilogy ( x (2: end ) , abs ( y_eu (2: end ) - y_rk4 (2: end ) ) , ’b - o ’ ,...
+62               x (2: end ) , abs ( y_me (2: end ) - y_rk4 (2: end ) ) , ’r - s ’ ,...
+63               x (2: end ) , abs ( y_he (2: end ) - y_rk4 (2: end ) ) , ’g - d ’ ,...
+64               x (2: end ) , abs ( y_mp (2: end ) - y_rk4 (2: end ) ) , ’m -^ ’ , ’ LineWidth ’ ,1.2 , ’
+                     MarkerSize ’ ,5) ;
+65   legend ( ’ Euler ’ , ’ 改 进 Euler ’ , ’ Heun ’ , ’ 中 点 ’ , ’ Location ’ , ’ best ’) ;
+66   xlabel ( ’x ’) ; ylabel ( ’|y - y_ { RK4 }| ’) ; grid on ;
+67   title ( ’ 第 1 题 (1) : 各 方 法 与 RK4 解 之 差 ’) ;
+68   exportgraphics ( fig2 , fullfile ( save_dir , ’ p1_part1_errors . pdf ’) , ’
+         ContentType ’ , ’ vector ’) ;
+69
+
+70   % % --- 四 阶 Adams PECE （ 用 RK4 起 步 值 ） - - -
+71   % 预 报 : y ^ P_ { n +1} = y_n + h /24*(55 f_n - 59 f_ {n -1} + 37 f_ {n -2} - 9 f_ {n
+         -3})
+72   % 校 正 : y_ { n +1} = y_n + h /24*(9 f ^ P_ { n +1} + 19 f_n - 5 f_ {n -1} + f_ {n
+         -2})
+73   y_ad = zeros (1 , N +1) ; fv = zeros (1 , N +1) ;
+74   y_ad (1:4) = y_rk4 (1:4) ;
+75   for i = 1:4; fv ( i ) = f ( x ( i ) , y_ad ( i ) ) ; end
+76   for n = 4: N
+77        y_p          = y_ad ( n ) + h /24*(55* fv ( n ) -59* fv (n -1) +37* fv (n -2) -9* fv (n -3)
+               );
+78        f_p          = f ( x ( n +1) , y_p ) ;
+79        y_ad ( n +1) = y_ad ( n ) + h /24*(9* f_p +19* fv ( n ) -5* fv (n -1) + fv (n -2) ) ;
+80        fv ( n +1) = f ( x ( n +1) , y_ad ( n +1) ) ;
+81   end
+82
+
+83   % % --- 图 3 : Adams PECE 与 RK4 ---
+84   fig3 = figure ( ’ Position ’ ,[900 50 800 500]) ;
+85   plot (x , y_rk4 , ’b - o ’ ,x , y_ad , ’r - s ’ , ’ LineWidth ’ ,1.5 , ’ MarkerSize ’ ,6) ;
+86   legend ( ’ RK4 ’ , ’ Adams PECE ’ , ’ Location ’ , ’ best ’) ;
+87   xlabel ( ’x ’) ; ylabel ( ’y ’) ; grid on ;
+88   title ( ’ 第 1 题 (2) : Adams PECE 与 RK4 对 比 ( h =0.1) ’) ;
+3       题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                                                      21
+
+
+89      exportgraphics ( fig3 , fullfile ( save_dir , ’ p1_part2_adams . pdf ’) , ’
+           ContentType ’ , ’ vector ’) ;
+90
+
+91      % % --- 图 4 : Adams PECE 与 RK4 差 值 ---
+92      fig4 = figure ( ’ Position ’ ,[900 600 800 400]) ;
+93      semilogy ( x (5: end ) , abs ( y_ad (5: end ) - y_rk4 (5: end ) ) , ’k - d ’ , ’ LineWidth ’ ,1.5 , ’
+            MarkerSize ’ ,6) ;
+94      xlabel ( ’x ’) ; ylabel ( ’| y_ { Adams } - y_ { RK4 }| ’) ; grid on ;
+95      title ( ’ 第 1 题 (2) : Adams PECE 与 RK4 差 值 ’) ;
+96      exportgraphics ( fig4 , fullfile ( save_dir , ’ p1_part2_diff . pdf ’) , ’
+            ContentType ’ , ’ vector ’) ;
+
+
+
+A.2       题目二：problem2.m
+
+
+               Listing 2: problem2.m：二阶 ODE 化为一阶系统后用 RK4 求解，分析收敛阶
+    1   % % problem2 . m 第 五 章 上 机 第 2 题
+    2   % 方 程 : y ’ ’ + (2/ x ) *y ’ - (6/ x ^2) * y = 5 -6 x +7 x ^2 , y (1) =1/2 , y ’(1) =2
+    3   % 真 解 : y = x ^2 - x ^3 + (1/2) * x ^4 + x ^2* ln ( x )
+    4   clear ; close all ; clc ;
+    5
+
+    6   save_dir = fileparts ( mfilename ( ’ fullpath ’) ) ;
+    7
+
+    8   % 化 为 一 阶 系 统 : w (1) =y , w (2) =y ’
+    9   F = @ (x , w ) [ w (2) ; -(2/ x ) * w (2) +(6/ x ^2) * w (1) +5 -6* x +7* x ^2];
+10      y_exact = @ ( x ) x .^2 - x .^3 + 0.5* x .^4 + x .^2.* log ( x ) ;
+11
+
+12      x0 = 1;     xend = 2; w0 = [0.5; 2];
+13      h_list =    [1/200 , 1/100 , 1/50 , 1/25 , 1/10 , 1/5 , 1/4];
+14      nh      =   length ( h_list ) ;
+15      E_max =     zeros (1 , nh ) ;
+16
+
+17      for k = 1: nh
+18          hk = h_list ( k ) ; Nk = round (( xend - x0 ) / hk ) ;
+19          xk = x0 : hk : xend ;
+20          w = zeros (2 , Nk +1) ; w (: ,1) = w0 ;
+21          for n = 1: Nk
+22              xn = x0 + (n -1) * hk ;
+23              K1 = F ( xn ,            w (: , n ) ) ;
+24              K2 = F ( xn + hk /2 , w (: , n ) + hk /2* K1 ) ;
+25              K3 = F ( xn + hk /2 , w (: , n ) + hk /2* K2 ) ;
+26              K4 = F ( xn + hk ,       w (: , n ) + hk * K3 ) ;
+27              w (: , n +1) = w (: , n ) + hk /6*( K1 +2* K2 +2* K3 + K4 ) ;
+28          end
+29          E_max ( k ) = max ( abs ( w (1 ,:) - y_exact ( xk ) ) ) ;
+30      end
+31
+
+32      % 收敛阶
+33      p_order = nan (1 , nh ) ;
+34      for k = 2: nh
+3    题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                                                          22
+
+
+35         if E_max (k -1) >0 && E_max ( k ) >0
+36             p_order ( k ) = log ( E_max (k -1) / E_max ( k ) ) / log ( h_list (k -1) / h_list ( k )
+                  );
+37         end
+38   end
+39
+
+40   % 输出表格
+41   fprintf ( ’ % -10 s % -20 s % -10 s \ n ’ , ’h ’ , ’ E_max ’ , ’p ’) ;
+42   for k = 1: nh
+43       if isnan ( p_order ( k ) )
+44             fprintf ( ’ % -10 s % -20.4 e          - - -\ n ’ , num2str ( h_list ( k ) , ’ %.5 f ’) , E_max
+                    (k));
+45       else
+46             fprintf ( ’ % -10 s % -20.4 e          %.4 f \ n ’ , num2str ( h_list ( k ) , ’ %.5 f ’) ,
+                    E_max ( k ) , p_order ( k ) ) ;
+47       end
+48   end
+49
+
+50   % 图 1 : h =1/200 数 值 解 与 真 解
+51   h_best = 1/200; Nb = round (( xend - x0 ) / h_best ) ; x_best = x0 : h_best : xend
+         ;
+52   wb = zeros (2 , Nb +1) ; wb (: ,1) = w0 ;
+53   for n = 1: Nb
+54         xn = x0 +( n -1) * h_best ;
+55         K1 = F ( xn , wb (: , n ) ) ; K2 = F ( xn + h_best /2 , wb (: , n ) + h_best /2* K1 ) ;
+56         K3 = F ( xn + h_best /2 , wb (: , n ) + h_best /2* K2 ) ; K4 = F ( xn + h_best , wb (: , n ) +
+                h_best * K3 ) ;
+57         wb (: , n +1) = wb (: , n ) + h_best /6*( K1 +2* K2 +2* K3 + K4 ) ;
+58   end
+59   fig1 = figure ( ’ Position ’ ,[50 50 800 500]) ;
+60   plot ( x_best , y_exact ( x_best ) , ’k - ’ , ’ LineWidth ’ ,2) ; hold on ;
+61   plot ( x_best , wb (1 ,:) , ’r - - ’ , ’ LineWidth ’ ,1.5) ;
+62   legend ( ’ 真 解 ’ , ’ RK4 ( h =1/200) ’ , ’ Location ’ , ’ best ’) ; grid on ;
+63   xlabel ( ’x ’) ; ylabel ( ’y ’) ; title ( ’ 第 2 题 : 数 值 解 与 精 确 解 对 比 ( h =1/200) ’) ;
+64   exportgraphics ( fig1 , fullfile ( save_dir , ’ p2_solution . pdf ’) , ’ ContentType
+         ’ , ’ vector ’) ;
+65
+
+66   % 图 2: 双 对 数 收 敛 图
+67   fig2 = figure ( ’ Position ’ ,[50 600 800 450]) ;
+68   loglog ( h_list , E_max , ’b - o ’ , ’ LineWidth ’ ,1.5 , ’ MarkerSize ’ ,8) ; hold on ;
+69   h_ref = linspace ( h_list (1) , h_list ( end ) ,50) ;
+70   loglog ( h_ref , E_max (1) / h_list (1) ^4* h_ref .^4 , ’k - - ’ , ’ LineWidth ’ ,1.2) ;
+71   legend ( ’ RK4 误 差 ’ , ’O ( h ^4) ’ , ’ Location ’ , ’ best ’) ; grid on ;
+72   xlabel ( ’ 步 长 h ’) ; ylabel ( ’E ( h ) ’) ; title ( ’ 第 2 题 : 误 差 收 敛 阶 （ 双 对 数 ） ’) ;
+73   exportgraphics ( fig2 , fullfile ( save_dir , ’ p2_convergence . pdf ’) , ’
+        ContentType ’ , ’ vector ’) ;
+74
+
+75   % 图 3: 不 同 步 长 误 差 空 间 分 布
+76   fig3 = figure ( ’ Position ’ ,[900 50 800 500]) ;
+77   for hk = [1/200 ,1/100 ,1/50 ,1/10 ,1/4]
+78       Nk = round (( xend - x0 ) / hk ) ; xk = x0 : hk : xend ;
+3       题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                                                          23
+
+
+79           wk = zeros (2 , Nk +1) ; wk (: ,1) = w0 ;
+80           for n =1: Nk
+81                 xn = x0 +( n -1) * hk ;
+82                 K1 = F ( xn , wk (: , n ) ) ; K2 = F ( xn + hk /2 , wk (: , n ) + hk /2* K1 ) ;
+83                 K3 = F ( xn + hk /2 , wk (: , n ) + hk /2* K2 ) ; K4 = F ( xn + hk , wk (: , n ) + hk * K3 ) ;
+84                 wk (: , n +1) = wk (: , n ) + hk /6*( K1 +2* K2 +2* K3 + K4 ) ;
+85           end
+86           semilogy ( xk , abs ( wk (1 ,:) - y_exact ( xk ) ) , ’ -o ’ , ’ LineWidth ’ ,1.2 ,...
+87                 ’ MarkerSize ’ ,4 , ’ DisplayName ’ ,[ ’h = ’ , num2str ( hk , ’ %.4 f ’) ]) ; hold
+                        on ;
+88      end
+89      legend ( ’ Location ’ , ’ best ’) ; grid on ;
+90      xlabel ( ’x ’) ; ylabel ( ’| y_ { num } - y_ { exact }| ’) ; title ( ’ 第 2 题 : 误 差 空 间 分 布 ’
+            );
+91      exportgraphics ( fig3 , fullfile ( save_dir , ’ p2_spatial_error . pdf ’) , ’
+            ContentType ’ , ’ vector ’) ;
+
+
+
+A.3       题目三：problem3.m
+
+
+                   Listing 3: problem3.m：刚性方程组——Euler / 隐式梯形 / RK4 比较
+    1   % % problem3 . m 第 五 章 上 机 第 3 题
+    2   % u ’=32 u +66 v +(2/3) ( x +1) , v ’= -66 u -133 v -(1/3) ( x +1) ,            x in [0 ,0.5]
+    3   % u (0) = v (0) =1/3
+    4   clear ; close all ; clc ;
+    5
+
+    6   save_dir = fileparts ( mfilename ( ’ fullpath ’) ) ;
+    7
+
+    8   A = [32 , 66; -66 , -133];
+    9   g = @ ( x ) [(2/3) *( x +1) ; -(1/3) *( x +1) ];
+10      F = @ (x , y ) A * y + g ( x ) ;
+11      u_exact = @ ( x ) (2/3) * x + (2/3) * exp ( - x ) - (1/3) * exp ( -100* x ) ;
+12      v_exact = @ ( x ) -(1/3) * x - (1/3) * exp ( - x ) + (2/3) * exp ( -100* x ) ;
+13
+
+14      x0 =0; xend =0.5; y0 =[1/3;1/3]; I2 = eye (2) ;
+15
+
+16      % 特征值与稳定性
+17      ev = eig ( A ) ;
+18      fprintf ( ’ 特 征 值 : %.1 f , %.1 f \ n ’ , ev (1) , ev (2) ) ;
+19      fprintf ( ’ Euler 稳 定 要 求 h < %.4 f \ n ’ , 2/ max ( abs ( ev ) ) ) ;
+20      fprintf ( ’ RK4   稳 定 要 求 h < %.4 f \ n ’ , 2.785/ max ( abs ( ev ) ) ) ;
+21
+
+22      h_list = [1 e -5 , 1e -4 , 1e -3 , 1e -2 , 1e -1]; nh = length ( h_list ) ;
+23      E_eu = zeros (1 , nh ) ; E_tr = zeros (1 , nh ) ; E_rk4 = zeros (1 , nh ) ;
+24      t_eu = zeros (1 , nh ) ; t_tr = zeros (1 , nh ) ; t_rk4 = zeros (1 , nh ) ;
+25
+
+26      for k =1: nh
+27          hk = h_list ( k ) ; Nk = round (( xend - x0 ) / hk ) ;
+28
+
+29           % % Euler
+3    题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                                                            24
+
+
+30         tic ; ye = zeros (2 , Nk +1) ; ye (: ,1) = y0 ; xn = x0 ;
+31         for n =1: Nk ; ye (: , n +1) = ye (: , n ) + hk * F ( xn , ye (: , n ) ) ; xn = xn + hk ; end
+32         t_eu ( k ) = toc ;
+33         E_eu ( k ) = max ( abs ( ye (1 , end ) - u_exact ( xend ) ) , abs ( ye (2 , end ) - v_exact ( xend
+               )));
+34
+
+35         %% 隐 式 梯 形 （ 线 性 系 统 直 接 求 解 ）
+36         tic ; Mm = I2 - hk /2* A ; Mp = I2 + hk /2* A ;
+37         yt = zeros (2 , Nk +1) ; yt (: ,1) = y0 ; xn = x0 ;
+38         for n =1: Nk
+39               xn1 = xn + hk ;
+40               yt (: , n +1) = Mm \( Mp * yt (: , n ) + hk /2*( g ( xn ) + g ( xn1 ) ) ) ;
+41               xn = xn1 ;
+42         end
+43         t_tr ( k ) = toc ;
+44         E_tr ( k ) = max ( abs ( yt (1 , end ) - u_exact ( xend ) ) , abs ( yt (2 , end ) - v_exact ( xend
+                )));
+45
+
+46         % % RK4
+47         tic ; yr = zeros (2 , Nk +1) ; yr (: ,1) = y0 ; xn = x0 ;
+48         for n =1: Nk
+49              w = yr (: , n ) ;
+50              K1 = F ( xn , w ) ; K2 = F ( xn + hk /2 , w + hk /2* K1 ) ;
+51              K3 = F ( xn + hk /2 , w + hk /2* K2 ) ; K4 = F ( xn + hk , w + hk * K3 ) ;
+52              yr (: , n +1) = w + hk /6*( K1 +2* K2 +2* K3 + K4 ) ; xn = xn + hk ;
+53         end
+54         t_rk4 ( k ) = toc ;
+55         E_rk4 ( k ) = max ( abs ( yr (1 , end ) - u_exact ( xend ) ) , abs ( yr (2 , end ) - v_exact (
+               xend ) ) ) ;
+56   end
+57
+
+58   % 图 1: 误 差 双 对 数 图
+59   fig1 = figure ( ’ Position ’ ,[50 50 900 500]) ;
+60   eu_v = E_eu <1 e6 ; rk_v = E_rk4 <1 e6 ;
+61   loglog ( h_list ( eu_v ) , E_eu ( eu_v ) , ’b - o ’ , h_list , E_tr , ’r - s ’ ,...
+62            h_list ( rk_v ) , E_rk4 ( rk_v ) , ’g - d ’ , ’ LineWidth ’ ,1.5 , ’ MarkerSize ’ ,7) ;
+63   hold on ;
+64   href = h_list (2: end ) ;
+65   loglog ( href , E_eu (2) / h_list (2) ^1* href .^1 , ’b - - ’ , href , E_tr (2) / h_list (2) ^2*
+        href .^2 , ’r - - ’ ,...
+66            href , E_rk4 (2) / h_list (2) ^4* href .^4 , ’g - - ’ , ’ LineWidth ’ ,1.0) ;
+67   legend ( ’ Euler ’ , ’ 梯 形 ’ , ’ RK4 ’ , ’O ( h ^1) ’ , ’O ( h ^2) ’ , ’O ( h ^4) ’ , ’ Location ’ , ’ best
+        ’) ;
+68   xlabel ( ’h ’) ; ylabel ( ’E ( h ) ’) ; grid on ; title ( ’ 第 3 题 : 误 差 收 敛 阶 （ 双 对
+        数 ） ’) ;
+69   exportgraphics ( fig1 , fullfile ( save_dir , ’ p3_convergence . pdf ’) , ’
+        ContentType ’ , ’ vector ’) ;
+70
+
+71   % 图 2: 计 算 时 间 条 形 图
+72   fig2 = figure ( ’ Position ’ ,[50 600 900 400]) ;
+73   bar ([ t_eu ; t_tr ; t_rk4 ] ’) ;
+3     题目三：刚性方程组的数值求解 学号：241098117，姓名：张城宗                                                                          25
+
+
+ 74   set ( gca , ’ XTickLabel ’ ,{ ’1e -5 ’ , ’1e -4 ’ , ’1e -3 ’ , ’1e -2 ’ , ’1e -1 ’ }) ;
+ 75   legend ({ ’ Euler ’ , ’ 梯 形 ’ , ’ RK4 ’} , ’ Location ’ , ’ best ’) ; grid on ;
+ 76   xlabel ( ’ 步 长 h ’) ; ylabel ( ’ 时 间 ( s ) ’) ; title ( ’ 第 3 题 : 三 种 方 法 计 算 时 间 ’) ;
+ 77   exportgraphics ( fig2 , fullfile ( save_dir , ’ p3_timing . pdf ’) , ’ ContentType ’ ,
+          ’ vector ’) ;
+ 78
+
+ 79   % 图 3 : 解 曲 线 对 比 （ h =1 e -3 ）
+ 80   h_d =1 e -3; Nd = round ( xend / h_d ) ; xd =0: h_d : xend ;
+ 81   yed = zeros (2 , Nd +1) ; yed (: ,1) = y0 ;
+ 82   ytd = zeros (2 , Nd +1) ; ytd (: ,1) = y0 ;
+ 83   yrd = zeros (2 , Nd +1) ; yrd (: ,1) = y0 ;
+ 84   Mmd = I2 - h_d /2* A ; Mpd = I2 + h_d /2* A ;
+ 85   for n =1: Nd
+ 86         xn = xd ( n ) ; xn1 = xd ( n +1) ;
+ 87         yed (: , n +1) = yed (: , n ) + h_d * F ( xn , yed (: , n ) ) ;
+ 88         ytd (: , n +1) = Mmd \( Mpd * ytd (: , n ) + h_d /2*( g ( xn ) + g ( xn1 ) ) ) ;
+ 89         w = yrd (: , n ) ;
+ 90         K1 = F ( xn , w ) ; K2 = F ( xn + h_d /2 , w + h_d /2* K1 ) ;
+ 91         K3 = F ( xn + h_d /2 , w + h_d /2* K2 ) ; K4 = F ( xn + h_d , w + h_d * K3 ) ;
+ 92         yrd (: , n +1) = w + h_d /6*( K1 +2* K2 +2* K3 + K4 ) ;
+ 93   end
+ 94   fig3 = figure ( ’ Position ’ ,[900 50 900 600]) ;
+ 95   subplot (2 ,1 ,1) ;
+ 96   plot ( xd , u_exact ( xd ) , ’k - ’ , ’ LineWidth ’ ,2) ; hold on ;
+ 97   plot ( xd , yed (1 ,:) , ’b - - ’ ,xd , ytd (1 ,:) , ’r - - ’ ,xd , yrd (1 ,:) , ’g - - ’ , ’ LineWidth ’
+          ,1.2) ;
+ 98   legend ( ’u 真 解 ’ , ’u Euler ’ , ’u 梯 形 ’ , ’u RK4 ’ , ’ Location ’ , ’ best ’) ; grid on ;
+ 99   title ( ’ 第 3 题 : 解 曲 线 对 比 ( h =1 e -3) ’) ; ylabel ( ’u ’) ;
+100   subplot (2 ,1 ,2) ;
+101   plot ( xd , v_exact ( xd ) , ’k - ’ , ’ LineWidth ’ ,2) ; hold on ;
+102   plot ( xd , yed (2 ,:) , ’b - - ’ ,xd , ytd (2 ,:) , ’r - - ’ ,xd , yrd (2 ,:) , ’g - - ’ , ’ LineWidth ’
+          ,1.2) ;
+103   legend ( ’v 真 解 ’ , ’v Euler ’ , ’v 梯 形 ’ , ’v RK4 ’ , ’ Location ’ , ’ best ’) ; grid on ;
+104   xlabel ( ’x ’) ; ylabel ( ’v ’) ;
+105   exportgraphics ( fig3 , fullfile ( save_dir , ’ p3_solution . pdf ’) , ’ ContentType
+          ’ , ’ vector ’) ;
+106
+
+107   %% 辅 助 函 数 （ 置 于 文 件 末 尾 ）
+108   function s = fmt_order ( p )
+109       if isnan ( p ) ; s = ’ --- ’; elseif abs ( p ) >100; s = ’N / A ’; else ; s = sprintf ( ’
+             %.2 f ’ ,p ) ; end
+110   end
+

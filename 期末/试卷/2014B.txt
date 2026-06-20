@@ -1,0 +1,70 @@
+                                                                                                                       . (10   )                        Tn (x) = cos(n arccos x), −1 ≤ x ≤ 1          Tn+1 (x) =
+                                                                                                                   2xTn (x) − Tn−1 (x), n = 1, · · ·            T0 (x) = 1, T1 (x) = x
+     2013/2014
+
+
+                        2014
+
+
+
+
+.            (12 )
+                     P
+                     k                    P
+                                          k
+1.           k             αj yn+j = h         βj f (tn+j , yn+j )
+                     j=0                 j=0
+
+
+
+
+2.                              y 0 = −y, y(0) = 1                                                                                           R2     2
+                                                                                                                       . (10 )          I=   0
+                                                                                                                                                  √x −1 dx                  m     Gauss − Chebyshev           .
+                                                                                                                                                   x(2−x)
+3.                                      t = 8,            −3 = −L ≤ J ≤ U = 3,               p=2                   m               ,                        ?
+                                         N=
+
+4.         f (x) = x4          f (x)       −1, 0, 1, 2                                             P3 (x) =
+
+
+
+
+. (8   )                                                    yn+1 = yn + h2 [f (tn , yn ) + f (tn+1 , yn+1 )]
+
+
+
+
+                                                                                                                                                                                                          (        )
+                                                                                                   (           )
+. (10 )                    yn = yn−1 + h2 [f (xn−1 , yn−1 )+f (xn , yn−1 +hf (xn−1 , yn−1 ))]       . (10   )     f (x) ∈ C[a,b] ,       f (x)     n                 p(x)     f (x)       [a, b]
+          0                                                                                                 n
+      y = −y, y(0) = 1
+
+
+
+
+                                                                                                    . (10 )       f (x) ∈ C[a,b]     f 00 (x)    (a, b)      f (x)   [a, b]
+                                                                                                                p(x) = a0 + a1 x                   a0 , a1
+
+. (10 )
+                         y(n + 2) − 3y(n + 1) + 2y(n) = 2n
+
+
+
+
+                                                                                      (         )                                                                                     (            )
+                                                         Rb
+  . (10 )         xj = a + j(b − a)/3, i = 0, 1, 2, 3,   a
+                                                              f (x)dx ≈ b−a
+                                                                         8
+                                                                            [f (x0 ) +   . (10 )   Runge-Kutta
+3f (x1 ) + 3f (x2 ) + f (x3 )]                                                                     (
+                                                                                                     y0   = f (x, y),   a ≤ x ≤ b,
+                                                                                                      y(a) = η
+
+
+
+
+                                                                            (        )                                               (   )
+

@@ -1,0 +1,4148 @@
+数 值 分 析
+    数值逼近及常微分方程数值解法
+
+
+
+
+               JU
+ 邓 卫 兵   吴    婷
+
+             ,N
+             h      编 写
+          at
+ 徐 勤 武   顾 国 勇
+      fM
+    lo
+     o
+  ho
+Sc
+
+
+
+
+    二 零 二 四 年 八 月
+                                    目            录
+
+第三章 函数逼近                                                                                   1
+ 3.1   函数逼近问题 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             1
+ 3.2   最佳一致逼近多项式 . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                  1
+ 3.3   正交多项式 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            4
+
+
+
+
+                                                  JU
+ 3.4   最佳平方逼近 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            15
+ 3.5   数据拟合        . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   20
+
+
+
+
+                                                ,N
+       3.5.1   线性最小二乘法             . . . . . . . . . . . . . . . . . . . . . . . . . . .   21
+       3.5.2   离散的 Fourier 变换 . . . . . . . . . . . . . . . . . . . . . . . . .            25
+       3.5.3   非线性拟合 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           32
+ 3.6
+                                         h
+       人工神经网络简介 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                34
+                                      at
+       3.6.1   什么是人工神经网络 . . . . . . . . . . . . . . . . . . . . . . . . .                 34
+                    fM
+
+       3.6.2   神经网络的数学表示 . . . . . . . . . . . . . . . . . . . . . . . . .                 38
+       3.6.3   神经网络的训练             . . . . . . . . . . . . . . . . . . . . . . . . . . .   39
+       3.6.4   神经网络的函数逼近性质 . . . . . . . . . . . . . . . . . . . . . .                     40
+                  lo
+
+
+
+ 习题 三 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        42
+
+参考文献
+      o
+
+
+
+
+                                                                                           46
+   ho
+ Sc
+
+
+
+
+                                            i
+                     ii
+
+
+
+
+Sc
+  ho
+     olo
+        fM
+          at
+             h,N
+                JU
+                     目
+                     录
+                                    第三章 函数逼近
+
+                                    3.1 函数逼近问题
+
+    给定函数 f pxq P C ra, bs, 寻求一个计算简单, 便于在计算机上表示的函数 g pxq 来近
+                  函数 逼 近 问 题. 具体定义时, 我们往往限定在有限维的函
+似地代替 f pxq 的问题就是所谓函
+
+
+
+
+                                                      JU
+                                   最 佳 逼 近. 例如, 第二
+数空间中寻求与 f pxq “距离”最近的逼近函数, 这样的逼近也称为最
+章介绍的插值法就是一种重要的函数逼近方法, 只是“距离”最近变成要求在插值节点处
+距离为 0.
+
+
+
+
+                                                    ,N
+    具体地说, 选取区间 ra, bs 上的一个线性无关函数系 φ0 pxq, φ1 pxq, ¨ ¨ ¨ , φn pxq, 其张
+成的空间记为 Φn`1 . 最佳逼近问题即为寻求 g ˚ pxq P Φn`1 使得
+
+                        }f pxq ´ g ˚ pxq} “
+                                            h   min       }f pxq ´ g pxq},     (3.1.1)
+                                         at
+                                              gpxqPΦn`1
+
+其中 } ¨ } 代表刻画函数之间距离的某种度量. 常用的距离度量标准有
+                       fM
+
+                                                       最佳 一 致 逼 近 ;
+ (1) }f pxq ´ g pxq}8 :“ max |f pxq ´ g pxq|, 相应的函数逼近称为最
+                            aďxďb
+                            żb
+                     lo
+
+
+
+ (2) }f pxq ´ g pxq}pp :“        |f pxq ´ g pxq|p W pxqdx, 其中 p ě 1, W pxq ě 0 为权函数(定
+                             a
+      义见§ 3.3), 相应的函数逼近称为(关于权函数 W pxqq 的 Lp 最佳逼近, 特别当 p “ 2
+        o
+
+
+
+
+            最佳 平 方 逼 近 .
+      时, 称它为最
+     ho
+
+
+
+
+    常用的函数系有幂函数系: 1, x, ¨ ¨ ¨ , xn , 三角函数系: 1, cos x, sin x, cos 2x, sin 2x, ¨ ¨ ¨ ,
+cos nx, sin nx, 以及指数函数系 teikx unk“0 (其中 i 代表虚数单位), 等等. 幂函数系的线性
+   Sc
+
+
+
+
+组合是一个多项式. 因为多项式便于在计算机上进行运算, 且它是任意次可微的, 容易求
+                                     三角 多
+积分和微分, 因此幂函数系是最常用的. 三角函数系的任一线性组合常称为一个三
+项式.
+
+
+                             3.2 最佳一致逼近多项式
+
+    关于一致逼近的问题, 早在 1885 年, Weierstrass 就指出下面的基本定理.
+
+    定理 3.2.1. 设 f pxq 是区间 ra, bs 上的连续函数, 则对于任意 ε ą 0, 存在一多项式
+pε pxq, 使不等式
+                                      |f pxq ´ pε pxq| ă ε
+对所有 x P ra, bs 一致成立.
+
+                                                1
+2                                                                                第三章   函数逼近
+
+        Weierstrass定理理论上保证了存在多项式一致逼近连续函数. 1912 年 Bernstein 构
+造了一个在 ra, bs 上一致收敛于 f pxq 多项式. 但若要达到较高的精度, 该多项式的次数
+可能会很高, 导致收敛速度太慢. 这一节我们考虑在 n 维多项式空间中去找 f pxq 的最佳
+一致逼近.
+
+        定义 3.2.1. 设 f pxq P C ra, bs. 令 Pn 表示所有次数不超过 n 的多项式以及零多项式
+构成的集合, 即 Pn “ spant1, x, ¨ ¨ ¨ , xn u. 若存在 p˚n pxq P Pn , 使得
+
+                    En :“ }f pxq ´ p˚n pxq}8 “     min }f pxq ´ pn pxq}8 ,              (3.2.1)
+                                                 pn pxqPPn
+
+则称 p˚n pxq 为 f pxq 在区间 ra, bs上的 n 次最佳一致逼近多项式. 简称为最佳逼近多项式.
+
+
+
+
+                                                                   JU
+En 称为 f pxq 的 n 次最佳逼近或最小偏差.
+
+        下面我们讨论最佳一致逼近多项式的存在唯一性. 首先, 我们给出交错点组的概念.
+
+
+
+
+                                                                 ,N
+假设 rpxq P C ra, bs, 若存在 n 个点 xi :
+
+                                a ď x1 ă x2 ă ¨ ¨ ¨ ă xn ď b
+                                                    h
+                                                 at
+使得
+                         |rpxi q| “ max |rpxq|,           i “ 1, 2, ¨ ¨ ¨ , n,
+                              fM
+
+                                  aďxďb
+
+且
+                         rpxi q “ ´rpxi`1 q,       i “ 1, 2, ¨ ¨ ¨ , n ´ 1,
+                            lo
+
+
+
+                                                       交错 点 组. 利用交错点组的概念,
+则称 x1 , x2 , ¨ ¨ ¨ , xn 为 rpxq 在 ra, bs 上的( Chebyshev )交
+Chebyshev 对最佳一致逼近多项式的特征给出如下重要的定理.
+                 o
+
+
+
+
+        定理 3.2.2 (Chebyshev 定理). 设函数 f pxq P C ra, bs, p˚n pxq P Pn , 则 p˚n pxq 是 f pxq
+              ho
+
+
+
+
+的最佳一致逼近多项式的充分必要条件是 f pxq ´ p˚n pxq 在 ra, bs 上存在一个至少有 n ` 2
+个点构成的交错点组.
+            Sc
+
+
+
+
+        定理的详细证明可参见教材 [1]. 该定理描述了最佳一致逼近多项式误差曲线的性
+态, 它表明 p˚n pxq 逼近 f pxq 的误差分布是均匀的(参见图 3.1), 这是构造最佳一致逼近多
+项式的主要理论依据.
+        下面的定理给出了最佳一致多项式的存在唯一性(参见 [5, 15]).
+
+        定理 3.2.3. 设函数 f pxq P C ra, bs, 则在 Pn 中, f pxq 存在唯一的最佳一致逼近多项
+式.
+
+        Chebyshev 定理从理论上给出了求最佳一致逼近多项式的计算方法. 设 f pxq P
+    1
+C ra, bs, 则在 Pn 中其存在唯一的最佳逼近多项式
+                                                 n
+                                                 ÿ
+                                     pn pxq “          ck xk .
+                                                 k“0
+3.2 最佳一致逼近多项式                                                                     3
+
+
+
+
+                               图 3.1 f pxq ´ g pxq 交错点组
+
+
+
+
+                                                       JU
+该多项式的 n ` 1 个系数 ck pk “ 0, ¨ ¨ ¨ , nq, 最小偏差 En 以及交错点组的 n ` 2 个点 xi :
+
+
+
+
+                                                     ,N
+                              a ď x1 ă x2 ă ¨ ¨ ¨ ă xn`2 ď b,
+
+一共有 2n ` 4 个未知数, 满足
+         $ n
+         ’  ř                                h
+              ck xkj ´ f pxj q “ p´1qj σEn , σ “ ˘1, j “ 1, ¨ ¨ ¨ , n ` 2,
+                                          at
+         &
+                k“0
+            ’
+            % pxj ´ aqpxj ´ bqrp1 pxj q ´ f 1 pxj qs “ 0, j “ 1, ¨ ¨ ¨ , n ` 2.
+                        fM
+
+                                     n
+
+这是一个非线性方程组, 一般情况下很难求解. 关于最佳一致逼近多项式的构造, 可以采
+用 Remes 算法, 但这是一种迭代近似算法, 而且比较复杂, 运算量也较大, 详细介绍可
+                      lo
+
+
+
+以参考相关文献如 [8]. 在实际应用中, 人们往往更倾向于寻找近似的最佳一致逼近多项
+式. 我们将在下一节中介绍.
+         o
+
+
+
+
+    下面的定理说明一定条件下端点属于交错点组.
+      ho
+
+
+
+
+    定理 3.2.4. 设 f pxq 在 ra, bs 上有 n ` 1 阶导数, 且 f pn`1q pxq 在 ra, bs 中保持定
+号(恒正或恒负), p˚n pxq P Pn 是 f pxq 的最佳一致逼近多项式, 则区间 ra, bs 的端点属于
+    Sc
+
+
+
+
+f pxq ´ p˚n pxq 的交错点组.
+
+    证 明 设 a 或 b 不属于 f pxq ´ p˚n pxq 的交错点组, 则由定理3.2.2知 rpxq “ f pxq ´
+p˚n pxq 在区间 pa, bq 内至少 n ` 1 个点处一阶导数为零. 反复应用罗尔中值定理可知,
+rpn`1q pxq 在 pa, bq 中至少有一个零点 ξ, 即有
+
+                                         rpn`1q pξ q “ 0.
+
+但
+                      rpn`1q pxq “ f pn`1q pxq ´ ppn`1q pxq “ f pn`1q pxq,
+因此有
+                                         f pn`1q pξ q “ 0.
+这与 f pn`1q pxq 在 ra, bs 中保持定号的假设相矛盾, 定理得证.                                        l
+4                                                                            第三章     函数逼近
+
+          例 3.2.1. 求函数 f pxq “ ex 在区间 r0, 1s 上的一次最佳一逼近多项式.
+
+          解 设一次最佳逼近多项式为
+
+                                             ppxq “ ax ` b,
+
+则
+
+                                 rpxq “ f pxq ´ ppxq “ ex ´ ax ´ b,
+                                 r1 pxq “ ex ´ a.
+
+
+
+
+                                                                JU
+易知 f 2 pxq “ ex 在 r0, 1s 上恒正. 假设交错点组为 x1 ă x2 ă x3 , 则 x1 “ 0, x3 “ 1. 由
+r1 px2 q “ 0, rpx1 q “ ´rpx2 q “ rpx3 q, 得方程组
+
+
+
+
+                                                              ,N
+                                      ex2 ´ a “ 0,
+                                      e0 ´ b “ ´ex2 ` ax2 ` b,
+                                                       h
+                                                    at
+                                      e1 ´ a ´ b “ ´ex2 ` ax2 ` b.
+                                   fM
+
+解此方程组得
+                                      1
+                    a “ e ´ 1,   b“     re ´ pe ´ 1q lnpe ´ 1qs,   x2 “ lnpe ´ 1q.
+                                      2
+                                 lo
+
+
+
+因此求得 f pxq 的一次最佳逼近多项式为
+                    o
+
+
+
+
+                                            1
+                           ppxq “ pe ´ 1qx ` re ´ pe ´ 1q lnpe ´ 1qs.                   l
+                 ho
+
+
+
+
+                                            2
+               Sc
+
+
+
+
+                                          3.3 正交多项式
+
+          这一节, 我们将介绍正交多项式及其性质. 它在最佳平方逼近和数值积分公式定义
+中有着重要的应用. 首先我们给出权函数的定义.
+
+          定义 3.3.1 (权函数). W pxq 称为区间 ra, bs 上的权函数, 若它满足下面两个条件：
+
+    (1) 在 pa, bq 中, W pxq ě 0 , 并且只能有有限个零点;
+          żb
+    (2)        xi W pxqdx, i “ 1, 2, ¨ ¨ ¨ 存在且为有限值.
+           a
+                                  żb
+          对非负连续函数 f pxq, 若                f pxqW pxqdx ” 0, 则在 pa, bq 上 f ” 0.
+                                      a
+3.3 正交多项式                                                                                           5
+
+    定义 3.3.2 (内积). 给定f, g P C ra, bs, W pxq 是 ra, bs 上的权函数, 称
+                                                żb
+                                 pf, g q :“          f pxqg pxqW pxqdx
+                                                a
+
+为函数 f 与 g 在 ra, bs 上关于权函数 W pxq 的内积.
+
+    内积具有如下性质:
+
+      (1) pf, g q “ pg, f q;
+
+
+
+
+                                                                         JU
+      (2) paf, g q “ apf, g q, a P R;
+
+      (3) pf1 ` f2 , g q “ pf1 , g q ` pf2 , g q;
+
+
+
+
+                                                                  N
+      (4) 当 f ı 0 时, pf, f q ą 0.
+
+    定义 3.3.3. 若内积
+                                           żb              h,
+                                               at
+                               pf, g q “        f pxqg pxqW pxqdx “ 0,
+                                           a
+                                    M
+
+则称函数 f 与 g 在 ra, bs 上带权 W pxq 正交. 若函数族 φ0 , φ1 , ¨ ¨ ¨ , φn , ¨ ¨ ¨ 满足
+                                               żb
+                               pφi , φj q “          W pxqφi pxqφj pxqdx
+                         of
+
+
+                                                a
+                                                                                               (3.3.1)
+                                               $
+                                               &           0    i‰j
+         ol
+
+
+
+
+                                           “
+                                               % A ą0 i“j
+                                                  j
+       ho
+
+
+
+
+        0 是区间 ra, bs 上带权 W pxq 的正交函数族.
+则称 tφi u8
+ Sc
+
+
+
+
+    例 3.3.1. 三角函数族 1, cos x, sin x, cos 2x, sin 2x, ¨ ¨ ¨ 在区间 r´π, π s 上正交.
+
+    设 pi pxq 是 i 次实系数多项式(规定 p0 pxq 是 0 次正交多项式). 若多项式系 tpi pxqu8
+                                                              i“0
+
+                        i“0 为区间 ra, bs 上关于权函数 W pxq 的正
+满足条件(3.3.1), 则称 tpi pxqu8                            正交 多 项 式 系 , 并
+                                      正交 多 项 式 .
+称 pn pxq 为区间 ra, bs 上关于权函数 W pxq 的 n 次正
+    区间 ra, bs 上关于权函数 W pxq 的正交多项式是存在的. 只要给定区间 ra, bs 及权函
+数 W pxq, 均可由单项式序列 t1, x, x2 , ¨ ¨ ¨ , xn , ¨ ¨ ¨ u, 通过Gram–Schmidt逐次正交化构造
+                  n“0 . 方法如下:
+出相应的正交多项式 tpn pxqu8
+                                                     n´1
+                                                     ÿ  pxn , pj q
+               p0 pxq “ 1, pn pxq “ xn ´                           pj pxq, n “ 1, 2, ¨ ¨ ¨ .   (3.3.2)
+                                                    j“0
+                                                        ppj , pj q
+
+由(3.3.2)得到的正交多项式有以下性质:
+6                                                                                 第三章    函数逼近
+
+    性质 3.3.1. pn pxq 是首项系数为 1 的 n 次多项式(简称首一)；
+
+                             n“0 具有如下递推关系式:
+    性质 3.3.2. 正交多项式系 tpn pxqu8
+
+                pk`1 pxq “ px ´ αk qpk pxq ´ βk pk´1 pxq,            k “ 0, 1, ¨ ¨ ¨ ,
+                                                                                          (3.3.3)
+                p0 pxq “ 1, p´1 pxq “ 0,
+
+其中
+                                   pxpk pxq, pk pxqq
+                              αk “                   , k “ 0, 1, ¨ ¨ ¨
+                                    ppk pxq, pk pxqq
+
+
+
+
+                                                              JU
+                                   $
+                                   & 0,
+                                   ’                           k “ 0;
+                              βk “       ppk pxq, pk pxqq
+                                                           , k ě 1.
+
+
+
+
+                                                            ,N
+                                   ’
+                                   %
+                                      ppk´1 pxq, pk´1 pxqq
+
+    由 Gram–Schmidt 逐次正交化的过程(3.3.2)可以看出, 单项式 xk 可以由正交多项式
+                                                     h
+p0 pxq, p1 pxq, ¨ ¨ ¨ , pk pxq 线性表示. 又因为 pn pxq 与 pi pxqpi ă nq 均正交, 所以我们有
+                                                  at
+                   żb
+                        xk pn pxqW pxqdx “ 0,          k “ 0, 1, ¨ ¨ ¨ , n ´ 1.           (3.3.4)
+                             fM
+
+                    a
+
+进一步, 由于任意 k pk ă nq 次多项式 gk pxq 都可由 1, x, ¨ ¨ ¨ , xk 线性表示, 从而可由正交
+多项式 p0 pxq, p1 pxq, ¨ ¨ ¨ , pk pxq 线性表示. 因此可以得到如下性质.
+                           lo
+
+
+
+    性质 3.3.3. 区间 ra, bs 上关于权函数 W pxq 的正交多项式 pn pxq 与任何次数低于 n
+的 k 次多项式 gk pxq 均正交, 即有
+              o
+           ho
+
+
+
+
+                         żb
+                              gk pxqpn pxqW pxqdx “ 0,          k ă n.
+                          a
+         Sc
+
+
+
+
+    性质 3.3.4. 设 pn pxq 为区间 ra, bs 上关于权函数 W pxq 的 n 次正交多项式, 则当
+n ě 1时, pn pxq 在 ra, bs 上有 n 个互异的零点.
+
+     证明 当 n ě 1 时, pn pxq 与 p0 pxq “ 1 正交, 即
+                                      żb
+                                           pn pxqW pxqdx “ 0.
+                                      a
+
+这说明 pn pxq 在 pa, bq 内必然变号, 因而至少有一个奇重零点. 设 pn pxq 在 pa, bq 内共
+有 k 个奇重零点: x1 , x2 , ¨ ¨ ¨ , xk . 构造多项式 pk pxq “ px ´ x1 qpx ´ x2 q ¨ ¨ ¨ px ´ xk q, 则
+pn pxqpk pxq 在 ra, bs 内只有偶重零点, 因此在 pa, bq 内不变号, 从而有
+                          ˇż b                 ˇ
+                          ˇ                    ˇ
+                          ˇ pn pxqpk pxqW pxqdxˇ ą 0.
+                          ˇ                    ˇ
+                                  a
+3.3 正交多项式                                                                            7
+
+据性质 3.3.3, 若 k ă n, 则上述积分应为零, 因此 k ě n. 但 Pn pxq 是 n 次多项式, k 不可
+能大于 n, 故必有 k “ n, 即 pn pxq 在 ra, bs 内恰有 n 个互异的零点.                                    l
+    下面, 我们介绍一些常用的正交多项式及其性质.
+    (一) Chebyshev(切比雪夫)多项式
+                   1
+    当权函数 W pxq “ ?1´x2 , 区间为 r´1, 1s 时, 可定义如下形式的正交多项式
+
+
+
+
+                                Tn pxq “ cospnarccosxq.                         (3.3.5)
+
+
+
+
+                                                     JU
+事实上, 令 x “ cos θ, , 0 ď θ ď π, 据(3.3.5)式, 有
+
+
+
+
+                                                   ,N
+             ż1                                    żπ
+                                         1
+                   Tm pxqTk pxqp1 ´ x2 q´ 2 dx “        cos mθ cos kθdθ
+              ´1                                   0
+                                                $
+                                         h      ’
+                                                ’
+                                                ’
+                                                ’ 0,            m ­“ k,         (3.3.6)
+                                      at
+                                                  π
+                                                &
+                                              “      ,          m “ k ­“ 0,
+                                                ’
+                                                ’ 2
+                      fM
+
+                                                ’
+                                                % π,
+                                                ’
+                                                                m “ k “ 0.
+
+
+进一步, 利用
+                    lo
+
+
+
+                                   Tn pxq “ cospnθq.                            (3.3.7)
+        o
+     ho
+
+
+
+
+由三角公式
+   Sc
+
+
+
+
+             Tn˘1 pxq “ cospn ˘ 1qθ “ cospnθq cospθq ¯ sinpnθq sinpθq
+
+
+可得如下性质：
+    （1）递推关系:
+
+
+                    Tn`1 pxq “ 2xTn pxq ´ Tn´1 pxq,         n “ 1, 2, ¨ ¨ ¨ ,
+                                                                                (3.3.8)
+                    T0 pxq “ 1, T1 pxq “ x.
+
+
+                                      多 项 式. 表 3.1列出
+由(3.3.8)可以推出各次多项式, 我们称这样的多项式为Chebyshev多
+了前 5 个Chebyshev多项式 Tn pxq. 相应函数图形如图 3.2所示.
+8                                                                                       第三章                  函数逼近
+
+
+
+                                                           1
+
+
+           表 3.1    Chebyshev多项式                          0.8
+
+
+                                                          0.6
+
+            T0 pxq “ 1,                                   0.4
+
+
+                                                          0.2
+
+            T1 pxq “ x,                                    0
+
+
+                                                         -0.2
+                          2
+            T2 pxq “ 2x ´ 1,                             -0.4
+
+
+                          3                              -0.6
+            T3 pxq “ 4x ´ 3x,
+                                                         -0.8
+
+
+                          4     2
+            T4 pxq “ 8x ´ 8x ` 1,                         -1
+
+
+
+
+                                                         JU
+                                                            -1   -0.8   -0.6   -0.4   -0.2   0   0.2   0.4   0.6    0.8   1
+
+
+
+
+                                                                图 3.2            Chebyshev多项式
+    当 |x| ď 1 时, 由Euler公式
+
+
+
+
+                                                       ,N
+                einθ “ cos nθ ` i sin nθ,     e´inθ “ cos nθ ´ i sin nθ,
+
+我们有                                             h
+                                             at
+                 Tn pxq “ cospnarccosxq “ cos nθ
+                            fM
+
+                          1
+                        “ reinθ ` e´inθ s
+                          2
+                          1
+                        “ rpcos θ ` i sin θqn ` pcos θ ´ i sin θqn s
+                          2
+                          lo
+
+
+
+                          1       ?                    ?
+                        “ rpx ` i 1 ´ x2 qn ` px ´ i 1 ´ x2 qn s,
+                          2
+             o
+
+
+
+
+从而推得
+          ho
+
+
+
+
+                              1      ?               ?
+                   Tn pxq “     rpx ` x2 ´ 1qn ` px ´ x2 ´ 1qn s.                                                  (3.3.9)
+                              2
+        Sc
+
+
+
+
+易知, 它是变量 x 的 n 次多项式, 具有形式
+                                    pnq     pnq             n
+                          Tn pxq “ t0 ` t1 x ` ¨ ¨ ¨ ` tpnq
+                                                        n x .
+
+                                                                    pnq
+该公式是在 |x| ď 1 时推出, 但很显然, 只要保持上式中系数 ti , i “ 0, 1, ¨ ¨ ¨ , n 不变, 就
+可将 x 的定义域推广到整个复空间.
+    Chebyshev多项式 Tn pxq 还具有下列重要性质:
+    (2) Tn pxq 的首项系数为 2n´1 .
+    该性质可由递推关系式(3.3.8)直接推得. 进一步, 利用
+
+         cospn arccosp´xqq “ cospnpπ ´ arccos xqq “ p´1qn cospn arccos xq
+
+可推出:
+3.3 正交多项式                                                                             9
+
+    (3) 奇偶性: 当 n 为奇数时, Tn pxq 为奇函数; 当 n 为偶数时, Tn pxq 为偶函数, 即
+
+                                  Tn p´xq “ p´1qn Tn pxq.
+
+    (4) 极值: |x| ă 1 时, Tn pxqpn ą 1q 在 n ´ 1 个点
+                              ˆ ˙
+                                kπ
+                     xk “ cos        ,    k “ 1, 2, ¨ ¨ ¨ , n ´ 1               (3.3.10)
+                                 n
+
+处达到极值, 即
+
+                                      Tn pxk q “ p´1qk .                        (3.3.11)
+
+
+
+
+                                                         JU
+    证明 显然 |x| ă 1 时, |Tn pxq| ď 1. 又据 (3.3.5) 式, 有
+
+
+
+
+                                                       ,N
+                                       ˆ       ˙
+                                            kπ
+                  Tn pxk q “ cos narcos cos      “ cospkπ q
+                                             n
+                                “ p´1qk ,         k “ 1, 2, ¨ ¨ ¨ , n ´ 1.
+                                            h
+                                         at
+    (5) 零点: Tn pxqpn ě 1q 在 p´1, 1q 上有 n 个互异零点:
+                                    p2k ´ 1qπ
+                     fM
+
+                       pnq
+                      xk “ cos                ,          k “ 1, 2, ¨ ¨ ¨ , n,   (3.3.12)
+                                        2n
+     pnq
+且 |xk | ă 1.
+                   lo
+
+
+
+    证明 据 (3.3.5) 式, 有
+                                          ˆ                ˙
+                       pnq                       p2k ´ 1qπ
+                  Tn pxk q “ cos narccos     cos
+        o
+
+
+
+
+                                                     2n
+     ho
+
+
+
+
+                                   p2k ´ 1q
+                             “ cos          π “ 0,      k “ 1, 2, ¨ ¨ ¨ , n.
+                                       2
+   Sc
+
+
+
+
+    (6) 设 Qn 是首项系数为 1 的 n 次实系数多项式 pn pxq 的全体所构成的集合, 则在
+Qn 中, 使
+                                    max |pn pxq| “ 极小
+                                   ´1ďxď1
+
+的多项式是
+                                                  1
+                                    T̄n pxq “          Tn pxq,                  (3.3.13)
+                                                2n´1
+即有
+
+                         min       max |pn pxq| “ max |T̄n pxq|.                (3.3.14)
+                       pn pxqPQn ´1ďxď1                 ´1ďxď1
+
+
+证明 令
+                                        kπ
+                             xk “ cos      ,      k “ 0, 1, ¨ ¨ ¨ , n
+                                         n
+10                                                                         第三章       函数逼近
+
+由性质(4) 知 max´1ďxď1 |T̄n pxq| “ 21´n 且 Tn pxk q “ p´1qk 21´n .
+     假设有多项式 qn pxq P Qn , 使得
+
+                               max |qn pxq| ď max |T̄n pxq|.
+                              ´1ďxď1              ´1ďxď1
+
+
+则
+
+                              max |qn pxq| ď 21´n , x P r´1, 1s.                     (3.3.15)
+                           ´1ďxď1
+
+
+又若 qn pxq ‰ T̄n pxq, 则 rpxq “ T̄n pxq ´ qn pxq P Pn´1 ( n ´ 1 次多项式空间), 且 rpxq ı 0.
+
+
+
+
+                                                             JU
+     由假设, 若 rpxi q ‰ 0, 则 sgn rpxi q “ sgn T̄ pxi q “ p´1qi . 下面考虑 rpxq 在 xi , i “
+0, 1, ¨ ¨ ¨ , n 处值的情况. 不妨假设 rpx0 q “ ¨ ¨ ¨ “ rpxk´1 q “ 0, rpxk q ‰ 0 和 rpxm q ‰ 0 及
+rpxm`1 q “ ¨ ¨ ¨ “ rpxn q “ 0. 显然 0 ď k ď m ď n. 下面只要考虑 rxk , xm s 中 rpxq 零点
+
+
+
+
+                                                           ,N
+的情况.
+     假设 rpxi q ‰ 0, rpxi`1 q “ ¨ ¨ ¨ “ rpxi`j´1 q “ 0, rpxi`j q ‰ 0 此时在 rxi , xi`j s
+                                                     h
+中 rpxq 至少有 j ´ 1 个零点. 但如 j 是偶数, 则 sgn rpxi q “ sgn rpxi`j q, 于是 rpxq
+                                                  at
+在 rxi , xi`j s 中具有偶数个零点(重根按重数计算), 从而具有 j 个零点. 如 j 是奇数, 则
+sgn rpxi q “ ´sgn rpxi`j q, 于是 rpxq 在 rxi , xi`j s 中具有奇数个零点, 从而具有 j 个零
+                             fM
+
+点. 总之, rpxq 在 rxi , xi`j s 具有 j 个零点. 从而在 rxk , xm s 具有 m ´ k 个零点. 又显然
+rpxq 在 rx0 , xk s 具有 k 个零点, 在 rxm , xn s 具有 n ´ m 个零点. 于是, rpxq 在 r´1, 1s 具
+有 k ` m ´ k ` n ´ m “ n 个零点. 但 rpxq P Pn´1 , 从而 rpxq ” 0. 即假设不成立, 或者
+                           lo
+
+
+
+qn pxq “ T̄n pxq.                                                                          l
+                                                                                 1
+     这个性质表明, 在次数不超过 n 的所有首项系数为 1 的多项式中, 2n´1 Tn pxq 在
+               o
+
+
+
+
+r´1, 1s 上与零的偏差是最小的 (在无穷范数意义下).
+            ho
+
+
+
+
+     设函数 f pxq 定义在区间 r´1, 1s 上, 具有 n ` 1 阶连续导数. 由第二章(??)式, 我们知
+          Sc
+
+
+
+
+道 f pxq 在 n ` 1 个互异节点 xi P r´1, 1spi “ 0, , 1, ¨ ¨ ¨ , nq 上的Lagrange插值余项满足
+
+                                        Mn`1
+                          |rn pxq| ď             max |wn`1 pxq|,                     (3.3.16)
+                                       pn ` 1q! ´1ďxď1
+
+其中 Mn`1 “ max |f pn`1q pxq|, wn`1 pxq “ px´x0 qpx´x1 q ¨ ¨ ¨ px´xn q. 据Chebyshev多
+               ´1ďxď1
+项式的性质(6), 如选取多项式 Tn`1 pxq 的零点
+
+                                    p2j ` 1qπ
+                         xj “ cos             ,      j “ 0, 1, ¨ ¨ ¨ , n
+                                     2pn ` 1q
+
+作为插值节点, 则可使 wn`1 pxq “ T̄n`1 pxq 与零之间有最小偏差, 从而使(3.3.16)中余项
+的上界极小化. 即有
+
+                        min       max |wn`1 pxq| “ max |T̄n`1 pxq|.
+                    wn`1 pxqPQn`1 ´1ďxď1                ´1ďxď1
+3.3 正交多项式                                                                            11
+
+于是
+                            Mn`1                        Mn`1 ´n
+              |rn pxq| ď             max |T̃n`1 pxq| ď          2 .
+                           pn ` 1q! ´1ďxď1             pn ` 1q!
+
+     如果插值区间为 ra, bs, 则可作变换
+                                      1
+                                t“       p2x ´ b ´ aq
+                                     b´a
+将区间 ra, bs 变为 r´1, 1s. 此时有
+
+                             pb ´ aqn`1
+               wn`1 pxq “               pt ´ t0 qpt ´ t1 q ¨ ¨ ¨ pt ´ tn q
+
+
+
+
+                                                   JU
+                                2n`1
+                             pb ´ aqn`1
+                           “            wn`1 ptq.
+                                2n`1
+
+
+
+
+                                                 ,N
+这样
+                              Mn`1
+                |rn pxq| ď              h
+                                       max |wn`1 pxq|
+                             pn ` 1q! aďxďb
+                                     at
+                              Mn`1 pb ´ aqn`1
+                           “                     max |wn`1 ptq|.
+                             pn ` 1q! 2n`1     ´1ďtď1
+                  fM
+
+于是, 选取 Chebyshev 多项式 Tn`1 ptq 的零点
+
+                                p2j ` 1qπ
+                    tj “ cos              ,       j “ 0, 1, ¨ ¨ ¨ , n
+                lo
+
+
+
+                                 2pn ` 1q
+
+对应的
+       o
+
+
+
+
+                 „                           ȷ
+               1               p2j ` 1qπ
+          xj “     pb ´ aq cos           `b`a ,                j “ 0, 1, ¨ ¨ ¨ , n
+    ho
+
+
+
+
+               2                2pn ` 1q
+作为插值节点, 可推得
+  Sc
+
+
+
+
+                              Mn`1 pb ´ aqn`1
+                 |rn pxq| ď                     max |T̄n`1 ptq|
+                             pn ` 1q! 2n`1     ´1ďtď1
+
+                              Mn`1 pb ´ aqn`1
+                           ď                  .
+                             pn ` 1q! 22n`1
+
+   在§3.2中我们讨论到要具体求一连续函数的最佳一致逼近多项式是十分困难的, 因
+此, 在实际使用中, 往往求一个近似的最佳逼近多项式. 根据上述讨论, 若选取Chebyshev多
+项式的零点作为插值节点, 则可使Lagrange插值多项式的余项上界极小化. 我们称相应
+的插值多项式为 Chebyshev 插 值 多 项 式, 它可以作为 f pxq 的一个近似的最佳逼近多
+项式.
+
+   例 3.3.2. 求函数 f pxq “ ex 上 r0, 1s 的三次近似最佳逼近多项式 (Chebyshev插值
+多项式). 所有计算保留四位小数.
+12                                                                                第三章   函数逼近
+
+     解 记 ra, bs “ r0, 1s. 由插值节点公式
+                    „                           ȷ
+                 1                p2j ` 1qπ
+           xj “       pb ´ aq cos           `b`a ,             j “ 0, 1, 2, 3, n “ 3,
+                 2                 2pn ` 1q
+
+计算得节点:
+                                     1´      π   ¯
+                                x0 “    cos ` 1 “ 0.9619,
+                                     2ˆ      8     ˙
+                                     1       3π
+                                x1 “     cos    ` 1 “ 0.6913,
+                                     2        8
+                                       ˆ           ˙
+                                     1       5π
+                                x2 “     cos    ` 1 “ 0.3087,
+
+
+
+
+                                                               JU
+                                     2        8
+                                       ˆ           ˙
+                                     1       7π
+                                x3 “     cos    ` 1 “ 0.03801.
+                                     2        8
+
+
+
+
+                                                             ,N
+以 x0 , x1 , x2 , x3 为节点作 f pxq 的三次Netwon插值多项式, 得
+
+                                                    h
+        p3 pxq “ 2.6168 ` 2.2926px ´ 0.9619q ` 0.9702px ´ 0.9619qpx ´ 0.6913q
+                                                 at
+                          ` 0.2782px ´ 0.9619qpx ´ 0.6913qpx ´ 0.3087q.
+                               fM
+
+我们取 p3 pxq 作为 f pxq 在区间 r0, 1s 上的近似最佳逼近多项式.                                                   l
+     (二) Legendre 多项式
+     当权函数 W pxq “ 1, 区间为 r´1, 1s 时, 可定义如下形式的正交多项式
+                             lo
+
+
+
+                                     1 dn px2 ´ 1qn
+                         Pn pxq “                   ,         n “ 1, 2, ¨ ¨ ¨ ,
+                                  2n n!    dxn                                          (3.3.17)
+              o
+
+
+
+
+                         P0 pxq “ 1.
+           ho
+
+
+
+
+为证明正交性, 我们记 upxq “ px2 ´ 1qm , v pxq “ px2 ´ 1qk , 显然
+         Sc
+
+
+
+
+                              v plq p˘1q “ 0,   l “ 0, 1, ¨ ¨ ¨ k ´ 1.
+
+于是, 逐次应用分部积分法, 我们有(不妨设 k ě m)
+      ż1                                 ż1
+                                   1
+          Pm pxqPk pxqdx “           m`k
+                                             upmq v pkq dx
+       ´1                    m!k!2        ´1
+                                 ˇ1                 ż1
+               1                 ˇ
+                       pmq pk´1q ˇ           1
+        “            u    v            ´                 upm`1q v pk´1q dx
+           m!k!2m`k              ˇ
+                                   ´1
+                                         m!k!2 m`k
+                                                      ´1
+                        ż1
+                 1           pm`1q pk´1q                                                (3.3.18)
+        “´                  u        v    dx
+            m!k!2m`k ´1
+             “ ¨¨¨
+                                    ż1
+                     k  1
+             “ p´1q                      upm`kq vdx.
+                    m!k!2m`k        ´1
+3.3 正交多项式                                                                                       13
+
+若 k ą m, 则 upm`kq “ 0, (3.3.18)的右端积分等于零; 若 k “ m, 由(3.3.18)式得
+        ż1                                  ż1                       ż1
+                    2          k p2k q!                   p2k q!
+            rPk pxqs dx “ p´1q        2 22k
+                                                vdx “          2 22k
+                                                                         p1 ´ x2 qk dx
+         ´1                      pk! q       ´1         p k! q        ´1
+
+                           2p2k q! 1
+                                    ż
+                        “               p1 ´ x2 qk dx
+                          pk!q2 22k 0
+                                    ż π2
+                           2p2k q!
+                        “                cos2k`1 θdθ p作变换 x “ sin θq
+                          pk!q2 22k 0
+                           2p2k q! 22k pk!q2          2
+                        “     2  2k
+                                                “          .
+                          pk!q 2 p2k ` 1q!         2k ` 1
+
+
+
+
+                                                         JU
+因此
+                                                   $
+
+
+
+
+                                                       ,N
+                         ż1                        & 0,
+                                                   ’
+                                                                     m ­“ k;
+                               Pm pxqPk pxqdx “           2                                (3.3.19)
+                          ´1                       ’
+                                                   %          , m “ k.
+                                                       2k ` 1
+                                              h
+进一步, 因为 px2 ´ 1qn 是 2n 次多项式, 所以 Pn pxq 是 n 次多项式. 我们称这样的正交多
+                                           at
+           多项式. 显然 Pn pxq 的首项系数为
+项式为Legendre多
+                        fM
+
+                         1                                              p2nq!
+                               2np2n ´ 1qp2n ´ 2q ¨ ¨ ¨ pn ` 1q “               .          (3.3.20)
+                       2n n!                                           2n pn!q2
+
+     Legendre多项式 Pn pxq 还具有下列重要性质.
+                      lo
+
+
+
+     (1) 若 n 为奇数,则 Pn pxq 为奇函数, 若 n 为偶数, 则 Pn pxq 为偶函数, 即有
+        o
+
+
+
+
+                                     Pn p´xq “ p´1qn Pn pxq.
+     ho
+
+
+
+
+     (2) Pn pxq 满足递推关系:
+   Sc
+
+
+
+
+                         2n ` 1            n
+           Pn`1 pxq “           xPn pxq ´     Pn´1 pxq,                n “ 1, 2, ¨ ¨ ¨ ,
+                          n`1             n`1
+           P0 pxq “ 1,                                                                     (3.3.21)
+
+           P1 pxq “ x.
+
+     证明 记
+                                                 2n pn!q2
+                                     P̄n pxq “            Pn pxq.                          (3.3.22)
+                                                  p2nq!
+
+由(3.3.20)知 P̄n pxq 为首一多项式. 显然, P̄n pxq 是定义在 r´1, 1s 上关于权函数为 1 的正
+交多项式. 由正交多项式的存在性及性质 3.3.2 知 P̄n pxq 满足递推关系式:
+
+            P̄n`1 pxq “ px ´ αn qP̄n pxq ´ βn P̄n´1 pxq,            n “ 1, 2, ¨ ¨ ¨ ,      (3.3.23)
+14                                                                                                     第三章                  函数逼近
+
+其中,
+                                ż1                       Mż 1
+                                                    2
+                        αn “          xrP̄n pxqs dx                 rP̄n pxqs2 dx
+                                 ´1                            ´1
+                                ż1                      Mż 1
+                                                2
+                        βn “          rP̄n pxqs dx             rP̄n´1 pxqs2 dx.
+                                 ´1                       ´1
+
+因 xrP̄n pxqs2 是奇函数, 因此
+                                     ż1
+                                            xrP̄n pxqs2 dx “ 0,
+                                       ´1
+
+故 αn “ 0. 再由(3.3.19)式, 可计算得
+
+
+
+
+                                                                       JU
+             „ n      ȷ2 ż 1             M „ 2n´1 ppn ´ 1q!q2 ȷ2 ż 1
+              2 pn!q2                2
+        βn “                 rPn pxqs dx                             rPn´1 pxqs2 dx
+               p2nq!                          p2pn ´ 1qq!
+
+
+
+
+                                                                     ,N
+                          ´1                                      ´1
+             ” n ı2 ż 1                Mż 1
+                                   2
+           “               rPn pxqs dx       rPn´1 pxqs2 dx
+              2n ´ 1    ´1                ´1
+
+           “
+                    n2
+                              .
+                                                           h
+                                                        at
+             p2n ´ 1qp2n ` 1q
+
+将所求得的 αn , βn 以及(3.3.22) 代入(3.3.23)式, 并经整理可得递推关系式(3.3.21).
+                               fM
+
+                                                                                                                                        l
+     由递推关系式 (3.3.21), 不难推得各阶Legendre多项式. 表 3.2列出了前5次Legendre多
+项式, 相应图形如图3.3所示.
+                             lo
+
+
+
+                                                                          1
+
+
+             表 3.2      Legendre多项式
+             o
+
+
+
+
+                                                                        0.8
+          ho
+
+
+
+
+                                                                        0.6
+
+          P0 pxq “ 1,                                                   0.4
+
+
+                                                                        0.2
+
+          P1 pxq “ x,
+        Sc
+
+
+
+
+                                                                          0
+
+
+                                                                        -0.2
+          P2 pxq “ 21 p3x2 ´ 1q,                                        -0.4
+
+
+
+          P3 pxq “ 21 p5x3 ´ 3xq,
+                                                                        -0.6
+
+
+                                                                        -0.8
+
+
+
+          P4 pxq “ 81 p35x4 ´ 30x2 ` 3q,                                 -1
+                                                                           -1   -0.8   -0.6   -0.4   -0.2   0   0.2   0.4   0.6   0.8   1
+
+
+
+
+                                    图 3.3 Legendre多项式
+     下面给出Legendre多项式的一个重要性质, 其与Chebyshev多项式 T̄n pxq 的“无穷范
+数最小”性质类似.
+     (3) 在所有首项系数为 1 的 n 次多项式集合 Qn 中, P̄n pxq 在区间 r´1, 1s 上与零的
+平方误差最小, 即
+                        ż1                                  ż1
+                                       2
+                              |P̄n pxq| dx “        min              |pn pxq|2 dx.
+                         ´1                     pn pxqPQn      ´1
+3.4 最佳平方逼近                                                                                                            15
+
+                                            3.4 最佳平方逼近
+
+   首先, 我们给出最佳平方逼近的定义.
+
+   定义 3.4.1. 设 f pxq P C ra, bs, Φn`1 Ă C ra, bs 为区间 ra, bs 上的一个线性无关函数
+系 tφi pxquni“0 张成的空间. 若存在 φ˚ pxq P Φn`1 使得
+
+                             }f pxq ´ φ˚ pxq}22 “               min        }f pxq ´ φpxq}22 ,                     (3.4.1)
+                                                              φpxqPΦn`1
+
+
+则称 φ˚ pxq 为 f pxq 在区间 ra, bs 上的最佳平方逼近(函数). 这里 } ¨ }22 是 C ra, bs 上的带
+
+
+
+
+                                                                         JU
+权 W pxq 的内积, 即
+                                                                                  żb
+     }f pxq ´ φpxq}22 “ pf pxq ´ φpxq, f pxq ´ φpxqq “                                  rf pxq ´ φpxqs2 W pxq dx.
+
+
+
+
+                                                                       ,N
+                                                                                    a
+
+     根据定义, 若 φpxq P Φn`1 , 则其可写成
+
+                                                           h
+                                                      φpxq “
+                                                               n
+                                                               ÿ
+                                                                     ci φi pxq,                                   (3.4.2)
+                                                        at
+                                                               i“0
+                              fM
+
+其中 c0 , c1 , ¨ ¨ ¨ , cn 为待定系数. 于是寻求最佳逼近函数的问题转化为求解下列极值问题:
+                               żb          n
+                                           ÿ
+                           min    rf pxq ´   ci φi pxqs2 W pxqdx. (3.4.3)
+                               c0 ,c1 ,¨¨¨ ,cn
+                            lo
+
+
+
+                                                  a             i“0
+
+   据微分学中极值存在的必要条件知, 欲使(3.4.3)式目标函数达到极值, c0 , c1 , ¨ ¨ ¨ , cn
+       o
+
+
+
+
+必须满足
+    ho
+
+
+
+
+                   #ż                                                    +
+                        b               n
+             B                          ÿ
+                                                          2
+                            rf pxq ´             ci φi pxqs W pxqdx          “ 0,          j “ 0, 1, ¨ ¨ ¨ , n,
+            B cj
+  Sc
+
+
+
+
+                      a                 i“0
+
+
+即为
+            żb               n
+                             ÿ
+        2        rf pxq ´          ci φi pxqsφj pxqW pxqdx “ 0,                     j “ 0, 1, ¨ ¨ ¨ , n.          (3.4.4)
+            a                i“0
+
+从而得到方程组
+                              n
+                              ÿ
+                                    ci pφi , φj q “ pf, φj q,              j “ 0, 1, ¨ ¨ ¨ , n.                   (3.4.5)
+                              i“0
+
+             法方程组. 关于最佳平方逼近, 我们有下面的定理.
+通常, (3.4.5)称为法
+
+  定理 3.4.1. 设函数 f pxq P C ra, bs, 则其在 Φn`1 “ spanttφj pxqunj“0 u 中的最佳平方
+                                                                   řn
+逼近函数存在唯一, 且可由法方程组(3.4.5)的解 c˚0 , c˚1 , ¨ ¨ ¨ , c˚n 构造为 φ˚ pxq “ j“0 c˚j φj .
+16                                                                        第三章   函数逼近
+
+     证 明 由于方程组(3.4.5)的系数矩阵是线性无关系 tφj pxqunj“0 的Gram矩阵, 因而非
+奇异. 因此方程组(3.4.5)有唯一解. 于是 c˚0 , c˚1 , ¨ ¨ ¨ , c˚n 是方程组(3.4.5)的唯一解, 故由这
+组系数定义的 φ˚ 满足(3.4.4)式, 即
+
+                            pf ´ φ˚ , φj q “ 0,   j “ 0, 1, ¨ ¨ ¨ , n.
+
+对任意 φpxq P Φn`1 , 显然 φpxq ´ φ˚ pxq P Φn`1 , 于是有
+
+                                   pf ´ φ˚ , φ ´ φ˚ q “ 0.
+
+从而推出
+
+
+
+
+                                                             JU
+                 }f ´ φ}22 ´ }f ´ φ˚ }22 “ }φ ´ φ˚ }22 ` 2pφ ´ φ˚ , φ˚ ´ f q
+                                         “ }φ ´ φ˚ }22 ě 0.
+
+
+
+
+                                                           ,N
+这说明 φ˚ 是 f pxq 在 Φn`1 中的最佳平方逼近.                                                    l
+
+     例 3.4.1. 求 f pxq “ xex 在 r0, 1s 上的最佳平方逼近 φpxq “ c0 ` c1 x ` c2 x2 .
+                                                     h
+                                                  at
+     解 取 φ0 pxq “ 1, φ1 pxq “ x, φ2 pxq “ x2 , W pxq “ 1, 则
+                                ż1
+                              fM
+
+                                                   1
+                   pφi , φj q “      xi xj dx “          ,    i, j “ 0, 1, 2,
+                                  0             i`j`1
+                                                  $
+                                                  ’
+                                                  ’  1,      j “ 0;
+                            lo
+
+
+
+                               ż1                 ’
+                                                  &
+                   pf, φj q “       xex ¨ xj dx “    e ´ 2, j “ 1;
+                                0                 ’
+                                                  ’
+                                                  ’
+               o
+
+
+
+
+                                                     6 ´ 2e, j “ 2.
+                                                  %
+            ho
+
+
+
+
+于是得到法方程组
+                             $
+          Sc
+
+
+
+
+                             ’
+                             ’
+                             ’    c0 ` 12 c1 ` 13 c2 “ 1,
+                             &
+                               1
+                                 c ` 13 c1 ` 14 c2 “ e ´ 2,
+                               2 0
+                             ’
+                             ’
+                             ’
+                             % 1
+                                 c ` 14 c1 ` 15 c2 “ 6 ´ 2e.
+                               3 0
+
+解此方程组得
+
+                               c0 “ 3p87 ´ 32eq « 0.04494447,
+                               c1 “ 12p46e ´ 125q « 0.49156931
+                               c2 “ 15p98 ´ 36eq « 2.12781263.
+
+因此, 我们求得 f pxq “ xex 在 r0, 1s 上的二次最佳平方逼近多项式
+
+                   φpxq “ 0.04494447 ` 0.49156931x ` 2.12781263x2 .                l
+3.4 最佳平方逼近                                                                                                17
+
+    从上例可以看出, 如果取幂函数系 txj unj“0 作为逼近空间的基函数, 则在 W pxq “
+1, ra, bs “ r0, 1s 情形, 方程组(3.4.5)的系数矩阵为
+                        »                                                   fi
+                                     1                               1
+                        — 1          2
+                                           ¨¨¨
+                                                                    n`1     ffi
+                        — 1          1                               1
+                                                                            ffi
+                        —                                                   ffi
+                                           ¨¨¨
+                        — 2          3                              n`2
+                        —                                                   ffi
+                                                                            ffi .                     (3.4.6)
+                        —                                                   ffi
+                        —
+                        —        ¨¨¨¨¨¨¨¨¨                                  ffi
+                                                                            ffi
+                        – 1          1                            1         fl
+                                           ¨¨¨
+                          n`1      n`2                          2n ` 1
+该矩阵是 n ` 1 阶Hilbert矩阵. Hilbert矩阵对称正定, 但高度病态. 当维数较大时, 由于
+
+
+
+
+                                                              JU
+舍入误差的影响, 求解对应的方程组会非常困难. 因此, 我们很少用这种方法来求最佳平
+方逼近多项式.
+
+
+
+
+                                                            ,N
+    为避免求解复杂的方程组, 我们选取 tφj pxqunj“0 为 ra, bs 上关于权函数 W pxq 的正
+交函数系, 即满足:
+
+                   pφi , φj q “
+                                  żb
+                                              h
+                                       φi pxqφj pxqW pxqdx “ 0,                  i ­“ j,
+                                           at
+                                  a
+
+则方程组 (3.4.5) 的解为
+                      fM
+
+      c˚j “ pφj , f q{pφj , φj q
+            żb                    Mż b                                                                (3.4.7)
+               φj pxqf pxqW pxqdx      rφj pxqs2 W pxqdx,                  j “ 0, 1, ¨ ¨ ¨ , n.
+                    lo
+
+
+
+          “
+             a                             a
+
+于是 f pxq 在 tφj pxqunj“0 张成的空间中的最佳平方逼近函数为
+        o
+
+
+
+
+                                                 n
+                                                   pφk , f q
+     ho
+
+
+
+
+                                                 ÿ
+                                   φ˚ pxq “                         φk ,                              (3.4.8)
+                                                 k“0
+                                                       pφk , φk q
+   Sc
+
+
+
+
+其对应误差
+                                                                             n
+                                                                             ÿ pφk , f q2
+       }δ pxq}22 “ pf ´ φ˚ , f ´ φ˚ q “ pf ´ φ˚ , f q “ }f }22 ´                                 .    (3.4.9)
+                                                                            k“0
+                                                                                    pφk , φk q
+
+显然有
+                           n
+                           ÿ pφk , f q2
+                                               ď }f }22 ,   @f P C ra, bs.
+                          k“0
+                              pφk , φk q
+上述不等式称为 Bessel 不等式.
+                        j“0 中考虑函数 f pxq 的最佳平方逼近, 则可以构造
+     若在无穷维正交函数系 tφj pxqu8
+级数
+                                           8
+                                           ÿ
+                                                  c˚j φj pxq,                                        (3.4.10)
+                                           j“0
+18                                                                             第三章   函数逼近
+
+                                                                     广义Fourier级
+其中 c˚j “ pφj , f q{pφj , φj q, j “ 0, 1, ¨ ¨ ¨ . 我们称(3.4.10)为 f pxq 的广        级数, 它
+                          广义Fourier系
+是Fourier级数的直接推广, 其中 c˚j 称为广        系数 .
+
+     例 3.4.2. 三角函数系
+
+                    1, cos x, sin x, cos 2x, sin 2x, ¨ ¨ ¨ , cos nx, sin nx
+
+是 r´π, π s 上的正交系(权函数 W pxq “ 1 ). 对于这个正交系, f pxq 在 r´π, π s 上的最佳
+平方逼近函数是
+                                         n
+                                 1      ÿ
+
+
+
+
+                                                             JU
+                      φpxq “       a0 `    pak cos kx ` bk sin kxq.                  (3.4.11)
+                                 2      k“1
+
+
+它是一个三角多项式. 据(3.4.7)式可知
+
+
+
+
+                                                           ,N
+              1 π
+                ż
+         ak “        f pxq cos kxdx,                    k “ 0, 1, ¨ ¨ ¨ , n,
+              π ż ´π
+                                                                                     (3.4.12)
+         bk “
+              1   π
+                     f pxq sin kxdx,
+                                                  h     k “ 1, ¨ ¨ ¨ , n.
+                                               at
+              π ´π
+
+     若在(3.4.11)式中令 n Ñ 8, 则得到一个关于 f pxq 的经典的Fourier级数.
+                            fM
+
+     例 3.4.3. 求 f pxq “ sin πx 在 r´1, 1s 上的三次最佳平方逼近多项式
+                          lo
+
+
+
+                  P pxq “ c0 P0 pxq ` c1 P1 pxq ` c2 P2 pxq ` c3 P3 pxq,
+
+其中 Pi 是 i 次Legendre多项式, i “ 0, 1, 2, 3.
+              o
+           ho
+
+
+
+
+     解 由Legendre多项式的定义我们有
+         Sc
+
+
+
+
+                       P0 pxq “ 1, P1 pxq “ x,
+                                1                  1
+                       P2 pxq “ p3x2 ´ 1q, P3 pxq “ p5x3 ´ 3xq.
+                                2                  2
+于是
+                                ż1
+                  pP0 , f q “         sin πxdx “ 0,
+                                 ´1
+                                ż1
+                  pP1 , f q “         x sin πxdx “ 2{π,
+                                 ´1
+                                ż1
+                                  1
+                  pP2 , f q “       p3x2 ´ 1q sin πxdx “ 0,
+                               ´1 2
+                              ż1
+                                  1
+                  pP3 , f q “       p5x3 ´ 3xq sin πxdx “ ´2{π ´ 6{π 3 ,
+                               ´1 2
+3.4 最佳平方逼近                                                                               19
+
+又由(3.3.20)得
+                               ż1
+                                                        2
+                pPj , Pj q “        rPj pxqs2 dx “          ,      j “ 0, 1, 2, 3
+                               ´1                    2j ` 1
+因此
+                                         L
+                           c0 “ pP0 , f q pP0 , P0 q “ 0,
+                                         L
+                           c1 “ pP1 , f q pP1 , P1 q “ 3{π,
+                                         L
+                           c2 “ pP2 , f q pP2 , P2 q “ 0,
+                                         L                7   3
+
+
+
+
+                                                        JU
+                           c3 “ pP3 , f q pP3 , P3 q “ ´ p1 ` 2 q.
+                                                          π  π
+于是, 我们求得三次最佳平方逼近多项式
+
+
+
+
+                                                      ,N
+                                      3         7     3
+                          P pxq “       P1 pxq ´ p1 ` 2 qP3 pxq.
+                                      π         π    π
+若再用 Pi pxq, i “ 0, 1, 2, 3 的定义则可得
+                                     32
+                                             h
+                                             3       9    7
+                                          at
+                       P pxq “ ´        p1 ` 2 qx3 ` p3 ` 2 qx.                           l
+                                     π      π       2π   π
+                     fM
+
+     例 3.4.4. Chebyshev多项式 Tn pxq, n “ 0, 1, 2, ¨ ¨ ¨ 构成了区间 r´1, 1s 上关于权函
+     1
+数为 ?1´x 2 的正交函数系. 函数 f pxq 的基于此正交函数系的最佳平方逼近为：
+
+
+                                                   n
+                                           1
+                   lo
+
+
+                                                  ÿ
+                                pn pxq “     c0 `     ck Tk pxq,                    (3.4.13)
+                                           2      k“1
+        o
+
+
+
+
+其中
+     ho
+
+
+
+
+                               ż1
+                         2         Tk pxqf pxq
+                    ck “            ?          dx,         k “ 0, 1, ¨ ¨ ¨ , n      (3.4.14)
+                         π      ´1     1 ´ x2
+   Sc
+
+
+
+
+可由(3.4.7)和(3.3.6)推出.
+
+    当 n Ñ 8 时, 我们称由(3.4.13)式得到的级数
+                                               8
+                                       1      ÿ
+                                         c0 `     ck Tk pxq                         (3.4.15)
+                                       2      k“1
+
+                    级数 .
+为函数 f pxq 的Chebyshev级
+     据(3.4.12)式, 利用对称区间上被积函数的奇偶性, 我们可得 g pθq “ f pcos θq 的经
+典Fourier系数为
+          1 π                   1 π                        2 π
+           ż                      ż                          ż
+     ak “      g pθq cos kθdθ “      f pcos θq cos kθdθ “      f pcos θq cos kθdθ,
+          π ´π                  π ´π                       π 0
+          1 π                   1 π
+           ż                     ż
+     bk “      g pθq sin kθdθ “      f pcos θq sin kθdθ “ 0,
+          π ´π                  π ´π
+20                                                                  第三章      函数逼近
+
+若在(3.4.14)式中作变换 x “ cos θ, 则得到
+
+                        2 π
+                          ż
+                  ck “      f pcos θq cos kθdθ “ ak .                        (3.4.16)
+                        π 0
+
+这说明 f pxq 的Chebyshev级数恰好是 g pθq “ f pcos θq 的经典Fourier级数.
+                                                    1
+  例 3.4.5. 求函数 f pxq “ arccosxp´1 ď x ď 1q 关于权函数 ?       的 3 次最佳平
+                                                  1 ´ x2
+方逼近.
+
+     解 据(3.4.16)式, 我们有
+
+
+
+
+                                                       JU
+                     2 π
+                      ż
+                c0 “     θdθ “ π,
+                     π 0
+
+
+
+
+                                                     ,N
+                     2 π                2 π
+                      ż                   ż
+                ck “      θ cos kθdθ “        θd sin kθ
+                     π 0               πk 0
+                       2 π
+                         ż
+                                         2                2
+                             sin kθdθ “      cos kθ|π0 “      rp´1qk ´ 1s.
+                   “´
+                      πk 0              πk 2   h         πk 2
+                                            at
+因此得到
+                   4                                        4
+                            fM
+
+             c1 “ ´ ,                   c2 “ 0,   c3 “ ´      .
+                   π                                       9π
+于是, 所要求的最佳平方逼近是
+                                      π  4         4
+                          lo
+
+
+
+                           p3 pxq “     ´ T1 pxq ´ T3 pxq
+                                      2  π        9π
+亦可将 p3 pxq 转化为用幂函数来表示,
+              o
+           ho
+
+
+
+
+                                        π   8
+                             p3 pxq “     ´ xp2x2 ` 3q.                            l
+                                        2  9π
+         Sc
+
+
+
+
+                                                                                   l
+
+
+                                  3.5 数据拟合
+                           ␣          (m
+     在科学研究中, 通过实验或者观察得到一组数据 pxi , yi q i“1 , 我们希望从中找到自
+变量 x 和因变量 y 之间的函数关系, 使得实验数据与函数的曲线能够在最大程度上近似
+吻合, 这样就可以根据曲线方程对数据进行理论分析和数值预测, 对某些不具备测量条
+件的位置的结果进行估算.
+     对于这样的问题, 我们可以采用第二章介绍的插值法找到函数 f pxq (如 m´1 次多项
+式)经过所有点 pxi , yi q. 如数据点很多, 则插值多项式的次数会很高. 这样做常常得不到
+反映所研究问题本质的函数依赖关系, 这是因为实验得到的数据往往带有观测误差, 插
+值法得到的模型保留了所有观测误差, 但不一定能表示实验数据的客观规律.
+3.5 数据拟合                                                                  21
+                           ␣          (m
+   一般地, 数 据 拟 合 问题指: 给定一组数据 pxi , yi q i“1 , 其中 xi P Rd , yi P R, d 代表
+自变量数据的维数, 寻求一定类型的函数 y “ f pxq 来拟合这些数据, 使得在给定点的误
+                  均方 误 差 , 即
+差按照某种度量达到最小. 我们常采用均
+                                         m
+                                    1 ÿ`               ˘2
+                          Lpf q “         f pxi q ´ yi
+                                    m i“1
+
+来衡量给定点的误差. 函数 f 的表达式一般由某些参数 a0 , a1 , ¨ ¨ ¨ , an 确定, 按照误差最
+小的原则上述数据拟合问题转化为优化问题:
+
+                                     min Lpf q,                       (3.5.1)
+
+
+
+
+                                                    JU
+                                     f PF
+
+其中 F 是由一族依赖于参数 a0 , a1 , ¨ ¨ ¨ , an 的函数构成的集合. 例如不超过 n 次的多项
+式函数构成的集合 Pn . 若 Lpf q 是均方误差, 那么把优化问题的解 f 称为数据 tpxi , yi qu
+
+
+
+
+                                                  ,N
+ 最小 二 乘 拟 合 函 数 .
+的最
+
+
+3.5.1   线性最小二乘法                        h
+                                    at
+   这一节我们考虑拟合函数 f pxq 线性依赖于参数 a1 , a2 , ¨ ¨ ¨ , an 的情形. 按照均方误
+                  fM
+
+                 线性 最 小 二 乘 问 题 .
+差定义的优化问题p3.5.1q称为线
+
+   例 3.5.1. 假设有 m 个点 pxi , yi q, i “ 1, 2, ¨ ¨ ¨ , m. 考虑用直线 y “ a ` bx 来拟合这
+些数据, 其中 a, b 为待定参数.
+                lo
+
+
+
+   当 m “ 2 时, 这就相当于插值, 此时均方误差为 0. 当 m ě 3 时, 一般情况下都会产
+       o
+
+
+
+
+生误差, 此时误差函数可以写作
+    ho
+
+
+
+
+                                                m
+                                            1 ÿ
+                    Lpa, bq :“ Lpf q “           paxi ` b ´ yi q2 .
+                                            m i“1
+  Sc
+
+
+
+
+把上面的误差函数看成关于 a, b 的二元函数, 根据极值存在的必要条件, 当
+
+                              Lpa, bq “ min Lpã, b̃q
+                                            ã,b̃PR
+
+时, 有
+                     $         m
+                       BL   2 ÿ
+                     ’
+                     ’
+                     & Ba “       xi paxi ` b ´ yi q “ 0,
+                            m i“1
+                     ’
+                               m
+                     ’ BL   2 ÿ
+                                 paxi ` b ´ yi q “ 0,
+                     ’
+                     ’    “
+                       Bb   m i“1
+                     %
+
+简记为                       #
+                              apx, xq ` bmx̄ “ px, y q,
+                              ax̄ ` b “ ȳ,
+22                                                                                       第三章      函数逼近
+
+                                                                               m
+                                                                               ř
+其中 x “ px1 , x2 , ¨ ¨ ¨ , xm qT , y “ py1 , y2 , ¨ ¨ ¨ , ym qT , px, y q “           xi yi 为 Rm 上的内积,
+                                                                               i“1
+  1 řm            1 řm
+x̄ “    xi , ȳ “       yi 分别为 txi u 和 tyi u 的均值, 那么上述关于 a, b 的线性方程组
+  m i“1           m i“1
+的解为
+                                               m
+                    $
+                                               ř
+                    ’
+                    ’                            pxi ´ x̄qpyi ´ ȳ q
+                    ’
+                    ’
+                    &a “    px, y q ´ mx̄ȳ   i“1
+                                                                     ,
+                    ’
+                                            “      m
+                            px, xq ´ mx̄x̄         ř            2
+                    ’                                px i ´ x̄ q
+                    ’
+                    ’                             i“1
+                    ’
+                    ’
+                    % b “ ȳ ´ ax̄.
+
+
+
+
+                                                                    JU
+这在统计学中称为一元线性回归.
+       上述推导也可以推广为多项式拟合的情形.
+
+
+
+
+                                                                  ,N
+       例 3.5.2. 用不超过 n 次的多项式函数
+
+                            f pxq “ an xn ` an´1 xn´1 ` ¨ ¨ ¨ ` a1 x ` a0
+                                                         h
+                                                      at
+来拟合 m 个数据 tpxi , yi qu, 即拟合函数空间为 Pn .
+                                   fM
+
+       根据极值存在的必要条件, 当 a0 , a1 , ¨ ¨ ¨ , an 使得
+                                                                 m
+                                                              1 ÿ
+                        Lpa0 , a1 , ¨ ¨ ¨ , an q :“ Lpf q “        pf pxi q ´ yi q2
+                                                              m i“1
+                                 lo
+
+
+
+取最小值时, 有
+                o
+
+
+
+
+                    m
+             ho
+
+
+
+
+          BL     2 ÿ k
+               “      x pa0 ` a1 xi ` ¨ ¨ ¨ ` an xni ´ yi q “ 0,                k “ 0, 1, ¨ ¨ ¨ , n.
+          B ak   m i“1 i
+           Sc
+
+
+
+
+接下来, 我们把这 n ` 1 个方程转化为线性方程组的形式. 对向量 x “ px1 , x2 , ¨ ¨ ¨ , xm qT ,
+记向量的幂次为 xk “ pxk1 , xk2 , ¨ ¨ ¨ , xkm qT P Rm , 进一步沿用前面内积的定义, 我们可以
+把上面的 n ` 1 个等式改写为如下线性方程组:
+
+                                                Au “ b,                                                (3.5.2)
+
+其中                           ¨                                                       ˛
+                                   n    n         n    n´1                 n    0
+                        ˚ px , x q     px , x q ¨ ¨ ¨ px , x q ‹
+                        ˚                                              ‹
+                        ˚pxn´1 , xn q pxn´1 , xn´1 q ¨ ¨ ¨ pxn´1 , x0 q‹
+                      A“˚
+                        ˚                                              ‹
+                              ..             ..                ..      ‹
+                        ˚
+                        ˚      .              .                 .      ‹
+                                                                       ‹
+                        ˝                                              ‚
+                          px0 , xn q   px0 , xn´1 q ¨ ¨ ¨ px0 , x0 q
+3.5 数据拟合                                                                          23
+
+                           35
+                                    Polynomial
+                                    original
+                           30
+
+
+                           25
+
+
+                           20
+
+
+                           15
+
+
+                           10
+
+
+                            5
+
+
+                            0
+
+
+
+
+                                                           JU
+                                0   1            2   3    4       5       6
+
+
+
+
+             图 3.4     例 3.5.3: 数据 tpxi , yi qu10
+                                               i“1 的二次多项式拟合函数
+
+
+
+
+                                                         ,N
+                                                              ¨               ˛
+                                                                      n
+                                                           ˚ px , y q ‹
+                                                h          ˚           ‹
+                                                           ˚pxn´1 , y q‹
+                                             at
+                     u “ pan , an´1 , ¨ ¨ ¨ , a0 qT ,    b“˚           ‹.
+                                                           ˚           ‹
+                                                                ..
+                                                           ˚     .     ‹
+                    fM
+
+                                                           ˚           ‹
+                                                           ˝           ‚
+                                                             px0 , y q
+
+                                       法方 程 组 .
+因此, 只需求解上面的线性方程组即可得到多项式拟合函数. (3.5.2)也称为法
+                  lo
+
+
+
+     例 3.5.3. 设有以下数据:
+          o
+
+
+
+
+     x 0.000 0.895 1.641 2.512 3.542 4.054 4.602 5.063 5.354 5.617
+       ho
+
+
+
+
+     y   1.000 1.803 3.680 7.320 13.59 17.41 22.19 24.89 26.55 29.77
+     Sc
+
+
+
+
+试在 2 次多项式函数空间 P2 求上述数据的最小二乘拟合.
+
+     我们这里只给出拟合结果, 具体计算可参见代码. 对于二次多项式拟合, 得到的结果
+为:
+              a2 “ 0.7542712,           a1 “ 0.98752785,      a0 “ 0.53554452.
+
+此时, 损失函数的值是
+
+                           Lpa1 , a2 q “ 0.17507558220264588.
+
+曲线拟合情况如图 3.4 所示.
+     我们还可以把上述多项式形式拟合中的基函数系改为任意的线性无关函数系, 如区
+间 ra, bs 上的线性无关函数系 tϕj pxqunj“0 . 那么对数据 tpxi , yi qum
+                                                    i“1 pn ă mq 的最小二乘
+24                                                                                         第三章   函数逼近
+
+拟合问题转化为如下极值问题:
+                                                   ˜                          ¸2
+                                              m        n
+                                           1 ÿ         ÿ
+                              min                          cj ϕj pxi q ´ yi        .
+                         c0 ,c1 ¨¨¨ ,cn PR m
+                                             i“1    j“0
+
+
+记向量 ϕk “ pϕk px1 q, ϕk px2 q, ¨ ¨ ¨ , ϕk pxm qqT P Rm , 引入记号
+                                  m
+                                  ÿ                                      m
+                                                                         ÿ
+                  pϕj , ϕk q :“         ϕj pxi qϕk pxi q, pϕk , y q :“         yi ϕk pxi q,          (3.5.3)
+                                  i“1                                    i“1
+
+则类似于例3.5.2, 得到相应的法方程组
+
+
+
+
+                                                                     JU
+                                                  Φc “ b                                             (3.5.4)
+
+其中
+
+
+
+
+                                                                   ,N
+             ¨                                                         ˛               ¨         ˛
+          ˚ pϕn , ϕn q pϕn , ϕn´1 q ¨ ¨ ¨ pϕn , ϕ0 q ‹                            ˚ pϕn , y q ‹
+          ˚
+          ˚pϕ , ϕ q pϕ , ϕ q ¨ ¨ ¨ pϕ , ϕ q‹
+          ˚ n´1 n        n´1    n´1         n´1   0 ‹
+                                                     ‹
+                                                          h                       ˚
+                                                                                  ˚pϕ , y q‹
+                                                                                  ˚ n´1 ‹
+                                                                                              ‹
+                                                       at
+        Φ“˚     ..           ..               ..     ‹,                         b“˚    ..     ‹.
+          ˚
+          ˚      .            .                .     ‹
+                                                     ‹
+                                                                                  ˚
+                                                                                  ˚     .     ‹
+                                                                                              ‹
+                              fM
+
+          ˝                                          ‚                            ˝           ‚
+            pϕ0 , ϕn q pϕ0 , ϕn´1 q ¨ ¨ ¨ pϕ0 , ϕ0 q                                pϕ0 , y q
+
+                                    c “ pcn , cn´1 , ¨ ¨ ¨ , c0 qT .
+                            lo
+
+
+
+     需要指出的是, 我们在(3.5.3)中引入的记号 pϕj , ϕk q 并不构成连续空间中的内积.
+因此, 仅仅凭借 ϕ0 pxq, ϕ1 pxq, ¨ ¨ ¨ , ϕn pxq 的线性无关并不能推出 Φ 是非奇异的. 例如, 令
+               o
+
+
+
+
+ϕ0 pxq “ sin x, ϕ1 pxq “ sin 2x, x P r0, 2π s, 显然 tϕ0 pxq, ϕ1 pxqu 在 r0, 2π s 上线性无关. 但
+            ho
+
+
+
+
+若取点 xk “ kπ, k “ 0, 1, 2pn “ 1, m “ 3q, 那么有 ϕ0 pxk q “ ϕ1 pxk q “ 0, k “ 0, 1, 2, 由
+此得出
+          Sc
+
+
+
+
+                                 ˇ¨                     ˛ˇ
+                                 ˇ pϕ1 , ϕ1 q pϕ1 , ϕ0 q ˇ
+                                 ˇ                       ˇ
+                           |Φ| “ ˇ
+                                 ˇ˝                     ‚ˇ “ 0.
+                                                         ˇ
+                                 ˇ pϕ0 , ϕ1 q pϕ0 , ϕ0 q ˇ
+
+     为保证方程组的系数矩阵 Φ 非奇异, 必须加上另外的条件, 如下述定理所示.
+
+     定理 3.5.1. 设 ϕ0 pxq, ϕ1 pxq, ¨ ¨ ¨ , ϕn pxq P C ra, bs 线性无关. 如果 ϕ0 pxq, ϕ1 pxq, ¨ ¨ ¨ ,
+ϕn pxq 的任意（非零）线性组合在点集 tx1 , x2 , ¨ ¨ ¨ , xm u 上至多只有 n 个不同的零点, 则
+Φ 非奇异.
+
+     上述定理中的条件称为 Haar 条件, 显然, 如果取 ϕi pxq “ xi , Haar 条件成立.
+     回忆§ 3.4中介绍的最佳平方逼近问题, 如果我们只知道函数 f pxq 在区间 ra, bs 上
+的点 x1 , x2 , ¨ ¨ ¨ , xm 处的值(或近似值), 我们可按照上述最小二乘逼近来定义函数的最
+                离 散 的 最 佳 平 方 逼 近 问 题. 相应的广义多项式称为
+佳逼近. 这样的函数逼近问题称为离
+3.5 数据拟合                                                                                   25
+
+       点 集 tx i um
+f pxq 在点         i“1 上 的 最 佳 平 方 逼 近 . 例如, 可以取 tϕk pxqu 为三角函数 1, cos x, sin x,
+cos 2x, sin 2x, ¨ ¨ ¨ , 对应的最小二乘逼近(或离散的最佳平方逼近)就是下一小节介绍的离
+散Fourier变换.
+
+
+3.5.2    离散的 Fourier 变换
+     当 f pxq 是定义在 ´8 ă x ă 8 上的周期函数时, 取 tϕj pxqun0 为三角函数系逼近
+f pxq 比用多项式更为合适. 例如, 当 f pxq 是以 2π 为周期的平方可积函数时, 三角函数系
+
+                   t1, cos x, sin x, cos 2x, sin 2x, ¨ ¨ ¨ , cos nx, sin nx, ¨ ¨ ¨ u
+
+
+
+
+                                                                    JU
+是 r0, 2π s 上的正交函数族, 类似于例3.4.2可得 f pxq 在 r0, 2π s 上的最佳平方逼近
+                                             n
+                                     1
+
+
+
+
+                                                             N
+                                            ÿ
+                          φpxq “       a0 `     paj cos jx ` bj sin jxq
+                                     2      j“1
+
+其中
+                                1
+                                    ż 2π            h,
+                                              at
+                         aj “              f pxq cos jxdx   pj “ 0, 1, ¨ ¨ ¨ , nq,
+                                π    0
+                                    ż 2π
+                                1
+                                    M
+
+                         bj “              f pxq sin jxdx   pj “ 0, 1, ¨ ¨ ¨ , nq,
+                                π    0
+
+称为 Fourier 系数. 令 n Ñ 8 得到 f pxq 的 Fourier 级数.
+                         of
+
+
+     与上述情况相应, 当 f pxq 在给定点集上的值已知时, 可类似定义离散情形的正交性
+并得到离散的 Fourier 系数. 我们考虑 r0, 2π s 上奇数个点的等距点集情形：
+           ol
+
+
+
+
+                                      2π
+                            xj “           j        pj “ 0, 1, ¨ ¨ ¨ , 2mq
+                                    2m ` 1
+         ho
+
+
+
+
+对 k, l “ 0, 1, ¨ ¨ ¨ , npn ă“ mq, 有如下结论
+ Sc
+
+
+
+
+               $                           $
+               ’     2m
+                     ÿ                     & 0,        l ­“ k, l “ k “ 0,
+               ’
+                         sin lx  sin kx
+               ’
+               ’               j       j “
+                                           % 2m ` 1 , l “ k ­“ 0,
+               ’
+               ’
+               ’ j“0
+               ’
+                                                 2
+               ’
+               ’                           $
+               ’
+               ’
+               ’
+                                              0,       l ­“ k,
+               ’
+               ’                           ’
+                                           ’
+               & 2m                        ’
+                                           ’
+                                              2m ` 1
+                                           &
+                     ÿ                                                                 (3.5.5)
+                         cos lxj cos kxj “           , l “ k ­“ 0,
+                                                 2
+               ’
+               ’                           ’
+                    j“0
+               ’
+               ’                           ’
+                                           ’
+               ’
+               ’                           % 2m ` 1, l “ k “ 0,
+                                           ’
+               ’
+               ’
+               ’
+               ’
+               ’
+               ’     2m
+                     ÿ
+                         cos kxj sin lxj “ 0, 任意 l, k
+               ’
+               ’
+               ’
+               %
+                  j“0
+
+这说明三角函数族 t1, cos x, sin x, cos 2x, sin 2x, ¨ ¨ ¨ , cos nx, sin nxu 关于区间 r0, 2π s 中
+     "         *2m
+         2π
+等距点集         j     是正交的. 为证明上述结论, 我们先给出下面的引理(参见 [1]).
+       2m ` 1 j“0
+26                                                                                   第三章            函数逼近
+
+     引理 3.5.2. 若整数 r 不是 2m ` 1 的倍数, 则
+                               2m
+                               ÿ                        2m
+                                                        ÿ
+                                     cos rxj “ 0,             sin rxj “ 0;                           (3.5.6)
+                               j“0                      j“0
+
+
+若整数 r 不是 m ` 1{2 的倍数, 则
+                   2m                                   2m
+                   ÿ
+                                  22m ` 1               ÿ                    2m ` 1
+                      pcos rxj q “        ,                  psin rxj q2 “          .                (3.5.7)
+                   j“0
+                                     2                  j“0
+                                                                               2
+
+     现在我们可以证明 (3.5.5). 例如
+
+
+
+
+                                                                    JU
+     2m                               2m
+     ÿ                          1ÿ
+         pcos kxj qpsin lxj q “      psinpk ` lqxj ` sinpl ´ k qxj q
+                                2 j“0
+
+
+
+
+                                                                  ,N
+     j“0
+               «                                      ff
+                 2m                  2m
+            1 ÿ                      ÿ
+          “         sinpk ` lqxj `       sinpl ´ k qxj , k “ 0, 1, ¨ ¨ ¨ , n        l “ 1, 2, ¨ ¨ ¨ , n.
+            2 j“0                    j“0
+                                                         h
+                                                      at
+由于 l ` k 和 l ´ k pl ‰ k q 都不是 2m ` 1 的倍数, 据 (3.5.6) 式, 上式为 0.
+                                 2πj
+                                 fM
+
+     定理 3.5.3. 设 xj “                  , j “ 0, 1, ¨ ¨ ¨ , 2m, 则数据 txj , yj qu2m
+                                                                              j“0 的最小二乘拟
+                                2m ` 1
+合(三角多项式)
+                                               n
+                               lo
+
+
+
+                                       1      ÿ
+                             ϕpxq :“     a0 `    pak cos kx ` bk sin kxq                             (3.5.8)
+                                       2      k“1
+               o
+
+
+
+
+中的系数为
+            ho
+
+
+
+
+                  $
+                                2m
+                  ’        2    ÿ          2πjk
+                  & ak “ 2m ` 1    yj cos
+                  ’
+                  ’
+          Sc
+
+
+
+
+                                          2m ` 1
+                  ’
+                                           j“0
+                                2m                                k “ 0, 1, 2, ¨ ¨ ¨ , n             (3.5.9)
+                  ’        2    ÿ          2πjk
+                    b  “           yj sin
+                  ’
+                     k
+                  ’
+                         2m ` 1           2m ` 1
+                  ’
+                  %
+                                           j“0
+
+
+     证明 方便起见, 我们记
+                       1
+          ϕ0 p x q “     ,   ϕk pxq “ cos kx,       ϕn`k pxq “ sin kx,       k “ 1, 2, ¨ ¨ ¨ , n,
+                       2
+和
+                ϕj “ rϕj px0 q, ϕj px1 q, ¨ ¨ ¨ , ϕj px2m qsT ,      j “ 0, 1, ¨ ¨ ¨ , 2n.
+
+根据线性最小二乘方法, 相应法方程组为:
+
+                                                 Gu “ b,
+3.5 数据拟合                                                                                                  27
+
+其中解向量 u “ ra0 , a1 , ¨ ¨ ¨ , an , b1 , ¨ ¨ ¨ , bn sT 为 2n ` 1 维向量, G 为 p2n ` 1q ˆ p2n ` 1q
+阶矩阵. 由 ϕ0 , ϕ1 , ¨ ¨ ¨ , ϕ2n 的正交性和(3.5.5)式知 G 是一个对角阵:
+
+        G “ diagppϕ0 , ϕ0 q, pϕ1 , ϕ1 q, ¨ ¨ ¨ , pϕn , ϕn q, pϕn`1 , ϕn`1 q, ¨ ¨ ¨ , pϕ2n , ϕ2n qq
+                 ˆ                                                   ˙
+                   1              1                     1
+          “ diag     p2m ` 1q, p2m ` 1q, ¨ ¨ ¨ , p2m ` 1q .
+                   4              2                     2
+方程组的右端向量
+
+    b “ rpy, ϕ0 q, py, ϕ1 q, ¨ ¨ ¨ , py, ϕ2n qsT
+        «                                                                                           ffT
+            2m       2m                      2m               2m                      2m
+          1ÿ
+
+
+
+
+                                                                     JU
+                     ÿ                       ÿ                ÿ                       ÿ
+      “         yj ,     yj cos xj , ¨ ¨ ¨ ,     yj cos nxj ,     yj sin xj , ¨ ¨ ¨ ,     yj sin nxj ,
+          2 j“0      j“0                     j“0              j“0                     j“0
+
+其中 y “ ry0 , y1 , ¨ ¨ ¨ , y2m sT . 于是我们立即得到该方程的解为(3.5.9)式所表示.                                             l
+
+
+
+
+                                                                   ,N
+    现在, 我们假设 yj 是函数 f pxq 在 xj 处的值, 即 f pxj q “ yj , j “ 0, 1, ¨ ¨ ¨ , 2m, 则具
+                                       离 散 Fourier 展 开 式, 它
+有系数表达式(3.5.9)的三角多项式(3.5.8)又称为函数 f pxq 的离
+是用三角多项式作为数据 tpxj , f pxj qqu2m                       h
+                            j“0 的最小二乘拟合. 由(3.5.9)式确定的 ak , bk 称
+                                                  at
+ 离散的 Fourier 系数.
+为离
+    可以证明当 n “ m 时, ϕpxq 满足插值原则:
+                          fM
+
+                              ϕpxj q “ f pxj q,               j “ 0, 1, ¨ ¨ ¨ , 2m.               (3.5.10)
+
+这说明三角多项式 ϕpxq 是函数 f pxq 的经过点集 tpxj , f pxj qqu2m
+                                              j“0 的插值函数. 此时, 我
+                        lo
+
+
+
+            三角 插 值 多 项 式 .
+们又称(3.5.8)式为三
+                                                                                     2π
+      更一般的情形, 假定 f pxq 是以 2π 为周期的复函数, 给定在 N 个点 xj “
+        o
+
+
+
+
+                                                                                        j pj “
+                                                                                     N
+     ho
+
+
+
+
+                                    ˆ      ˙
+                                       2π
+0, 1, ¨ ¨ ¨ , N ´ 1q 上的值 fj “ f           j . 记 f “ rf0 , f1 , ¨ ¨ ¨ , fN ´1 sT . 由于
+                                       N
+   Sc
+
+
+
+
+                                                  ?
+                    eijx “ cos jx ` i sin jx pi “ ´1, j “ 0, 1, ¨ ¨ ¨ , n ´ 1q,
+
+故函数族 t1, eix , ¨ ¨ ¨ , eipn´1qx pn ď N qu 在 r0, 2π s 上是正交的. 函数 eikx 在等距点集 txj “
+2π
+N
+   j u 上的值 eikxj 组成的向量记作
+                                  2π                2π
+                   ϕk “ p1, eik N , ¨ ¨ ¨ , eik N pN ´1q qT         pk “ 0, 1, ¨ ¨ ¨ , n ´ 1q.
+
+n 个向量 ϕ0 , ϕ1 , ¨ ¨ ¨ , ϕn´1 也是正交的, 事实上
+                                           N
+                                           ÿ ´1                        N
+                                                                       ÿ ´1
+                                                     2π        2π                     2π
+                         pϕk , ϕl q “             eik N j e´il N j “          eipk´lq N j
+                                           j“0                         j“0
+                                           $
+                                           & 0,          l ­“ k,
+                                       “
+                                           % N, l “ k.
+28                                                                                     第三章      函数逼近
+
+因此, f pxq 在 N 个点 txj u 上的有限Fourier展开式为
+                                                n´1
+                                                ÿ
+                                Sn pxq “              ck eikx   pn ď N q,
+                                             k“0
+
+其中
+                                    N ´1
+                    L             1 ÿ            2π
+      ck “ pf , ϕk q pϕk , ϕk q “        fj e´ik N j               pk “ 0, 1, ¨ ¨ ¨ , n ´ 1q.   (3.5.11)
+                                  N j“0
+
+上式称为离散 Fourier 变换( DFT ). 当 n “ N 时, SN pxq 为插值函数, 此时有
+
+
+
+
+                                                                      JU
+                              N
+                              ÿ ´1
+                                           2π
+                       fj “          ck eik N j         pj “ 0, 1, ¨ ¨ ¨ , N ´ 1q.              (3.5.12)
+                              k“0
+
+
+
+
+                                                                    ,N
+上式称为离散 Fourier 逆变换. 实际上, (3.5.11)和(3.5.12)是 Fourier 变换和逆变换的离散
+化结果.
+     离散 Fourier 变换(或逆变换)的计算可归结为计算
+                                N ´1
+                                                            h
+                                                         at
+                                ÿ
+                        ck “           xj wkj          pk “ 0, 1, ¨ ¨ ¨ , N ´ 1q,               (3.5.13)
+                                j“0
+                                fM
+
+             2π            2π
+其中 w “ e´i N 或 w “ ei N , txj upj “ 0, 1, ¨ ¨ ¨ , N ´ 1q 为已知复数序列. 利用(3.5.13)计
+算一个 ck 需要 N 个复数乘法和 N 个复数加法, 称为 N 个操作, 计算全部 ck 共需 N 2 个
+                              lo
+
+
+
+操作. 当 N 很大时计算量也很大, 直到上个世纪 60 年代中期 Cooley & Tukey 提出了快
+速傅里叶变换( FFT )算法, 可将计算工作量降到大约 OpN log2 N q, 才大大提高了运算
+              o
+
+
+
+
+速度.
+           ho
+
+
+
+
+     FFT 算法的基本思想是尽量减少乘法的次数, 例如 ab ` ac ` ad “ apb ` c ` dq, 左
+端三次乘法而右端只用一次乘法. 实际上
+         Sc
+
+
+
+
+                  2π          2π            2π
+              eik N j “ cos      kj ` i sin    kj               pk, j “ 0, 1, ¨ ¨ ¨ , N ´ 1q
+                              N             N
+                                                            N
+中只有 N 个不同的值. 特别当 N “ 2P 时只有                                   个不同的值. 因此在计算 ck 时, 可合并
+                                                            2
+大量同因子的项, 从而减少乘法次数.
+     下面我们以 N “ 24 “ 16 为例来推导FFT的计算过程. 由(3.5.13)得
+                                  15
+                                  ÿ
+                          ck “          xj wkj           pk “ 0, 1, ¨ ¨ ¨ , 15q.
+                                  j“0
+
+将 j, k 用二进制表示为
+
+                       j “ j3 23 ` j2 22 ` j1 21 ` j0 20 “ pj3 j2 j1 j0 q2 ,
+
+                       k “ k3 23 ` k2 22 ` k1 21 ` k0 20 “ pk3 k2 k1 k0 q2 ,
+3.5 数据拟合                                                                                                                         29
+
+其中 jr , kr pr “ 0, 1, 2, 3q 只能取 0 和 1, 此时 0 ď j, k ď 15. 相应地记
+
+                                ck “ cpk3 k2 k1 k0 q,                 xj “ xpj3 j2 j1 j0 q.
+
+于是, 变换公式可表示为
+                                    1
+                                    ÿ 1
+                                      ÿ 1
+                                        ÿ 1
+                                          ÿ
+               cpk3 k2 k1 k0 q “                                   xpj3 j2 j1 j0 qwpk3 k2 k1 k0 qpj3 j2 j1 j0 q ,
+                                    j0 “0 j1 “0 j2 “0 j3 “0
+                                    1
+                                    ÿ 1
+                                      ÿ 1
+                                        ÿ 1
+                                          ÿ
+                                “                                  xpj3 j2 j1 j0 qwk0 pj3 j2 j1 j0 q
+                                    j0 “0 j1 “0 j2 “0 j3 “0
+
+
+
+
+                                                                             JU
+                                                       1                          2                    3
+                                                wk1 2 pj3 j2 j1 j0 q wk2 2 pj3 j2 j1 j0 q wk3 2 pj3 j2 j1 j0 q .
+
+将 kj 乘法按照二进制展开, 如
+
+
+
+
+                                                                           ,N
+                         k1 21 pj3 j2 j1 j0 q2 “ k1 pj3 24 ` j2 23 ` j1 22 ` j0 21 q
+                                                  “ k1 j3 24 ` k1 pj2 j1 j0 0q2
+                                                         h
+                                                  “ k1 j3 N ` k1 pj2 j1 j0 0q2 ,
+                                                      at
+结合
+                           fM
+
+                                                       2π
+                                wk1 j3 N “ e´i N k1 j3 N “ e´i2πk1 j3 “ 1,
+           1
+可得 wk1 2 pj3 j2 j1 j0 q2 “ wk1 pj2 j1 j0 0q2 . 同理, 有
+                        2                                                   3
+                         lo
+
+
+
+                  wk2 2 pj3 j2 j1 j0 q2 “ wk2 pj1 j0 00q2 , wk3 2 pj3 j2 j1 j0 q2 “ wk3 pj0 000q2 .
+
+从而推得
+         o
+
+
+
+
+                                            #          «           ˜                                                    ¸
+                                    1           1          1           1
+      ho
+
+
+
+
+                                    ÿ           ÿ          ÿ           ÿ
+                                                                                                    k0 pj3 j2 j1 j0 q
+               cpk3 k2 k1 k0 q “                                                xpj3 j2 j1 j0 qw
+                                    j0 “0   j1 “0          j2 “0      j3 “0
+    Sc
+
+
+
+
+                                                                      ff                   +
+                                                    k1 pj2 j1 j0 0q        k2 pj1 j0 00q
+                                                w                      w                       wk3 pj0 000q .
+
+若引入记号及相应计算过程如下
+        $
+        ’
+        ’
+        ’
+        ’ A0 pj3 j2 j1 j0 q “ xpj3 j2 j1 j0 q,
+                                 1
+        ’
+        ’                       ř
+                                     A0 pj3 j2 j1 j0 qwk0 pj3 j2 j1 j0 q ,
+        ’
+        ’
+        ’
+        ’ A1 pj2 j1 j0 k0 q “
+                              j
+        ’
+        ’                       3 “0
+        ’
+        ’                         1
+        &                       ř
+          A2 pj1 j0 k1 k0 q “        A1 pj2 j1 j0 k0 qwk1 pj2 j1 j0 0q ,                                                    (3.5.14)
+        ’                     j2 “0
+        ’
+        ’                        ř1
+        ’ A3 pj0 k2 k1 k0 q “        A2 pj1 j0 k1 k0 qwk2 pj1 j0 00q ,
+        ’
+        ’
+        ’
+        ’
+        ’                      j1 “0
+                                   1
+        ’
+        ’                         ř
+                                     A3 pj0 k2 k1 k0 qwk3 pj0 000q ,
+        ’
+        % A4 pk3 k2 k1 k0 q “
+        ’
+        ’
+                                                        j0 “0
+30                                                                                                  第三章       函数逼近
+
+则
+                                          C pk3 k2 k1 k0 q “ A4 pk3 k2 k1 k0 q.
+
+这说明计算 ck “ C pk3 k2 k1 k0 q 可分为四步走. 注意到
+                                             4´1           N
+                                     wk0 2         “ wk0 2 “ e´ik0 π “ p´1qk0 .
+
+计算公式(3.5.14)还可以简化为
+                                     1
+                                     ÿ
+             A1 pj2 j1 j0 k0 q “            A0 pj3 j2 j1 j0 qwk0 pj3 j2 j1 j0 q
+                                    j3 “0
+
+
+
+
+                                                                                    JU
+                                                                                                3
+                                 “ A0 p0j2 j1 j0 qwk0 p0j2 j1 j0 q ` A0 p1j2 j1 j0 qwk0 2 wk0 p0j2 j1 j0 q
+                                   “                                            ‰
+                                 “ A0 p0j2 j1 j0 q ` p´1qk0 A0 p1j2 j1 j0 q wk0 p0j2 j1 j0 q .
+
+
+
+
+                                                                                  ,N
+此时分别取 k0 “ 0, 1, 可得
+         $
+         & A1 pj2 j1 j0 0q “ A0 p0j2 j1 j0 q ` A0 p1j2 j1 j0 q,
+                                                                       h
+                                                                    at
+                    % A pj j j 1q “ rA p0j j j q ´ A p1j j j qswp0j2 j1 j0 q .
+                             1   2 1 0                 0   2 1 0           0      2 1 0
+                                       fM
+
+将二进制还原成十进制表示 j “ p0j2 j1 j0 q2 “ j2 22 ` j1 21 ` j0 , 得到 A1 的计算公式如下
+      $
+      & A1 pj2q “ A0 pj q ` A0 pj ` 23 q,
+                                                 j “ 0, 1, ¨ ¨ ¨ , 7.
+                                     lo
+
+
+
+      % A pj2 ` 1q “ rA pj q ´ A pj ` 23 qs wj ,
+         1                0        0
+
+
+同理 A2 和 A3 可分别简化为
+                  o
+               ho
+
+
+
+
+ $
+ & A2 pj22 ` k q “ A1 p2j ` k q ` A1 p2j ` k ` 23 q,
+                                                                                              k “ 0, 1, j “ 0, 1, 2, 3,
+ % A pj22 ` k ` 2q “ rA p2j ` k q ´ A p2j ` k ` 23 qs w2j ,
+             Sc
+
+
+
+
+         2                            1                     1
+
+
+与
+$
+& A3 pj23 ` k q “ A2 pj22 ` k q ` A2 pj22 ` k ` 23 q,
+                                                                                                 k “ 0, 1, 2, 3, j “ 0, 1.
+% A pj23 ` k ` 22 q “ rA pj22 ` k q ´ A pj22 ` k ` 23 qs w22 j ,
+     3                               2                      2
+
+
+最后, 可将 A4 计算简化为
+          $
+          & A4 pk q “ A3 pk q ` A3 pk ` 23 q
+                                                                                   k “ 0, 1, 2, ¨ ¨ ¨ , 7.
+                  % A pk ` 23 q “ A pk q ´ A pk ` 23 q,
+                         4                         3            3
+
+
+     简单分析可知, 利用上述计算过程由 xj 求出所有 ck 共需 24 次复数乘法, 远小于直
+接计算的次数(256).
+3.5 数据拟合                                                                                                  31
+
+     类似地, 上述计算过程可推广到 N “ 2P 的一般情形. 对 q “ 1, 2, ¨ ¨ ¨ , P , 引入记号
+
+
+                                 P ´q´1 jP ´q´2 ¨ ¨ ¨ j1 j0 kq´1 k
+                           Aq pjloooooooooooomoooooooooooon       q´2 ¨ ¨ ¨ k1 k0 q,
+                                                                 loooooomoooooon
+                                            j¨2q             Ò          k
+                                                       kq´1 ¨ 2q´1
+
+
+其中 j “ pjP ´q´1 jP ´q´2 ¨ ¨ ¨ j1 j0 q2 , k “ pkq´2 ¨ ¨ ¨ k1 k0 q2 . 注意到
+
+                                   P ´1            N
+                           wkq´1 2        “ wkq´1 2 “ e´ikq´1 π “ p´1qkq´1 ,
+
+
+
+
+                                                              JU
+我们有
+
+
+
+
+                                                            ,N
+          Aq pjP ´q´1 jP ´q´2 ¨ ¨ ¨ j1 j0 kq´1 kq´2 ¨ ¨ ¨ k1 k0 q
+                    1                             h
+                                               at
+                    ÿ
+               “          Aq´1 pjP ´q jP ´q´1 ¨ ¨ ¨ j0 kq´2 ¨ ¨ ¨ k1 k0 qwkq´1 pjP ´q ¨¨¨j0 0¨¨¨0q
+                    jP ´q “0
+                           fM
+
+                 “
+                “ Aq´1 p0jP ´q´1 ¨ ¨ ¨ j0 kq´2 ¨ ¨ ¨ k0 q ` p´1qkq´1
+                   Aq´1 p1jP ´q´1 ¨ ¨ ¨ j0 kq´2 ¨ ¨ ¨ k0 qs ¨ wkq´1 p0jP ´q´1 ¨¨¨j0 0¨¨¨0q
+                 “                                                                     ‰   q´1
+                “ Aq´1 pj2q´1 ` k q ` p´1qkq´1 Aq´1 pj2q´1 ` k ` 2P ´1 q ¨ wkq´1 ¨j2 .
+        o                lo
+
+
+
+在上式中分别取 kq´1 “ 0, 1, 对 q “ 1, ¨ ¨ ¨ , P , 可得 FFT 计算公式如下
+     ho
+
+
+
+
+       $
+       ’
+       ’ Aq pj2q ` k q “ Aq´1 pj2q´1 ` k q ` Aq´1 pj2q´1 ` k ` 2P ´1 q,
+   Sc
+
+
+
+
+       ’
+       ’
+       ’
+       ’
+       & Aq pj2q ` k ` 2q´1 q
+       ’
+                                                                                                     (3.5.15)
+                                                                           q´1
+       ’
+       ’
+       ’
+       ’        “ rAq´1 pj2q´1 ` k q ´ Aq´1 pj2q´1 ` k ` 2P ´1 qswj2 ,
+       ’
+       ’
+                  j “ 0, 1, ¨ ¨ ¨ , 2P ´q ´ 1, k “ 0, 1, ¨ ¨ ¨ , 2q´1 ´ 1.
+       ’
+       %
+
+
+利用(3.5.15)每步计算需 2P ´q ¨ 2q´1 “ 2P ´1 “ N {2 次复数乘法, 而最后一步计算 AP
+              q´1
+时, 由于 wj2           “ ppwqN {2 qj “ p´1q0 “ 1, 故共需 pP ´ 1q N2 次复数乘法, 这比直接用公
+式(3.5.11)计算需 N 2 次复数乘法少得多. 计算公式(3.5.15)称为改进的FFT算法, 其计算
+步骤如下算法所示.
+
+
+     算法 3.1. 改进的FFT
+32                                                                           第三章   函数逼近
+                                                               ˆ     ˙
+                                                                   N
+           Step 1 给出复数数组 A0 pN q, A1 pN q 及 w                         , 确定 P , q “ 1. 将已知数据
+                                                                   2
+                  txj u 输入到数组 A0 pN q 的单元中.
+                                   2π                     2π
+                        m    ´i N m
+           Step 2 计算ˆ w˙ “ e        (或 wm “ ei N m q (m 从 0 到 2P ´1 ´ 1), 结果存放在
+                     N
+                  w       的相应单元中.
+                      2
+           Step 3 j 从 0 到 p2P ´q ´ 1q, k 从 0 到 p2q´1 ´ 1q, 按 FFT 公式(3.5.15)计算 Aq ,
+                  结果放在 A1 pN q 的相应单元中.
+                       $
+
+
+
+
+                                                            JU
+                       ’
+                       ’
+                       ’ A1 pj2q ` k q “ A0 pj2q´1 ` k q ` A0 pj2q´1 ` k ` 2P ´1 q
+                       &
+                         A1 pj2q ` k ` 2q´1 q
+                       ’
+
+
+
+
+                                                          ,N
+                       ’
+                       ’
+                              “ rA0 pj2q´1 ` k q ´ A0 pj2q´1 ` k ` 2P ´1 qswpj2q´1 q
+                       %
+
+
+           Step 4 k, j 循环结束, q ` 1 Ñ q, A1 pN q Ñ A0 pN q.
+                                                h
+                  若 q ă P , 则 goto Step 3; 否则 goto Step 5.
+                                             at
+           Step 5 此时 q “ P, j “ 0, k 从 0 到 p2P ´1 ´ 1q. 计算
+                          fM
+
+                              $
+                              & A1 pk q “ A0 pk q ` A0 pk ` 2P ´1 q
+                        lo
+
+
+
+                                 % A pk ` 2q´1 q “ A pk q ´ A pk ` 2P ´1 q.
+                                        1                      0       0
+
+
+
+                  这里得到的 A1 pk qpk “ 0, 1, ¨ ¨ ¨ , 2P ´1 q 即为所求 ck .
+             o
+          ho
+
+
+
+
+3.5.3   非线性拟合
+        Sc
+
+
+
+
+     在 §3.5.1, 我们假设拟合函数 f pxq 线性依赖于参数 a0 , a1 , ¨ ¨ ¨ , an , 这一节我们考虑
+拟合函数 f pxq 非线性依赖于参数的情形. 此时按照均方误差定义的优化问题(3.5.1)称为
+非线性最小二乘问题.
+     例如, 用下面的函数来作逼近:
+                                                a
+                                   f pxq “            ,
+                                             1 ` becx
+其中 a, b, c 都是未知的, 希望用给定的数据确定 a, b, c 的值, 使得均方误差达到最小.
+
+     例 3.5.4. 设有以下数据:
+
+                 x ´1.5     ´1      ´0.5       0     0.5           1   1.5
+
+                 y   0.04   0.17     0.65     1.39 1.85 1.90 1.99
+3.5 数据拟合                                                                             33
+
+                           2
+                                    Curve
+                          1.8       original
+
+                          1.6
+
+                          1.4
+
+                          1.2
+
+                           1
+
+                          0.8
+
+                          0.6
+
+                          0.4
+
+                          0.2
+
+                           0
+                           -1.5      -1        -0.5   0       0.5   1   1.5
+
+
+
+
+                                                                JU
+                       图 3.5        例 3.5.4 数据的非线性函数拟合
+
+
+
+
+                                                              ,N
+                   2
+试利用形如 y “                的函数来拟合表里的数据.
+                1 ` aebx
+    解 对于上述问题我们常用如下线性化技巧来处理. 首先我们注意到:              h
+                                               at
+                                     ˆ      ˙
+               2      2        bx      2
+         y“          ô “ 1 ` ae ô ln     ´ 1 “ bx ` ln a.
+            1 ` aebx  y                y
+                      fM
+
+因此, 取 upxq “ x, v py q “ lnp y2 ´1q, 我们可将数据 tpxi , yi qum                          m
+                                                        i“1 转化为 tpupxi q, v pyi qqui“1 .
+此时对转化后的数据可以用线性函数
+                    lo
+
+
+
+                                ỹ “ bx ` c,          p其中 c “ ln aq
+        o
+
+
+
+
+来作拟合, 即可实现原问题的线性化. 利用线性化方法得到的结果如图 3.5 所示. 代码可
+     ho
+
+
+
+
+参见:nonlinfitEx1.py (Python代码) 和 nonlinfitEx1.m (Matlab代码).                           l
+    然而, 如果用线性化处理技巧, 我们得到的 a, b 并不一定是下面损失函数的极小值：
+   Sc
+
+
+
+
+                            m ˇ                 ˇ2
+                         1 ÿ ˇˇ      2          ˇ
+               Lpa, bq “                   ´ yi
+                                                ˇ .
+                         m i“1 ˇ 1 ` aebxi      ˇ
+
+事实上, 它是下面损失函数的极小值: (其中 c “ ln a)
+                         m ˇ               ˆ       ˙ˇ2
+                      1 ÿ ˇˇ                 2       ˇ
+           L̃pb, cq “         bxi ` c ´ ln      ´ 1 ˇˇ .
+                      m i“1 ˇ                yi
+
+因此, 我们需要用寻求其他方法来求 Lpa, bq 的最小值. 下面我们介绍梯度下降法, 这是
+优化问题求解中最常用的一类方法.
+    一般地, 设 J pθq 是 Rn 中连续可微函数, 现在需要求它的最小值及达到最小值时 θ
+的取值, 即求如下的优化问题:
+                                          θ˚ “ arg min J pθq.
+                                                          θ
+34                                                                    第三章    函数逼近
+
+一个比较自然的寻找方式是: 从某个点 θk (初始时 k “ 0) 出发, 找下一个点 θk`1 使得
+J pθk`1 q ă J pθk q. 然后不断迭代下去, 直到某个 J pθk q 无法出现显著下降为止.
+     根据微分中值定理, 假设 θk 和 θk`1 非常接近, 那么
+
+         J pθk`1 q “ J pθk q ` ∇J pξk q ¨ pθk`1 ´ θk q, (ξk 介于 θk 和 θk`1 )
+                 « J pθk q ` ∇J pθk q ¨ pθk`1 ´ θk q,
+
+其中 ∇J 为 J 的梯度:
+                                    ˆ                      ˙T
+                                        BJ          BJ
+                            ∇J “             ,¨¨¨ ,             .
+                                        B θ1        B θn
+
+
+
+
+                                                             JU
+这样, 如果我们取
+                             θk`1 ´ θk “ ´αk ∇J pθk q,
+
+
+
+
+                                                           ,N
+其中 αk 是足够小的正数, 那么就能保证
+
+                    J pθk`1 q « J pθk q ´ αk |∇J pθk q|2 ă J pθk q.
+                                                h
+                                             at
+即由 θk 到 θk`1 , J pθq 在下降. 于是, 梯度下降法可描述为下面的迭代算法:
+                         fM
+
+                                 θk`1 “ θk ´ αk gk ,
+
+                                      步长. 迭代终止准则可以取为 |gk | 小于给
+其中 gk “ gpθk q :“ ∇J pθk q, 非负实数 αk 称为步
+                       lo
+
+
+
+定的误差容限.
+     在梯度下降法的求解过程中, 只需求解损失函数的一阶导数, 计算代价相比二阶方
+             o
+
+
+
+
+法(需要用到Hessian矩阵的迭代算法)更小, 可以在很多大规模数据集上应用. 但是, 梯度
+          ho
+
+
+
+
+                                      局部
+下降法由于方向选择的问题, 得到的结果不一定是全局最优, 即参数寻优可能陷入局
+极 小(local minima), 如图 3.6 所示. 随机梯度下降法可以在一定程度上解决陷入局部
+        Sc
+
+
+
+
+极小的问题, 感兴趣的读者可参阅 [].
+
+
+                         3.6 人工神经网络简介
+
+     人工神经网络是重要的机器学习方法之一, 也是深度学习最核心的基础, 我们这里
+把它看成函数的非线性逼近或者数据的非线性拟合形式做简单的介绍.
+
+
+3.6.1   什么是人工神经网络
+     人工神经网络(Artificial Neural Network)是一个相当大的、多学科交叉的学科
+                                  神经元(neuron).
+领域, 不同学科对神经网络的定义有所差别. 神经网络中最基本的成分是神
+在生物神经网络中, 每个神经元与其他神经元相连, 当它“兴奋”时, 就会向相连的神经
+3.6 人工神经网络简介                                                                      35
+
+
+
+
+                                                     JU
+                                                   ,N
+                           图 3.6 梯度下降法陷入局部极小
+
+
+元发送化学物质, 从而改变这些神经元内的电位; 如果神经元的电位超过了一“阈值”, 那
+                                            h
+                                         at
+么它就会被激活, 即“兴奋”起来, 向其他神经元发送化学物质. 相关过程如图 3.7 所示. ∗
+                        fM
+                      lo
+
+
+
+                   信号被输入到神经元中         细胞体判断输入信号之和        当信号之和大于阈值时,
+                                                        点火, 向相邻神经元传递信号.
+          o
+
+
+
+
+                             图 3.7 兴奋在神经元之间的传递
+       ho
+
+
+
+
+      将神经元的工作在数学上抽象化, 并以其为单位人工地形成网络, 这样的网络就是
+     Sc
+
+
+
+
+人工神经网络(ANN). 将构成大脑的神经元的集合体抽象为数学模型, 这就是人工神经
+网络的出发点.
+      1943年, W. McCulloch 和 W. Pitts 将上述情形抽象为“M-P神经元模型”, 简单模拟
+了神经元的反应流程, 如图 3.8 所示. M-P神经元模型具体包括:
+
+                                                 输入 值(input), 表示
+           ‚ 多个带有权重的输入 wi ¨ xi , 相当于“突触”, 其中 xi 是输
+                         权重(weight), 表示刺激的不同强度.
+             外界的刺激; wi 表示权
+                                                                n
+                                                                ř
+           ‚ 转换函数 Σ, 相当于“汇聚电信号的细胞膜”.                                wi xi 也就是对所有带权重的
+                                                            i“1
+             输入进行简单的求和, 将多个值合并为一个值.
+ ∗
+     图片来源: https://www.ituring.com.cn/book/tupubarticle/28234
+36                                                                              第三章   函数逼近
+
+                   “e
+                    x1
+
+                              w    À;ýp σ
+                              1                                      !
+                    x2                                 P
+                                                       n
+                           w2                 y=σ            ωj xj − b
+                                                       j=1
+                                    Σ σ                                   y
+                     ..
+                      .
+                      ..                                                 “ú y
+                       .   wn
+
+                    xn     CÍ           b
+                                        <
+
+
+
+
+                                                                 JU
+                      图 3.8       M-P神经元模型
+
+
+
+
+                                                               ,N
+                         偏 置 (bias) b 与激
+       ‚ 阈 值(threshold)或者偏             激 活 函 数(activation function) σ,
+         神经元接受到的总输入值将与阈值进行比较, 然后通过激活函数处理以产生
+         神经元的输出.
+                                                     h
+                                                  at
+于是我们得到一个基本的神经元表示:
+                                        ˜                    ¸
+                                            n
+                             fM
+
+                                            ÿ
+                                  y“σ             wi x i ´ b .
+                                            i“1
+
+在生物神经网络中, 激活函数 σ 取为阶跃函数（Heaviside 函数）:
+                           lo
+
+
+
+                                  #
+                                    1, x ě 0,
+             σ pxq “ stepf pxq :“
+            o
+
+
+
+
+                                    0, x ă 0.
+         ho
+
+
+
+
+该函数对应于神经细胞中神经元的电位超过阈值之后, 就会被激活, 并向下一个神经元
+传递信号.
+       Sc
+
+
+
+
+                     感知 机 模 型, 其表达能力非常有限, 只能用于二
+     只包含一个M–P神经元的模型称为感
+分类问题, 无法学习比较复杂的非线性模型.
+     人工神经网络在感知机模型的基础上作了扩展, 主要有如下三点: (a) 在输入层和输
+出层之间加入了隐藏层, 增强模型的表达能力. (b) 输出层的神经元也可以不止一个输
+出, 可以有多个输出. 这样模型可以灵活应用于分类或回归, 以及其他的学习任务. 相应
+的推广形式如图 3.9 和 3.10 所示.
+
+
+
+(c) 对激活函数进行扩展. 感知机的激活函数是 stepf pxq, 该函数虽然简单但是不连续,
+因此神经网络中一般使用其他激活函数. 神经网络中常用的一些激活函数如下:
+                                                1
+       ‚ Logistic sigmoid函数: σ ptq “                 .
+                                             1 ` e´t
+3.6 人工神经网络简介                                                                             37
+
+
+
+
+           “eB     •ÏB1           •ÏB2        “úB                         “eB      “úB
+
+
+                 图 3.9      有隐藏层的推广                                    图 3.10     有多个输出的推广
+
+                                             t
+       ‚ tanh函数: σ ptq “ tanh t或者σ ptq “ tanh , 它相当于 sigmoid 函数作了平
+
+
+
+
+                                                        JU
+                                             2
+         移和伸缩.
+
+       ‚ ReLU函数: σ ptq “ maxt0, tu.
+
+
+
+
+                                                      ,N
+它们对应的图形如图 3.11 所示.
+                        y                     y                    y
+                                          h
+                                       at
+                       O           x              O      x         O          x
+                   fM
+
+                           1
+                  y=                     y = tanh x           y = max{0, x}
+                        1 + e−x
+                 lo
+
+
+
+                             图 3.11 激活函数示意图
+       o
+
+
+
+
+   人工神经网络是基于感知机的扩展, 深度神经网络可以理解为有很多隐藏层的神
+    ho
+
+
+
+
+                 多 层 感 知 机(MLP). 常见的深度神经网络具有如
+经网络, 有时也把深度神经网络叫做多
+                    输 入 层(input layer), 最后一层为输
+图 3.12 所示的层级结构, 第一层为输                        输 出 层(output
+  Sc
+
+
+
+
+               隐藏 层(hidden layer). 每层神经元与下一层神经元全互连, 神
+layer), 而中间的层都是隐
+                                  多层 前 馈 神 经
+经元之间不存在同层连接, 也不存在跨层连接. 这样的网络结构通常称为多
+网络(multi-layer feedforward neural network).
+
+
+
+
+                  “eB       •ÏB1       •ÏB2       •ÏB3       “úB
+
+
+
+                            图 3.12 深度神经网络
+38                                                                                   第三章      函数逼近
+
+3.6.2   神经网络的数学表示
+     虽然深度神经网络看起来很复杂, 但是从局部模型来说, 还是和感知机一样的, 即
+一个线性变换 z “ W ¨ x ` b 加上一个激活函数 σ p¨q, 其中 W 代表权重矩阵. 如果
+x “ px1 , ¨ ¨ ¨ , xn qT 是个向量, 我们记 σ pxq 为逐分量作用:
+
+                              σ pxq “ pσ px1 q, ¨ ¨ ¨ , σ pxn qqT .
+
+     我们考虑相邻两层, 第 l ´ 1 层的输出 z l´1 即为第 l 层的输入, 从而第 l 层的输出可
+以表示为
+
+
+
+
+                                                                JU
+                                  z l “ σ pWl ¨ z l´1 ` bl q,                                  (3.6.1)
+
+其中 Wl 表示第 l ´ 1 层到第 l 层的连接权重矩阵, bl 表示第 l 层的偏置向量, 这样, 整个
+
+
+
+
+                                                              ,N
+多层前馈神经网络可以表示为
+
+                         y “ AL ˝ σ ˝ AL´1 ˝ σ ˝ ¨ ¨ ¨ ˝ σ ˝ A0 pxq,
+                                                   h
+                                                at
+其中 Al pz q “ Wl ¨ z ` bl pl “ 0, 1, ¨ ¨ ¨ , Lq. 这样的神经网络是一个 L ` 1 层神经网络, 共
+有 L 个隐藏层, 1 个输出层.
+                             fM
+
+                                     z1l
+
+                 z1l−1                          W l : 4 × 3 é5
+                                     z2l
+                           lo
+
+
+
+                                                bl : 4 ô    Ï
+                 z2l−1
+                                     z3l
+                                                z l−1 = (z1l−1 , z2l−1 , z3l−1 )T : 3 ô   Ï
+             o
+
+
+
+
+                 z3l−1                          z l = (z1l , z2l , z3l , z4l )T : 4 ô Ï
+          ho
+
+
+
+
+                                     z4l
+
+               ,l−1B              ,lB
+        Sc
+
+
+
+
+                   图 3.13         深度神经网络的局部示意图
+
+     例如, 在图 3.13 中, 第 l ´ 1 层共有 3 个神经元, 第 l 层共有 4 个神经元, 记
+                          ¨             ˛      ¨ ˛
+                             l   l   l            l
+                          ˚w11 w12 w13 ‹       ˚b1 ‹
+                          ˚             ‹      ˚ ‹
+                          ˚wl wl wl ‹          ˚bl ‹
+                     l       21  22  23     l  ˚ 2‹
+                   W “˚                 ‹, b “ ˚ ‹,
+                          ˚             ‹
+                          ˚wl wl wl ‹          ˚bl ‹
+                          ˚ 31   32  33 ‹      ˚ 3‹
+                          ˝             ‚      ˝ ‚
+                             l   l   l
+                            w41 w42 w43         bl4
+
+则对于 j “ 1, 2, 3, 4, 可以把前面的(3.6.1)式写成分量形式为
+                         `                                       ˘
+                  zjl “ σ z1l´1 wj1
+                                 l
+                                    ` z2l´1 wj2
+                                             l
+                                                ` z3l´1 wj3
+                                                         l
+                                                            ` blj .
+3.6 人工神经网络简介                                                                 39
+
+    从计算数学的角度看, 我们可以先不考虑人工神经网络是否真的模拟了生物神经网
+              包含 了 许 多 参 数 的 数 学 模 型, 这个模型是若
+络, 只需将一个神经网络视为包                            若干 个 函 数 组 合
+嵌 套 而成的一个高度非线性的函数, 数学模型或者函数的参数就是那些连接权重和偏置
+        学 习 过 程, 就是根据训练数据来调整神经元之间的连接权重以及每个神
+量. 神经网络的学
+经元的偏置, 使得模型能够表达数据自身的内在关系; 换言之, 神经网络“学”到的东西,
+蕴含在连接权重和偏置中. 因此, 我们可以将神经网络看成函数逼近或者数据拟合的一
+种方法, 只是这里不再是我们前面介绍的简单函数, 而是具有一定特殊结构的网络代表
+的函数.
+
+
+
+
+                                                    JU
+3.6.3   神经网络的训练
+
+
+
+
+                                                  ,N
+    神经网络可以说是由其结构和参数控制. 确定了网络结构后, 神经网络由其参数唯
+一确定, 因此我们可以把神经网络模型记为 ϕpx; θq, 其中, θ 表示神经网络的参数(权重与
+偏置). 那么我们如何确定神经网络的参数 θ 从而得到最佳的模型 ϕpx; θq 呢?
+    首先我们要确立一个评价模型好坏的标准, 通常我们使用损
+                                        h
+                              损失函数(loss function)
+                                     at
+J pθq. 针对不同的问题, 以及不同的网络结构, 我们会使用不同的损失函数, 其中最简单
+                   fM
+
+     均方误差(mean-square loss):
+和常用的是均
+
+                               J pθq :“ }ϕpx; θq ´ y }22 .
+                 lo
+
+
+
+                               `ş                  ˘ 21
+这里, 对于 f P L2 pΩq, 记 }f }2 “     Ω
+                                   | f p x q| 2
+                                                dx      表示 f 的L2 -范
+                                                                  范数 .
+    这个损失函数的直观意义相当明确, 模型的预测值和真值的欧氏距离越大, 损失就
+       o
+
+
+
+
+越大, 反之就越小. 因此, 最优的参数 θ˚ 应使得损失函数 J pθq 达到最小, 即
+    ho
+
+
+
+
+                                 θ˚ “ arg min J pθq.                     (3.6.2)
+  Sc
+
+
+
+
+                                              θ
+
+
+这样, 模型的训练就变成了一个优化问题得求解.
+    由于计算机只能处理离散数据, 没有办法精确计算 J pθq. 并且在一般情况下, 我们只
+有部分数据集 tpxi , yi quni“1 , 所以我们通常使用经
+                                  经验损失函数(empirical loss)
+                                         n
+                                     1ÿ
+                         Je pθq :“         |ϕpxi ; θq ´ yi |2 .
+                                     n i“1
+
+    神经网络的训练过程就是寻找最优参数 θ˚ 使得
+
+                                 θ˚ “ arg min Je pθq.                    (3.6.3)
+                                             θ
+
+
+对优化问题(3.6.3), 我们可采用前面介绍的梯度下降法求解.
+40                                                                                       第三章         函数逼近
+
+3.6.4         神经网络的函数逼近性质
+         我们已经指出, L 个隐藏层的神经网络可以表示成
+
+                                y “ AL ˝ σ ˝ AL´1 ˝ σ ˝ ¨ ¨ ¨ ˝ σ ˝ A0 pxq,                           (3.6.4)
+
+其中 Al pz q “ Wl ¨ z ` bl pl “ 0, 1, ¨ ¨ ¨ , Lq. 如果输入层是 d 维, 即 x P Rd , 输出层是 p 维,
+即 y P Rp , 那么我们就得到了映射关系 x ÞÑ y 的函数表达式.
+         把所有形如(3.6.4)的神经网络函数放在一起, 构成一个函数族, 记为 F. 这样的函数
+族中, 所有权重和偏置都是可调的, 这样神经网络函数(3.6.4)可以作为函数逼近空间† .
+
+
+
+
+                                                                               JU
+         虽然大部分函数不能精确地用(3.6.4)表示, 但是随着隐藏层数、神经元数的增加, 网
+络的非线性建模能力( 即表达能力 )会快速增长, 这是一般的逼近方法所不能比拟的. 另
+外, 简便统一的训练算法以及分部并行计算的易于实现, 使得神经网络逼近函数具有传
+
+
+
+
+                                                                             ,N
+统函数逼近方法所不具备的优势.
+         于是, 我们现在关心的是 F 究竟对哪些函数有逼近能力, 逼近的阶和精度是怎样的,
+与经典的函数逼近方法相比有哪些优缺点.                                           h
+                                                           at
+         设激活函数 σ P C pR, Rq, 其中 C pX, Y q 表示从 X 到 Y 的连续函数全体. 记
+                                     fM
+
+                  !             q
+                                ÿ                                                                )
+         Σr pσ q “ g : Rr Ñ R |   βi σ pwi ¨ x ` bi q, wi , x P Rr , bi , βi P R, q “ 1, 2, ¨ ¨ ¨ .
+                                     i“1
+
+
+                      通用逼近定理(universal approximation
+Hornik等人于上世纪八十年代建立了下面的通
+                                   lo
+
+
+
+theorem)(见 [19]).
+                   o
+
+
+
+
+         定理 3.6.1 (通用逼近定理). 若 σ 不是多项式、单调递增, 且满足 lim σ pxq “ 1,
+                ho
+
+
+
+
+                                                                                              xÑ`8
+ lim σ pxq “ 0, 则对任意 r P N` 、紧集 K Ă Rr , ε ą 0, 以及连续函数 f P C pRr , Rq, 存
+xÑ´8
+在 g P Σr pσ q, 使得
+              Sc
+
+
+
+
+                                           sup |f pxq ´ g pxq| ă ε.
+                                           xPK
+
+         这个定理也可推广到多个隐藏层、多个输出的深度神经网络的版本.
+         给定 Sobolev 空间 W n,p pr0, 1sd q, 其范数定义为
+                                                ´ ÿ                   ¯ p1
+                       }f }W n,p pr0,1sd q :“             }Dα f }pp          ,   1 ď p ă 8.
+                                                0ď|α|ďn
+
+
+并且记 W n,p pr0, 1sd q 中的单位球
+
+                           Fn,p :“ tf P W n,p pr0, 1sd q : }f }W n,p pr0,1sd q ď 1u.
+     †
+         虽然我们把 F 称作“空间”, 但如果对每层的神经元数个数加以限制, 那么它就不是严格意义上的线性空间, 因为对加
+法不封闭.
+3.6 人工神经网络简介                                                                                 41
+
+进一步记
+                              r
+                             !ÿ                                                  )
+              M r p σ q :“             ai σ pwi ¨ x ` bi q : ai , bi P R, wi P Rd .
+                                 i“1
+
+
+Maiorov 给出了如下关于 Mr pσ q (1 个隐藏层)表示的神经网络的逼近结论(见 [21]).
+
+   定理 3.6.2. 存在一个激活函数 σ, 满足单调递增且 lim σ pxq “ 1, lim σ pxq “ 0,
+                                                                  xÑ`8                xÑ´8
+使得对 1 ď p ă 8, d ě 2, n ě 1, 有
+
+                                                                         n
+                     sup          inf     }f ´ g }W n,p pr0,1sd q ď Cr´ d´1 .
+
+
+
+
+                                                         JU
+                    f PFn,p gPMr pσq
+
+
+   显然 ReLU 激活函数不满足上述逼近定理的条件. Yarotsky 在最近的工作 [20]中不
+
+
+
+
+                                                       ,N
+仅证明了采用 ReLU 激活函数的神经网络具有逼近性质, 还给出了关于网络大小的误差
+估计. 给定 Sobolev 空间 W n,8 pr0, 1sd q, 其范数定义为
+                                               h
+                     }f }W n,8 pr0,1sd q :“ max ess sup |Dα f pxq|.
+                                            at
+                                                 |α|ďn xPr0,1sd
+                   fM
+
+并且记 W n,8 pr0, 1sd q 中的单位球
+
+                Fn,8 “ tf P W n,8 pr0, 1sd q : }f }W n,8 pr0,1sd q ď 1u.
+                 lo
+
+
+
+我们有如下结论：
+       o
+
+
+
+
+   定理 3.6.3. 对任意正整数 d, n 与 ε P p0, 1q, 任意 f P Fn,8 , 存在 ReLU–神经网络
+    ho
+
+
+
+
+fθ 满足
+                         sup }fθ pxq ´ f pxq}W n,8 pr0,1sd q ă ε.
+  Sc
+
+
+
+
+                             θ
+
+并且这个神经网络的隐藏层数至多为 cplnp1{εq ` 1q, 神经元总数是 cε´d{n plnp1{εq ` 1q,
+其中常数 c “ cpd, nq.
+
+                    最 佳 逼 近 误 差, 即神经网络能够表示的函
+   前述的逼近定理都是考虑的神经网络的最
+数中对目标函数近似效果最好的情况. 实际应用中, 还要考虑对损失函数离散和采样带
+  泛 化 误 差(generalization error), 以及优化算法带来的优
+来的泛                                       优 化 误 差(optimization
+error). 此外, 实际应用中还要考虑网络结构的选择以及初始参数的设置.
+   从数学上来看, 神经网络函数逼近代表了非线性函数的一类仿射展开, 其特殊优点
+是基函数的选取自由度大, 展开系数可由统一的训练算法获得. 神经网络不仅可以用来
+逼近我们通常意义上的函数, 还可以用来数值求解常微分方程与偏微分方程(组), 应用非
+常广泛.
+42                                                                             第三章   函数逼近
+
+                                           习 题 三
+
+     1. 试证, f pxq “ ex 在 r0, bs 上以
+
+                                xj “ jh,   h “ b{n,      j “ 0, 1, ¨ ¨ ¨ , n
+
+       为节点的 Lagrange 插值多项式 pn pxq 一致收敛于 ex .
+
+     2. 设函数 f pxq 在区间 ra, bs 上连续, 试证明 f pxq 的 n 次最佳一次逼近多项式是 f pxq
+        在 ra, bs 上的某一个 Lagrange 插值多项式.
+                  ?
+
+
+
+
+                                                             JU
+     3. 求 f pxq “ x 在 r 41 , 1s 上的一次最佳一致逼近多项式.
+
+     4. 记 H2 “ Spant1, x, x2 u 是二次多项式空间. 求 ppxq P H2 使得
+
+
+
+
+                                                           ,N
+       maxxPr0,2s |x3 ´ ppxq| 达到最小.
+
+                     1
+     5. 求 f pxq “       在 r0, 1s 上的一次最佳一致逼近多项式.     h
+                    1`x
+                                                 at
+     6. 设 f pxq 在区间 ra, bs 上连续, 试证 f pxq 的零次最佳一致逼近多项式是
+                                  fM
+
+                                                     M `m
+                                            ppxq “        ,
+                                                       2
+       其中
+                                lo
+
+
+
+                                 M “ max f pxq,       m “ min f pxq.
+                                       aďxďb               aďxďb
+                 o
+
+
+
+
+     7. 对下列给定的权函数 W pxq, 求出区间 r´1, 1s 上的正交多项式系的前三个多项式
+              ho
+
+
+
+
+       p0 pxq, p1 pxq, p2 pxq
+                           1
+                                           p2q W pxq “ 1 ` x2 .
+            Sc
+
+
+
+
+            (1) W pxq “ ?       ,
+                         1 ` x2
+
+     8. 设 qn pxq 是区间 ra, bs 上关于权函数 W pxq 的首一 n 次正交多项式. 令
+                        »                              fi
+                               ?
+                            α0   β1
+                        —                              ffi
+                        — ?                            ffi
+                        — β1 α1                        ffi
+                        —                              ffi
+                        —      . .. . ..  . ..
+                                                       ffi
+                   An “ —
+                        —
+                                                       ffi ,
+                                                       ffi   n ě 1,
+                        —                       ?      ffi
+                                         αn´2     βn´1 ffi
+                        —                              ffi
+                        —
+                        –                              fl
+                                         ?
+                                           βn´1 αn´1
+
+       其中 αk , βk 为递推关系式 (3.3.3) 中的系数. 试证, 矩阵 An 的特征值是正交多项式
+       qn pxq 的根.
+3.6 人工神经网络简介                                                                            43
+
+ 9. 设
+                         Xn px, y q “ Tn`1 pxqTn py q ´ Tn`1 py qTn pxq,
+
+   其中 Tn 表示 Chebyshev 多项式. 证明
+
+                Xn px, y q “ 2px ´ y qTn pxqTn py q ` Xn´1 px, y q,            n ě 1,
+
+   并导出                                         „    n                  ȷ
+                       1                         1 ÿ
+                         Xn px, y q “ px ´ y q     ` qk“1 Tk pxqTk py q .
+                       2                         2
+
+
+
+
+                                                   JU
+10. 设 Tn pxq 是 n 次 Chebyshev 多项式. 证明, 若 |x| ď 1, 则 |Tn pxq| ď 1; 若 |x| ą 1, 则
+   |Tn pxq| ą 1, n “ 1, 2, ¨ ¨ ¨ . 从而有
+
+
+
+
+                                                 ,N
+                                       max |Tn pxq| “ 1.
+                                     ´1ďxď1
+
+
+
+11. 证明 Chebyshev 多项式满足关系:                h
+                                      at
+                                           1
+                            Tm pxqTn pxq “   tTm`n pxq ` Tm´n pxqu,
+                                           2
+                    fM
+
+                            Tn pTm pxqq “ Tm pTn pxqq “ Tmn pxq.
+
+12. 设 pn pxq 为不高于 n 次的多项式, 令
+                  lo
+
+
+
+                                     M “ max |pn pxq|.
+                                           ´2ďxď1
+      o
+
+
+
+
+   试证明对任何大于 1 的实数 y, 恒有
+   ho
+
+
+
+
+                                     |pn py q| ď M |Tn py q|.
+ Sc
+
+
+
+
+13. 求函数 f pxq “ arctanx 在 r´1, 1s 上的三次 Chebyshev 插值多项式.
+
+14. 求 f pxq “ ln x 在 r1, 2s 上的二次 Chebyshev 插值多项式.
+
+15. 求多项式 f pxq “ 2x4 ` 3x3 ´ x2 ` 1 在区间 r´1, 1s 上的三次最佳一致逼近多项式
+   ppxq.
+16. 试证明: 在所有首项系数为 1 的 n 次多项式集合 Qn 中, (3.3.22) 中 P̄n pxq 在区间
+   r´1, 1s 上与零的平方误差最小, 即
+                 ż1                                       ż1
+                    |P̄n pxq|2 dx “             min            |pn pxq|2 dx.
+                           ´1                 pn pxqPQn   ´1
+
+                   ?
+17. 求函数 f pxq “        x 在 r0, 1s 上的最佳平方逼近 ppxq “ a0 ` a1 x.
+44                                                                第三章    函数逼近
+
+ 18. 求函数 f pxq 在指定区间上的一次和二次最佳平方逼近多项式(分别取函数系
+     t1, xu 和 t1, x, x2 uq.
+           (1) f pxq “ x3 ´ 1,        r0, 2s;
+           (2) f pxq “ ln x,       r1, 2s.
+
+               1
+ 19. 设 f pxq “   ,
+               x
+           (1) 求 f pxq 在区间 r1, 2s 上的零次和一次最佳一致逼近多项式;
+           (2) 求 f pxq 在区间 r1, 2s 上的零次和一次最佳平方逼近多项式.
+
+
+
+
+                                                      JU
+                 ˆ         ˙ 12
+                     1`x
+ 20. 求 f pxq “                    的 Chebyshev 级数.
+
+
+
+
+                                                    ,N
+                      2
+
+ 21. 求 f pxq “ arcsinx 的 Chebyshev 级数.
+                                                   h
+ 22. 求数据 p1, 0q, p2, 2q, p3, 2q, p4, 5q, p5, 4q 的最小二乘拟合 y “ a ` bx.
+                                                at
+         ␣          (N
+ 23. 设有点组 pxi , yi q 1 , 其中 pxi , yi q P R ˆ R, N ą 2. 求抛物线 y “ ax2 ` bx ` c 作
+                                fM
+
+     最小二乘拟合的系数 a, b, c 所满足的方程.
+
+ 24. 求数据 p´2, 0q, p´1, 1q, p1, 1q, p2, 0q 的最小二乘拟合 y “ a0 ` a1 x ` a2 x2 .
+                              lo
+
+
+
+                                                          m
+                                                          ř
+ 25. 给定互异的 m 个实 数txi um
+                      i“1 , 假设 φ P Pk , k ă m, 证明:              φ2 pxi q “ 0 的充分必
+                                                          i“1
+              o
+
+
+
+
+     要条件是 φ “ 0.
+           ho
+
+
+
+
+ 26. 给定数据 p´1, 0q, p0, 2q, p1, 3q, p2, 1q, 求最小二乘拟合函数
+         Sc
+
+
+
+
+             (1) y “ a0 ` a1 x;
+             (2) y “ b0 ` b1 x2 ;
+             (3) y “ c0 ` c1 x ` c2 x2 .
+
+ 27. 证明: 数据 tpxi , yi qum
+                        i“1 的最小二乘拟合函数 ppxq “ a0 ` a1 x ` ¨ ¨ ¨ ` am´1 x
+                                                                        m´1
+
+     恰是经过点集 tpxi , yi qum
+                        i“1 的 Lagrange 插值多项式.
+
+ 28. 记 P2 “ Spant1, x, x2 u 是二次多项式空间, 求 ppxq P P2 使得
+                             ż2
+                                        “               ‰2
+                                px ´ 1q2 |x ´ 1|3 ´ ppxq dx
+                                     0
+
+     达到最小.
+3.6 人工神经网络简介                                                            45
+
+                                   上机实习题
+
+ 1. 求 f pxq “ ex 在区间 r0, 1s 上的 n 次最佳平方逼近多项式
+                                            n
+                                            ÿ
+                                   φpxq “         ak φk pxq,
+                                            k“0
+
+       (1) n “ 5, φk pxq “ xk ;
+       (2) n “ 5, φk pxq 为 k 次 Legendre 多项式;
+       (3) n “ 10, φk pxq “ xk ;
+
+
+
+
+                                                JU
+       (4) n “ 10, φk pxq 为 k 次 Legendre 多项式.
+
+
+
+
+                                              ,N
+ 2. 利用例 3.5.3 的数据编程求解最小线性二乘拟合:
+
+       (1) 在不超过 n 次的多项式函数空间 Pn 中求上述数据的最小二乘拟合;
+                                       h
+       (2) 将 (1) 中多项式形式改为任意的函数, 即考虑用如下的函数集中作拟合:
+                                    at
+                                                     n
+                                                     ÿ
+                                    y “ f p xq “           ak ϕk pxq.
+                  fM
+
+                                                     k“0
+
+           其中 ϕk , k “ 0, 1, ¨ ¨ ¨ , n 是给定的函数系满足线性无关的要求. 这里可
+           采用 1, x, cos x, sin x 验证.
+                lo
+
+
+
+ 3. 利用例 3.5.3 的数据求其 9 次多项式拟合.
+      o
+
+
+
+
+       (1) 求得到多项式拟合的均方误差及法方程组系数矩阵 A 的条件数是多
+   ho
+
+
+
+
+           少?(在Python中可以用numpy.linalg.cond来输出条件数; 在 Matlab
+           中可以用cond来输出条件数)
+ Sc
+
+
+
+
+       (2) 可以证明如果用 9 次多项式拟合, 那么当 f 是 Lagrange 插值多项式时,
+           均方误差是 0 但 (1) 中均方误差的结果并不是 0, 为什么?
+       (3) 把多项式空间 Pn 的基改成 Chebyshev 多项式
+
+                                    tTk pxq : k “ 0, 1, ¨ ¨ ¨ , nu,
+
+           观察均方误差和法方程组系数矩阵 A 的条件数会怎么表现.
+
+ 4. 实现改进的 FFT 算法. 尝试利用实现的代码进行图像或音频压缩处理.
+                                参考文献
+ [1] 林成森. 数值计算方法 ( 第二版 上、下册). 北京 科学出版社, 2005.
+
+ [2] 周铁, 徐树方, 张平文, 李铁军. 计算方法. 北京: 清华大学出版社, 2006.
+
+ [3] 李庆扬, 王能超, 易大义. 数值分析 ( 第五版 ). 北京: 清华大学出版社, 2008.
+
+
+
+
+                                                   JU
+ [4] 李荣华, 刘播. 微分方程数值解法 ( 第四版 ). 北京: 高等教育出版社, 2009.
+
+ [5] 黄云清, 舒适, 陈艳萍, 杨银, 魏华祎. 数值计算方法( 第二版 ). 北京: 科学出版社,
+
+
+
+
+                                                 ,N
+    2022.
+
+ [6] (美)金凯德 (Kincaid, D.), (美)切尼 (Cheney, W.). 数值分析 ( 影印版, 英文第三版 ).
+    北京: 机械工业出版社, 2003.
+                                            h
+                                         at
+ [7] 车刚明等编著. 数值分析典型题解析及自测试题 ( 第三版 ). 西安: 西北工业大学出版
+                          fM
+
+    社, 2005.
+
+ [8] 现代应用数学手册编委会. 现代应用数学手册. 计算与数值分析卷. 北京: 清华大学
+                        lo
+
+
+
+    出版社, 2005.
+
+ [9] 同济大学计算数学教研室编著. 现代数值计算. 北京: 人民邮电出版社, 2009.
+              o
+           ho
+
+
+
+
+[10] (美)索尔(Sauer, T.)著; 吴兆金, 王国英, 范红军译等. 数值分析. 北京: 人民邮电出版
+    社, 2010.
+         Sc
+
+
+
+
+[11] (美)马修斯(Mathews, J.H.)等著; 周璐等译. 数值方法( Matlab 版)(原书第四版). 北
+    京: 电子工业出版社, 2005.
+
+[12] 夸特罗尼(Alfio, Q)等著. 数值数学=Numerical Mathematics ( 影印版 ). 北京: 科学
+    出版社, 2006.
+
+[13] (美)伯登(Burden,R.L.)等. 数值分析 ( 第七版 影印版 ). 北京: 高等教育出版社, 2001.
+
+[14] Isaacson, E., Keller, H. Analysis of Numerical Methods, London–New York: John
+    Wiley and Sons, 1967.
+
+[15] Cheney,E. W.著; 王彭年等译. 逼近论导论 ( Introduction to Approximation The-
+    ory). 北京: 高等教育出版社, 2000.
+
+                                       46
+参考文献                                                                                47
+
+[16] Hall, C.A., Meyer, W. Optimal error bounds for cubic spline interpolation. Journal
+    of Approximation Theory. 16(2):105–122, 1976.
+
+[17] Stoer, J., Bulirsch R. Introduction to Numerical Analysis, 3rd Edition, Springer,
+    2002.
+
+[18] Mills,T.M, Smith S.J. A note on the Newton-Cotes integration formula Journal of
+    Approximation Theory. 66(1):98-105, 1991.
+
+[19] Hornik, K., Stinchcombe, M, White, H. Multilayer feedforward networks are uni-
+    versal approximators. Nerual Networks, 2(5): 359–366, 1989.
+
+
+
+
+                                                JU
+[20] Yarotsky, D. Error bounds for approximations with deep Relu networks. Neural
+
+
+
+
+                                              ,N
+    Networks 94: 103–114, 2017.
+
+[21] Maiorov,V.E. On Best Approximation by Ridge Functions. Journal of Approxima-
+    tion Theory, 99: 68-94, 1999.       h
+                                     at
+[22] Brenner, S. C., Scott, L. R. The Mathematical Theory of Finite Element Methods
+    (Third Edition). New York: Springer Science+Business Media, LLC, 2008.
+                      fM
+        o           lo
+     ho
+   Sc
+

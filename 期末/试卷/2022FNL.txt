@@ -1,0 +1,531 @@
+                                                                                                 I
+                                                                                           DiMersified
+
+                                                                   2022        9                 11
+
+
+                  :                                                        ,
+          ,                                                        .                         ,                     (             )
+ ,                             ,                                                                                       .     ,
+                                                      ,                                                        .
+
+                  (                     3        ,        12           )                    .
+                                    ′
+     1.                            y = f (t, y), y(0) = η0                                             yn+1 = yn + hΦ(tn , yn , h); y0 = η0
+                              _______________.
+     2.                   p                                                F                          t,               −L ≤ J ≤ U , p, t, L, U
+              ,                                           F                _________                                   .
+     3.           f (x)                      [a, b]            ,       f (x)               [a, b]                                          ____
+_______________.
+     4.                                 Runge–Kutta                                                        ,                 Runge–Kutta         ,
+                              _______________________ _______________________
+__________________ __________________ __________________.
+
+              :                                                                        ,                                              ,
+                      .                  ,                                     .
+
+          :
+     1. Φ(t, y, 0) = f (t, y).
+     2. 2(L + U + 1)pt−1 (p − 1) + 1.
+        M +m
+     3.          ,         M = max f (x), m = min f (x).
+            2                  x∈[a,b]        x∈[a,b]
+                                      h       1               h      1 
+     4. K1 = f (tn , yn ), K2 = f tn + , yn + hK1 , K3 = f tn + , yn + hK2 ,
+                                        2      2                 2      2
+                                                  h
+        K4 = f (tn + h, yn + hK3 ), yn+1 = yn + (K1 + 2K2 + 2K3 + K4 ).
+                                                  6
+
+
+
+
+                                                                                   1
+                    (8           )                                    Runge–Kutta
+                                                                h
+                                                  yn+1 = yn + (K1 + K2 ),
+                                                                2
+                                                   K1 = f (tn , yn ),
+                                                                       h
+                                                   K2 = f (tn + h, yn + (K1 + K2 ).
+                                                                       2
+                                     .
+
+                :                                                                                   ,                                       ,
+                                                        ,                  .
+                ,                                                                  :                                         h,
+        (                        )          yn                        δ,                      ỹn = yn + δ ,                 ym           m>n
+                     δ               |ỹm − ym | < δ              ,                                             .
+                                                                                                            ′
+                ,                        ,                                                                  y = µy      ,         µ
+(                        ,                   µ           ).                                µh ∈ (α, β),                       ,           (α, β)
+                             .
+                ,                                  ,                           ,                                                      ,
+f (t, y) = µy ,                                                                                         ,       µh           .
+
+            :       f (t, y) = µy ,
+                                                                       h
+                                                            yn+1 = yn + (µyn + K2 ),
+                                                                       2
+                                                                         µh
+                                                             K2 = µyn +     (µyn + K2 ),
+                                                                          2
+                    2 + µh                                                                  2 + µh
+        K2 =               µyn .     K2        ,                           yn+1 =                  yn .
+                    2 − µh                                                                  2 − µh
+                         δ,     ỹn = yn + δ ,
+                                                            2 + µh              2 + µh
+                                                 ỹn+1 =           ỹn = yn+1 +        (ỹn − yn ),
+                                                            2 − µh              2 − µh
+
+                                                                                       2 + µh
+                                                       |ỹn+1 − yn+1 | =                      |ỹn − yn |.
+                                                                                       2 − µh
+                                                                                       2 + µh
+                ,                                                                             < 1,                   µh ∈ (−∞, 0).
+                                                                                       2 − µh
+    ,                                                         (−∞, 0).
+
+                    (8           )                            ,
+                                                              Z 3 p
+                                                                 x 4x − x2 − 3 dx
+                                                                  1
+
+                                                                                       2
+                      n       Gauss – Chebyshev                                               ,             Gauss – Chebyshev
+                                             .
+
+
+                :                                                    Gauss–Chebyshev                          ,
+                                 ,                      ,                                      .
+
+
+     :                   ,                   −1      1,     x = t + 2,
+Z 3 √                      Z 1        p                             Z 1
+                     x=t+2                                              (t + 2)(1 − t2 )
+   x 4x − x2 − 3 dx =====      (t + 2) 4(t + 2) − (t + 2)2 − 3 dt =        p             dt.
+ 1                          −1                                       −1      (1 − t2 )
+      ,         f (t) = (t + 2)(1 − t2 ) = −t3 − 2t2 + t + 2,           .     n                                   Gauss–Chebyshev
+                                    2n − 1,                Gauss–Chebyshev                                               .
+                                           √                           √
+                                           1         2             3         2
+                              x1 = cos       π =       , x2 = cos    π =−      ,
+                                           4        2              4        2
+
+                                     Z 3 √
+                                                          π
+                                        x 4x − x2 − 3 dx = [f (x1 ) + f (x2 )] = π.
+                                      1                   2
+
+                    (10      )                              3                    p(x),
+                                 p(0) = 0, p′ (0) = 1, p(1) = 1, p′ (1) = 2.
+
+                :                        Hermite                                      ,                                              ,
+                                         .          ,                                                                           .
+      ,                                           f (x) = x                                             ,
+            ,                                                        .
+
+            :             : Hermite
+              Hermite                                           .                f (x)                 x0 , x 1 , · · · , x n
+              f (x0 ), f (x1 ), · · · , f (xn ),                                      ′       ′
+                                                                                    f (x0 ), f (x1 ), · · · , f ′ (xn ).
+          2n + 1                    H2n+1 (x),
+                                                             ′
+                            H2n+1 (xi ) = f (xi ),          H2n+1 (xi ) = f ′ (xi ),         i = 0, 1, · · · , n,
+                                                 2n + 1                      Ai (x), Bi (x), i = 0, 1, · · · , n,
+                Ai (xj ) = δij ,      A′i (xj ) = 0,        Bi (xj ) = 0,        Bi′ (xj ) = δij ,    i, j = 0, 1, · · · , n,
+                                 X
+                                 n                          X
+                                                            n
+      ,         H2n+1 (x) =             f (xi )Ai (x) +             f ′ (xi )Bi (x)                     .
+                                  i=0                        i=0
+
+           li (x)                f (x)                      x0 , x 1 , · · · , x n            i      Lagrange                       , i =
+0, 1, · · · , n,
+                             (x − x0 ) · · · (x − xi−1 )(x − xi+1 ) · · · (x − xn )
+                 li (x) =                                                              ,               i = 0, 1, · · · , n,
+                            (xi − x0 ) · · · (xi − xi−1 )(xi − xi+1 ) · · · (xi − xn )
+
+                                                                         3
+                                      ,
+                                                !
+                                           X
+                                           n
+                                            1
+    Ai (x) =           1 − 2(x − xi )             li2 (x),         Bi (x) = (x − xi )li2 (x),       i = 0, 1, · · · , n.
+                                         x − xj
+                                      j=0 i
+                                           j̸=i
+
+        x0 = 0 , x1 = 1            ,    l0 (x) = 1 − x, l1 (x) = x, A0 (x) = (1 + 2x)(1 − x)2 ,
+A1 (x) = (3 − 2x)x2 , B0 (x) = x(1 − x)2 , B1 (x) = (x − 1)x2 .
+
+                                 p(x) = A1 (x) + B0 (x) + 2B1 (x) = x3 − x2 + x.
+
+                 :
+            p(0) = 0,          p(x) = x · p0 (x),        p0 (x)   :
+                                           
+             
+              p0 (x)             2,        
+                                              p0 (x) = ax2 + bx + c,                             
+             
+                                           
+                                                                                                 
+             
+             p (1) = 1,                    
+                                            p (1) = 1,                                           
+                                                                                                  a = 1,
+                0                                0
+                                      ⇒                                                   ⇒         b = −1,
+             
+              p0 (0) = 1,                  
+                                              p′0 (1) = 1,                                       
+                                                                                                  
+             
+                                           
+                                                                                                 c = 1.
+             
+             p′ (1) + p (1) = 2,           
+                                            p (0) = 1,
+                0        0                       0
+
+             p0 (x) = x2 − x + 1,                                   p(x) = x · p0 (x) = x3 − x2 + x.
+                 :
+                     f (x) = x            f (0) = 0, f (1) = 1, f ′ (0) = 1, f ′ (1) = 1,                    p0 (x)
+
+                                          p0 (0) = p′0 (0) = p0 (1) = 0,   p′0 (1) = 1,
+
+       p(x) = f (x) + p0 (x)    .                        ,          p0 (x) = Ax2 (x − 1),           p′0 (1) = A = 1,
+p(x) = f (x) + p0 (x) = x − x + x.
+                         3   2
+
+
+
+                 (10         )    f (x) = x3            [−1, 1]                       ρ(x) = 1
+                         .
+
+             :                                                     ,                          ,
+                 ,                .
+
+        :     φ0 (x) = 1, φ1 (x) = x, φ2 (x) = x2 ,                  a0 , a1 , a2 ,
+                                                                          
+                         (φ0 , φ0 ) (φ0 , φ1 ) (φ0 , φ2 )      a0    (φ0 , f )
+                                                                          
+                      (φ1 , φ0 ) (φ1 , φ1 ) (φ1 , φ2 ) · a1  = (φ1 , f ) ,
+                         (φ2 , φ0 ) (φ2 , φ1 ) (φ2 , φ2 )      a2    (φ2 , f )
+                  Z 1
+     , (f, g) :=      f (x)g(x)ρ(x) dx,       f, g ∈ C 0 ([−1, 1]) .        (φ0 , φ0 ) = 2, (φ0 , φ2 ) =
+                        −1
+            2                          2
+(φ1 , φ1 ) = , (φ2 , φ2 ) = (φ1 , f ) = , (φ0 , φ1 ) = (φ1 , φ2 ) = (φ0 , f ) = (φ2 , f ) = 0.
+            3                          5
+                    3                                               X2
+                                                                                      3
+a0 = a2 = 0 , a1 = ,       f (x)                                        ai φi (x) = x.
+                    5                                               i=0
+                                                                                      5
+
+
+                                                               4
+                   (10      )
+                                         y(n + 2) − 2y(n + 1) + y(n) = 3n
+           .
+
+               :                                                                                                   ,
+       .                                                   ,                                                               ,
+                                 ,                                                                     .                       ,
+       ,                                   .
+
+       :                                                   :
+
+                                                               z 2 − 2z + 1 = 0.
+
+                         z1 = z2 = 1                   ,                                             y(n) = C1 · 1n + n · C2 · 1n =
+C1 + nC2 ,                C1 , C2                      .
+                                                           ,                       y(n) = a · 3n ,                         ,
+
+                                a · 3n+2 − 2a · 3n+1 + a · 3n = 3n ⇒ 4a = 1.
+       1                                       1 n
+     a= ,                       y(n) =           ·3 ,
+       4                                       4
+                                                                                     1 n
+                                                   y(n) = C1 + nC2 +                   ·3 .
+                                                                                     4
+
+
+                   (10      )                                                      y ′ = f (t, y), y(t0 ) = η0
+
+                                                                  h
+                                     yn+1 − yn−1 =                  (3fn − fn−1 + 4fn−2 )
+                                                                  3
+
+
+               :                                                                         ,
+                                                   ,                                                                   .
+                                                                           .                               ,                       .
+
+               :                     .                                                       :
+                                                                                1   4
+                                         ρ(λ) = λ3 − λ,              σ(λ) = λ2 − λ + .
+                                                                                3   3
+   ρ(1) = 0, ρ′ (1) = 2 = σ(1),                                                      ,                         .
+                     .   ρ(λ) = 0,                              λ1 = 0, λ2 = 1, λ3 = −1,                       ρ(λ)
+                                               ,                               ,                 .
+                                               ,                       .                                                               □
+
+
+
+                                                                      5
+                      (10             )                a, b,            max | ln x − a − bx|                                     ,
+                                                                        1≤x≤2
+    .
+
+                  :                                             ,                                                       ,
+                                                                                                           .
+        ,                                  .
+
+             :                                             ,           f (x) = ln x      [1, 2]
+                          ,       g(x) = a + bx.     Chebyshev        ,       1 ≤ x1 < x 2 < x 3 ≤ 2
+                                                                         1
+f (x) − g(x)                  [1, 2]               .       f ′′ (x) = − 2 < 0       [1, 2]                                                ,
+                                                                        x
+                                     ,   x1 = 1 , x3 = 2 .                       ,
+
+                      f (x1 ) − g(x1 ) = −f (x2 ) + g(x2 ) = f (x3 ) − g(x3 ),                               f ′ (x2 ) − g ′ (x2 ) = 0.
+
+    x1 , x 3 ,
+      
+                                                                                                   (
+      −a − b = a + bx2 − ln x2 = ln 2 − a − 2b                                                         −a − ln 2 = a + 1 + ln ln 2
+           1                                                                               ⇒
+      
+       −b=0                                                                                            b = ln 2
+          x2
+                          1                   
+            a=−             1 + ln 2 + ln ln 2 , b = ln 2.                          ,
+                          2
+                                                                                        1                    
+                                          |f (1) − g(1)| = | − a − b| =                   −1 + ln 2 − ln ln 2 .
+                                                                                        2
+
+                                                                              b−a
+                      (10             )                    n,           h=        , xi = a + ih,
+                                                                               n
+y ′ = f (x, y), a ≤ x ≤ b; y(0) = η                                            Euler
+                                                                                                                   
+                                                                                 h      h
+                                            yi+1 = yi + hf                   xi + , yi + f (xi , yi )
+                                                                                 2      2
+                      ,                                                         .
+
+                  :                            ,                                            Taylor                  ,
+                                                       .                                    ,
+                                                                                                        
+                                                                            h      h
+                                                       Φ=f              xi + , yi + f (xi , yi )
+                                                                            2      2
+                 y′                                ,                                                                    Taylor        .
+        ,                             f                         Taylor                          ,                                     ,
+                                                                       
+                              h                                         h
+Φ           y ′ xi +                                   ,          ′
+                                                                 y xi +                                        Taylor                         .
+                              2                                         2
+
+                                                                                    6
+                                                                      ,                 ,                                                   ,
+                                                                                                                    
+                                                                                                                 h
+                                           .                  “           ”              Φ       y ′ xi +                               ,
+                                                                                                                 2
+               1 ′′′
+                 y (xi ) .
+              24
+
+                :           y(x)                                                    .                                          ,   i = 0, 1, 2, · · · n−
+1,                  yi = y(xi ),
+                                                                                             
+                                                                          h      h
+                                         ỹi+1 = yi + hf              xi + , yi + f (xi , yi ) ,
+                                                                          2      2
+                 ỹi+1         y(xi+1 )                   ,                                                                .
+                ,               y(xi+1 )          Taylor                  ,
+
+                                                              h2 ′′       h3
+                         y(xi+1 ) = yi + hy ′ (xi ) +           y (xi ) + y ′′′ (xi ) + O(h4 ), h → 0.                                            (9.1)
+                                                              2           6
+                                                                                                
+                                                                              h         h
+              ỹi+1 ,                            Euler                f xi + , yi + f (xi , yi )      y(x)
+                                                                               2        2
+     xi                             .                f                                           .
+                                                                                                            
+                                                        h                      h
+                                               di = yi + f (xi , yi ) − y xi +                                   ,
+                                                        2                      2
+     Taylor
+                                                         h2 ′′
+                                               di = −      y (xi ) + O(h3 ),                         h → 0,
+                                                         8
+
+                                                                                 
+                                            h      h                     h         h
+                          εi = f        xi + , yi + f (xi , yi ) − f xi + , y xi +      ,
+                                            2      2                     2         2
+                         Taylor                 Lagrange
+                                                 ∂f                       1     ∂ 2f
+                                    εi = d i ·                           + d2i · 2                ,                                               (9.2)
+                                                 ∂y (xi + h , y(xi + h )) 2     ∂y (xi + h , ξi )
+                                                              2                 2                                    2
+
+
+
+
+                                                                                                      
+                                                  h                                         h
+                          ξi = (1 − θi ) · y xi +                     + θi              yi + f (xi , yi ) ,              θi ∈ [0, 1].
+                                                  2                                         2
+
+                                                                              ∂f
+                                                              Li =                         ,
+                                                                              ∂y (xi ,yi )
+          f                ,
+
+                              ∂f                                                    ∂ 2f                 ∂ 2f
+                           lim                    = Li ,                        lim                    =             ,
+                          h→0 ∂y (xi + h                                        h→0 ∂y 2                    2
+                                         ,y x + h
+                                       2 ( i 2 ))                                        (xi + h , ξi ) ∂y (xi ,yi )
+                                                                                                         2
+
+
+
+                                                                                7
+                                          Li h2 ′′
+           (9.2)                εi = −         y (xi ) + O(h3 ), h → 0.
+                                           8
+                                                   ,
+                                                        
+                                        h        h                        h
+                 ỹi+1 = yi + h · f xi + , y xi +      + εi = yi + hy ′ xi +    + hεi ,
+                                        2         2                          2
+                               Taylor                  ,
+
+                                   h2 ′′         h3
+       ỹi+1 = yi + hy ′ (xi ) +       y (xi ) + y ′′′ (xi ) + hεi + O(h4 )
+                                   2             8
+                                   h 2
+                                                 h 3                            
+                = yi + hy ′ (xi ) + y ′′ (xi ) +     y ′′′ (xi ) − Li y ′′ (xi ) + hεi + O(h4 ),                          h → 0.   (9.3)
+                                   2             8
+           (9.1)       (9.3),                               ,           h3               ,                                    ,
+
+
+                                          h3 ′′′                      h3
+                               |Rn | =        y (xi ) − Li y ′′ (xi ) − y ′′′ (xi )
+                                           8                            6
+                                          1 ′′′                          1 ′′
+                                       =     y (xi ) + 3Li y ′′ (xi ) =    f (xi , yi ) + 3Li f ′ (xi , yi ) ,
+                                         24                             24
+                    ∂f
+       , Li =                    .                                                                                                         □
+                    ∂y (xi ,yi )
+
+
+                    (12  )                            y ′ = f (y), a < x ≤ b, y(0) = η ,
+                         b−a
+           n,         h=     , xi = a + ih, 0 ≤ i ≤ n,          A, B, C ,
+                           n
+                    yi+1 = yi−1 + h[Af (xi+1 , yi+1 ) + Bf (xi , yi ) + Cf (xi−1 , yi−1 )]
+                                               ,                                                 ,
+   .
+
+                :                                               ,               Taylor                ,
+                           .                                                ,                                     f       ,
+             Taylor                                                 ,                                     ,               .
+       ,      Taylor                       ,                                                 (       ),
+                                   ,                                                     ,                                             .
+
+        :                                  ,                    y(x)                                          .                    ,
+i = 0, 1, 2, · · · n − 1,                                  yi = y(xi ),
+
+                                ỹi+1 = yi−1 + h[Af (xi+1 , yi+1 ) + Bf (xi , yi ) + Cf (xi−1 , yi−1 )],
+
+                   ỹi+1          y(xi+1 )                              ,                                             .
+
+
+
+                                                                                   8
+                      y(xi+1 )                Taylor       ,
+
+                                          ′           4h3 ′′′
+                                                          2 ′′
+       y(xi+1 ) = yi−1 + 2hy (xi−1 ) + 2h y (xi−1 ) +     y (xi−1 )
+                                                       3
+                    2h4 (4)                4h5 (5)
+                 +      y (xi−1 , yi−1 ) +    y (xi−1 , yi−1 ) + O(h6 ),                    h → 0.             (10.1)
+                     3                     15
+                         ỹi+1 .     f (xi+1 , yi+1 )            Taylor            ,
+
+    f (xi+1 , yi+1 ) = y ′ (xi+1 ) = y ′ (xi−1 ) + 2hy ′′ (xi−1 ) + 2h2 y ′′′ (xi−1 )
+                                                   4h3 (4)        2h4 (5)
+                                               +      y (xi−1 ) +    y (xi−1 , yi−1 ) + O(h5 ),           h → 0,
+                                                    3              3
+f (xi , yi )             Taylor               ,
+
+                                                                              h2 ′′′
+               f (xi , yi ) = y ′ (xi ) = y ′ (xi−1 ) + hy ′′ (xi−1 ) +         y (xi−1 )
+                                                                              2
+                                                   h3 (4)       h4
+                                               +     y (xi−1 ) + y (5) (xi−1 ) + O(h5 ),         h → 0.
+                                                   6            24
+                                     ,
+
+                     ỹi+1 = yi−1 + (A + B + C)hy ′ (xi−1 ) + (2A + B) h2 y ′′ (xi−1 )
+                                                                   
+                                      1     3 ′′′            4     1
+                            + 2A + B h y (xi−1 ) +             A + B h4 y (4) (xi−1 )
+                                      2                      3     6
+                                         
+                                 2     1
+                            +      A + B h5 y (5) (xi−1 , yi−1 ) + O(h6 ), h → 0.                              (10.2)
+                                 3    24
+       (10.1)          (10.2)         ,                                                      ,
+                                                                             
+                                                                               1
+                                                                             
+                                                                              A= ,
+                                     
+                                      A + B + C = 2,                        
+                                                                                3
+                                     
+                                                                            
+                                                                             
+                                       2A + B = 2,                               4
+                                                                     ⇒         B= ,
+                                     
+                                                                            
+                                                                                3
+                                     
+                                     2A + 1 B = 4 .                         
+                                                                             
+                                                                             
+                                                                                1
+                                            2      3                         C = .
+                                                                                 3
+   4   1   2                       2    1    5    4
+     A+ B = ,                        A+ B =    ̸= ,                      A, B, C                 ,
+   3   6   3                       3   24   18   15
+         .
+
+                                                         h5 (5)
+                    |Rn | = ỹi+1 − y(xi+1 ) =              y (xi−1 , yi−1 ) + O(h6 ),      h → 0.
+                                                         90
+
+               h5        ,                                               ,                           .
+
+
+
+
+                                                                 9
+
